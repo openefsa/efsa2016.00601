@@ -41,7 +41,7 @@ plotCitrusMap <- function(europe) {
                df = europe, # data frame with compound annual growth rate
                dfid="NUTS.Code",
                var = "ha", # compound annual growth rate field in df
-               breaks = c(0,100,100,2000,5000,10000,20000), # list of breaks
+               breaks = c(0,100,1000,2000,5000,10000,20000), # list of breaks
                                         #col = cols, # colors
                
                col = cols,
