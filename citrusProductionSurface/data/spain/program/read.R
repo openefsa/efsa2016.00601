@@ -28,7 +28,9 @@ readCitrusHectar_spain <- function() {
                             "ESPAÑA")) %>%
    
        mutate(ha=as.numeric(ha)) %>%
-       filter(!is.na(ha)) 
+       filter(!is.na(ha)) %>%
+       mutate(country="Spain") %>%
+       mutate(year=2013) 
        
                                         
 }
