@@ -7,7 +7,6 @@ clipToEurope <- function(spdf) {
 
 }
 
-nuts <- read.csv("NUTS_2013L.csv")
 nuts2013 <- readOGR("geo/NUTS_2013_60M_SH/data/","NUTS_RG_60M_2013")
 countryMap <- nuts2013[which(nuts2013@data$STAT_LEVL_ == 0),]
 nuts2013Map <- clipToEurope(nuts2013)
@@ -21,7 +20,7 @@ cols <- carto.pal(pal1 = "green.pal", # first color gradient
                   n2 = 4) # number of colors in the second gradiant
 
 plotCitrusMap <- function(europe) {
-
+    europe <- data.frame(europe)
     opar <- par(mar = c(0,0,1.2,0))
 
 

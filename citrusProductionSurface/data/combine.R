@@ -9,18 +9,22 @@ p_load(maptools)
 source("replace.R")
 
 source("spain/program/read.R")
+source("france/program/read.R")
 source("mapTools.R")
 
-nuts <- read.csv("NUTS_2013L.csv") %>% select(Level,NUTS.Code,Description)
+nuts <- read.csv("NUTS_2013L.csv",stringsAsFactors=F) %>%
+    tbl_df() %>%
+    select(Level,NUTS.Code,Description)
 
 
-spain <- readCitrusHectar_spain() %>%
-    addNewData("nutsReplacements.csv")
 
-europe <- left_join(spain,nuts,by = c('name'='Description'))
-
-                                        #%>%
-                                        #select(country,year)
+europe <- readCitrusHectar_spain() %>%
+    rbind(readCitrusHectar_france()) %>%
+    addNewData("nutsReplacements.csv") %>%
+    left_join(nuts,by = c('name'='Description')) %>%
+    rename(NUTS3.name = name) %>%
+    select(country,year,NUTS3.name,NUTS.Code,ha)
+                                        #,comment,source,link,date)
 
 write.csv(europe,"output/citrusProduction.csv")
 
