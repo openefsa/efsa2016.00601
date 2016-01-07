@@ -1,0 +1,1 @@
+download.file("http://www.cystat.gov.cy/mof/cystat/statistics.nsf/All/E82BC8FA48353FE9C2257E5E0031C997/$file/AGRI-PRODUCTS-A2009_13-EN-080615.xls?OpenElement",paste0(getwd(),"/cyprus/originals/AGRI-PRODUCTS-A2009_13-EN-080615.xls"))
