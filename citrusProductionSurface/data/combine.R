@@ -11,6 +11,8 @@ source("replace.R")
 source("spain/program/read.R")
 source("france/program/read.R")
 source("italy/program/read.R")
+source("portugal/program/read.R")
+
 source("mapTools.R")
 
 nuts <- read.csv("NUTS_2013L.csv",stringsAsFactors=F) %>%
@@ -22,6 +24,7 @@ nuts <- read.csv("NUTS_2013L.csv",stringsAsFactors=F) %>%
 europe <- readCitrusHectar_spain() %>%
     rbind(readCitrusHectar_france()) %>%
     rbind(readCitrusHectar_italy()) %>%
+    rbind(readCitrusHectar_portugal()) %>%
     addNewData("nutsReplacements.csv") %>%
     left_join(nuts,by = c('name'='Description')) %>%
     rename(NUTS3.name = name) %>%

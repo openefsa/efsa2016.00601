@@ -46,5 +46,5 @@ readCitrusHectar_italy <- function() {
         rbind(getDataFromSheet("Dw312013.xls",2,2013,"")) %>%
         rbind(getDataFromSheet("Dw312014.xls",1,2014,"")) %>%
         rbind(getDataFromSheet("Dw312014.xls",2,2014,"")) %>%
-        rbind(getDataFromSheet("Dw312015.xls",1,2015,"Data for pompelmo, bergamotto, cedro, chinotto is missng for 2015"))
+        rbind(getDataFromSheet("Dw312015.xls",1,2015,"Data for pompelmo, bergamotto, cedro, chinotto is missing for 2015"))
 }
