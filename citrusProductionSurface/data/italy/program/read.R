@@ -33,18 +33,28 @@ getDataFromSheet <- function(file,sheet,year,comment) {
        mutate(ha=sum(X3,X8,X13,X18)) %>% ungroup() %>%
        select(name,ha) %>%
        mutate(year=year,
-              country="Italy",
+              country="IT",
               date="06/01/2015",
               comment=comment,
               link=downloadLink,
-              source="http://agri.istat.it/sag_is_pdwout/jsp/NewDownload.jsp?id=97A|15A|18A|21A|31A"
-              )
+              source="http://agri.istat.it/sag_is_pdwout/jsp/NewDownload.jsp?id=97A|15A|18A|21A|31A")
+             
     data
 }
 readCitrusHectar_italy <- function() {
-    getDataFromSheet("Dw312013.xls",1,2013,"") %>%
-        rbind(getDataFromSheet("Dw312013.xls",2,2013,"")) %>%
-        rbind(getDataFromSheet("Dw312014.xls",1,2014,"")) %>%
-        rbind(getDataFromSheet("Dw312014.xls",2,2014,"")) %>%
-        rbind(getDataFromSheet("Dw312015.xls",1,2015,"Data for pompelmo, bergamotto, cedro, chinotto is missing for 2015"))
+    italy <- bind_rows(
+        getDataFromSheet("Dw312011.xls",1,2011,""),
+        getDataFromSheet("Dw312011.xls",2,2011,""),
+        getDataFromSheet("Dw312012.xls",1,2012,""),
+        getDataFromSheet("Dw312012.xls",2,2012,""),
+        getDataFromSheet("Dw312013.xls",1,2013,""), 
+        getDataFromSheet("Dw312013.xls",2,2013,""),
+        getDataFromSheet("Dw312014.xls",1,2014,""), 
+        getDataFromSheet("Dw312014.xls",2,2014,""), 
+        getDataFromSheet("Dw312015.xls",1,2015,"Data for pompelmo, bergamotto, cedro, chinotto is missing for 2015")) %>%
+        group_by(name,year,country) %>%
+        mutate(ha=sum(ha))  %>%
+        filter(row_number()==1) 
+
+    
 }

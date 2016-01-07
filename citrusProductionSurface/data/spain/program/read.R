@@ -31,7 +31,7 @@ readCitrusHectar_spain <- function() {
    
        mutate(ha=as.numeric(ha)) %>%
        filter(!is.na(ha)) %>%
-       mutate(country="Spain",
+       mutate(country="ES",
               year=2013,
               comment="",
               source="http://www.magrama.gob.es/es/estadistica/temas/publicaciones/anuario-de-estadistica/2014/default.aspx?parte=3&capitulo=13",

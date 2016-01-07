@@ -13,7 +13,7 @@ readCitrusHectar_france_<- function() {
         group_by(region) %>%
         mutate(ha=sum(X32,X35,X38,X41)) %>%
         select(region,ha) %>%
-        mutate(country="France", year=2013) %>%
+        mutate(country="FR", year=2013) %>%
         ungroup() %>%
         mutate(nuts2=c("FR82","FR83"))
 

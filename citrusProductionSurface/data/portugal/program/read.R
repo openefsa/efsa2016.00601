@@ -38,7 +38,7 @@ readCitrusHectar_portugal <- function() {
         mutate(year=sub("y","",year),
                year=as.numeric(year)) %>%
         select(name,year,ha,Level) %>%
-        mutate(country="Portugal",
+        mutate(country="PT",
                comment="",
                source="",
                link="",
