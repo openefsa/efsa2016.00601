@@ -3,7 +3,9 @@ p_load(cartography)
 p_load_gh("eblondel/cleangeo")
 p_unload(raster)
 
-nuts3.spdf.tr <- spTransform(nuts3.spdf,CRS("+proj=longlat +ellps=WGS84"))
+
+plotCitrusMap <- function(europe) {
+    nuts3.spdf.tr <- spTransform(nuts3.spdf,CRS("+proj=longlat +ellps=WGS84"))
 
 
                                         #         48
@@ -11,24 +13,25 @@ nuts3.spdf.tr <- spTransform(nuts3.spdf,CRS("+proj=longlat +ellps=WGS84"))
                                         #         35
                                         # osm
                                         #extent <- raster::extent(-10,34,34,48) #small
-extent <- raster::extent(-26,53,34,72) #big
+    extent <- raster::extent(-26,53,34,72) #big
 
-nuts3.spdf.tr <- raster::crop(nuts3.spdf.tr,extent)
+    nuts3.spdf.tr <- raster::crop(nuts3.spdf.tr,extent)
 
-nuts3.spdf@data <- nuts3.spdf@data
+                                        #nuts3.spdf@data <- nuts3.spdf@data
 
-nuts0.spdf.tr <- spTransform(nuts0.spdf,CRS("+proj=longlat +ellps=WGS84"))
-nuts0.spdf.tr <- raster::crop(nuts0.spdf.tr,extent)
-world.spdf.tr <- spTransform(world.spdf.tr,CRS("+proj=longlat +ellps=WGS84"))
-world.spdf.tr.clean <- clgeo_Clean(world.spdf.tr , print.log = TRUE)
-world.spdf.tr.clean <- raster::crop(world.spdf.tr.clean,extent)
+    nuts0.spdf.tr <- spTransform(nuts0.spdf,CRS("+proj=longlat +ellps=WGS84"))
+    nuts0.spdf.tr <- raster::crop(nuts0.spdf.tr,extent)
+    world.spdf.tr <- spTransform(world.spdf,CRS("+proj=longlat +ellps=WGS84"))
+    world.spdf.tr.clean <- clgeo_Clean(world.spdf.tr , print.log = TRUE)
+    world.spdf.tr.clean <- raster::crop(world.spdf.tr.clean,extent)
 
-cols <- carto.pal(pal1 = "red.pal", # first color gradient
-                  n1 = 8) #, # number of colors in the first gradiant
+    cols <- carto.pal(pal1 = "red.pal", # first color gradient
+                      n1 = 8) #, # number of colors in the first gradiant
                                         #pal2 = "red.pal", # second color gradient
                                         #n2 = 4) # number of colors in the second gradiant
 
-plotCitrusMap <- function(europe) {
+
+    
     europe <- data.frame(europe) %>%
         mutate(t_ha=ha/1000)
                                         #opar <- par(mar = c(0,0,1.2,0))

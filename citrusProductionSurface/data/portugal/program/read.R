@@ -5,6 +5,8 @@ p_load(stringr)
 p_load(readr)
 
 readCitrusHectar_portugal <- function() {
+
+    nutsLevels <- readNutsLevels()
                                         #https://www.ine.pt/xportal/xmain?xpid=INE&xpgid=ine_indicadores&indOcorrCod=0000020&contexto=bd&selTab=tab2
     iso8859_1 <- locale("pt",encoding="ISO-8859-1")
     dataNuts <- read_csv2(paste0(getwd(),"/portugal/original/eSFjCZvkxI27xPkYFHeKHPoy_55629.csv"),
@@ -26,7 +28,7 @@ readCitrusHectar_portugal <- function() {
         mutate(name=str_replace_all(name,c("Portugal"="PORTUGAL",
                                            "Continente"="CONTINENTE",
                                            "Centro"="Centro (PT)"))) %>%
-        left_join(nuts,by=c("name"="Description")) %>%
+        left_join(nutsLevels,by=c("name"="Description")) %>%
         filter(!row_number() %in% c(1,2),
                !Level==2)  %>%
                                         #correct mistakes in nuts levels (reference: https://en.wikipedia.org/wiki/NUTS_of_Portugal)
@@ -67,5 +69,5 @@ readCitrusHectar_portugal <- function() {
 
                                         #http://ra09.ine.pt/xportal/xmain?xpid=RA2009&xpgid=ine_ra2009_indicador&contexto=ind&indOcorrCod=0004965&selTab=tab10
 
-data=read.csv(paste0(getwd(),"/portugal/original/gKfNUrJHUlYsbNQeENAWJimm_54530.csv"),
-              sep=";",skip=12,fileEncoding="ISO-8859-1",header=F,stringsAsFactor=F) 
+                                        #data=read.csv(paste0(getwd(),"/portugal/original/gKfNUrJHUlYsbNQeENAWJimm_54530.csv"),
+                                        #sep=";",skip=12,fileEncoding="ISO-8859-1",header=F,stringsAsFactor=F) 

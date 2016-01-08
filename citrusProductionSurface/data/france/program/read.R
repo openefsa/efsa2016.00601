@@ -3,8 +3,14 @@ p_load(readxl)
 p_load(dplyr)
 
 readCitrusHectar_france_<- function() {
-  
-                                        # workarround for https://github.com/hadley/readxl/issues/154
+    nuts.data <- data_frame(NUTS.Code=nuts3.spdf@data$id,id=row.names(nuts3.spdf@data))
+    polygon_data <- data_frame(id=sapply(slot(nuts3.spdf, "polygons"), slot, "ID"),
+                               Shape_Area= sapply(slot(nuts3.spdf, "polygons"), slot, "area"))
+    nuts.area <- left_join(nuts.data,polygon_data)
+    
+    
+    nutsLevels <- readNutsLevels()
+    
     df <- read_excel("france/original/verger2015T6bsva.xls",2,F,skip=8) %>%
         tbl_df() %>%
         rename(region=X2) %>% 
@@ -17,13 +23,13 @@ readCitrusHectar_france_<- function() {
         ungroup() %>%
         mutate(nuts2=c("FR82","FR83"))
 
-    nuts_coteDAzur <- nuts %>% filter(grepl("FR82.+",NUTS.Code)) %>%
+    nuts_coteDAzur <- nutsLevels %>% filter(grepl("FR82.+",NUTS.Code)) %>%
         mutate(nuts2="FR82")
-    nuts_corse <- nuts %>% filter(grepl("FR83.+",NUTS.Code)) %>%
+    nuts_corse <- nutsLevels %>% filter(grepl("FR83.+",NUTS.Code)) %>%
         mutate(nuts2="FR83")
 
     nuts_both <- rbind(nuts_coteDAzur,nuts_corse) %>%
-        left_join(nuts2013@data,by=c("NUTS.Code"="NUTS_ID"))
+        left_join(nuts.area)
 
 
     nuts_both %>% group_by(nuts2) %>%
@@ -35,7 +41,7 @@ readCitrusHectar_france_<- function() {
         select(country,year,Description,impHa) %>%
         rename(name=Description,
                ha=impHa) %>%
-        mutate(comment="Remark: Total area (6 ha) of citrus production in Provence-Alpes-Côte d’Azur (FR82) was distributed to regions of NUTS level 3 (FR821-826) proportional to the area of the regions.",
+        mutate(comment="Remark: Total area (6 ha) of citrus production in Provence-Alpes-Côte d’Azur (FR82) / Corse(FR83) was distributed to regions of NUTS level 3 (FR821-826) / (FR831-FR832) proportional to the area of the regions.",
                source="http://agreste.agriculture.gouv.fr/enquetes/productions-vegetales-528/vergers-et-fruits/",
                link=" http://www.agreste.agriculture.gouv.fr/IMG/xls/verger2015T6bsva.xls",
                date="06/01/2015")
@@ -43,6 +49,7 @@ readCitrusHectar_france_<- function() {
         
 }
 readCitrusHectar_france<- function() {
+                                        # workarround for https://github.com/hadley/readxl/issues/154
     dummy <- capture.output(data <- readCitrusHectar_france_())
     data
 }
