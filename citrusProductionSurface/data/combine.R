@@ -1,30 +1,36 @@
 library(pacman)
 p_load(cartography)
-p_load(dplyr)
-
 p_load(rgdal)
 p_load(PBSmapping)
 p_load(maptools)
+p_load(dplyr)
+p_load(readr)
 
 source("replace.R")
+source("mapTools.R")
+source("utils.R")
 
 source("spain/program/read.R")
 source("france/program/read.R")
 source("italy/program/read.R")
 source("portugal/program/read.R")
-
-source("mapTools.R")
-
-nuts <- read.csv("NUTS_2013L.csv",stringsAsFactors=F) %>%
-    tbl_df() %>%
-    select(Level,NUTS.Code,Description)
+source("cyprus/program/read.R")
 
 
 
-europe <- readCitrusHectar_spain() %>%
-    rbind(readCitrusHectar_france()) %>%
-    rbind(readCitrusHectar_italy()) %>%
-    rbind(readCitrusHectar_portugal()) %>%
+
+nuts <- read_csv("NUTS_2013L.csv")
+names(nuts)[names(nuts)=="NUTS-Code"] <- "NUTS.Code"
+nuts <- nuts %>% select(Level,NUTS.Code,Description)
+
+
+
+europe <- bind_rows(
+    readCitrusHectar_spain(),
+    readCitrusHectar_france(),
+    readCitrusHectar_italy(),
+    readCitrusHectar_portugal(),
+    readCitrusHectar_cyprus()) %>%
     addNewData("nutsReplacements.csv") %>%
     left_join(nuts,by = c('name'='Description')) %>%
     rename(NUTS3.name = name) %>%
@@ -34,7 +40,7 @@ europe <- readCitrusHectar_spain() %>%
 write.csv(europe,"output/citrusProduction.csv")
 
 
-
                                         #pdf()
 plotCitrusMap(europe %>% filter(year==2013))
                                         #dev.off()
+capture.output(sessionInfo(),file="sessionInfo.txt")

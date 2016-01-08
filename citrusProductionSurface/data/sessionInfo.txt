@@ -1,0 +1,26 @@
+R version 3.2.0 (2015-04-16)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 14.10
+
+locale:
+ [1] LC_CTYPE=de_DE.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8       
+ [4] LC_COLLATE=de_DE.UTF-8     LC_MONETARY=en_US.UTF-8    LC_MESSAGES=de_DE.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                  LC_ADDRESS=C              
+[10] LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] readr_0.2.2        cleangeo_0.1-2     devtools_1.8.0     readxl_0.1.0.9000 
+ [5] openxlsx_3.0.0     maptools_0.8-37    PBSmapping_2.69.76 rgdal_1.0-4       
+ [9] cartography_1.1    sp_1.2-1           stringr_1.0.0      reshape2_1.4.1    
+[13] dplyr_0.4.3        pacman_0.3.0      
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_0.12.2     knitr_1.10.5    xml2_0.1.1      raster_2.3-40   magrittr_1.5   
+ [6] lattice_0.20-29 R6_2.0.1        httr_1.0.0      plyr_1.8.3      tools_3.2.0    
+[11] parallel_3.2.0  grid_3.2.0      e1071_1.6-4     DBI_0.3.1       git2r_0.10.1   
+[16] rversions_1.0.1 rgeos_0.3-15    class_7.3-11    digest_0.6.8    lazyeval_0.1.10
+[21] assertthat_0.1  curl_0.9        memoise_0.2.1   stringi_0.5-2   compiler_3.2.0 
+[26] classInt_0.1-23 foreign_0.8-61 

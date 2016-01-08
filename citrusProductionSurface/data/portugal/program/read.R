@@ -2,12 +2,19 @@ library(pacman)
 p_load(dplyr)
 p_load(reshape2)
 p_load(stringr)
-
+p_load(readr)
 
 readCitrusHectar_portugal <- function() {
                                         #https://www.ine.pt/xportal/xmain?xpid=INE&xpgid=ine_indicadores&indOcorrCod=0000020&contexto=bd&selTab=tab2
-    dataNuts <- read.csv(paste0(getwd(),"/portugal/original/eSFjCZvkxI27xPkYFHeKHPoy_55629.csv"),
-                         sep=";",skip=12,fileEncoding="ISO-8859-1",header=F,stringsAsFactor=F ) %>% tbl_df() %>% select(-V31)
+    iso8859_1 <- locale("pt",encoding="ISO-8859-1")
+    dataNuts <- read_csv2(paste0(getwd(),"/portugal/original/eSFjCZvkxI27xPkYFHeKHPoy_55629.csv"),
+                          
+                          skip=12,
+                                        #fileEncoding="ISO-8859-1",
+                          col_names=F,
+                          n_max=11,
+                          locale=iso8859_1
+                          ) %>% tbl_df() %>% select(-X31)
     colnames(dataNuts) <- c("name",paste0("y",seq(2014,1986,-1)))
 
 

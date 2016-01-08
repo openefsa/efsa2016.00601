@@ -9,7 +9,7 @@ p_load(stringr)
 getDataFromSheet <- function(file,sheet,year,comment) {
     fullFileName <- paste0(getwd(),"/italy/original/",file)
     downloadLink <- paste0("http://agri.istat.it/sag_is_pdwout/excel/",file)
-    download.file(downloadLink,fullFileName)
+    condDownload(downloadLink,fullFileName)
     data <- read_excel(fullFileName,sheet,F,skip=3) %>%
         tbl_df() %>%
         select(X1,X3,X8,X13,X18) %>%
