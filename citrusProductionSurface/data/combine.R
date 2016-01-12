@@ -31,8 +31,7 @@ run <- function() {
         addNewData("nutsReplacements.csv") %>%
         left_join(nutsLevels,by = c('name'='Description')) %>%
         rename(NUTS3.name = name) %>%
-        select(country,year,NUTS3.name,NUTS.Code,ha)
-                                        #,comment,source,link,date)
+        select(country,year,NUTS3.name,NUTS.Code,ha,comment,source,link,date)
 
     write.csv(europe,"output/citrusProduction.csv")
 
@@ -43,3 +42,17 @@ run <- function() {
     capture.output(sessionInfo(),file="sessionInfo.txt")
     
 }
+
+
+## name
+## (chr)
+## 1             Minho Lima
+## 2           Grande Porto
+## 3                 Tâmega
+## 4    Entre Douro e Vouga
+## 5            Baixo Vouga
+## 6          Baixo Mondego
+## 7         Pinhal Litoral
+## 8  Pinhal Interior Norte
+## 9             Dão-Lafões
+## 10   Alto Trás os Montes

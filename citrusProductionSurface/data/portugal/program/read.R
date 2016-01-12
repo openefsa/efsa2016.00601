@@ -3,20 +3,20 @@ p_load(dplyr)
 p_load(reshape2)
 p_load(stringr)
 p_load(readr)
+source("portugal/program/readNuts3.R")
 
 readCitrusHectar_portugal <- function() {
 
     nutsLevels <- readNutsLevels()
                                         #https://www.ine.pt/xportal/xmain?xpid=INE&xpgid=ine_indicadores&indOcorrCod=0000020&contexto=bd&selTab=tab2
-    iso8859_1 <- locale("pt",encoding="ISO-8859-1")
+   
     dataNuts <- read_csv2(paste0(getwd(),"/portugal/original/eSFjCZvkxI27xPkYFHeKHPoy_55629.csv"),
                           
                           skip=12,
                                         #fileEncoding="ISO-8859-1",
                           col_names=F,
                           n_max=11,
-                          locale=iso8859_1
-                          ) %>% tbl_df() %>% select(-X31)
+                          locale=iso88591Locale()) %>% tbl_df() %>% select(-X31)
     colnames(dataNuts) <- c("name",paste0("y",seq(2014,1986,-1)))
 
 
@@ -51,13 +51,13 @@ readCitrusHectar_portugal <- function() {
                comment="",
                source="",
                link="",
-               date="")
+               date="11/01/2016")
 
     dataNuts3 <- dataNuts %>% filter(Level==3)
 
                                         # todo someting with nuts2 data and with nuts3 from 2009 in other file
-   
-    return(dataNuts3  %>%  select(-Level))
+    dataNuts3  %>%  select(-Level) %>%
+        bind_rows(readCitrus2009Census())
     
 }
                                         #%>% select(name,Level,NUTS.Code)

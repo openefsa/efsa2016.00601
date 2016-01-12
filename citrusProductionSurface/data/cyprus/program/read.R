@@ -15,6 +15,7 @@ readCitrusHectar_cyprus <- function() {
         mutate(year=as.numeric(as.character(year)),
                ha=as.numeric(ha)) %>%
         filter(PRODUCT=="Citrus") %>%
+        select(-PRODUCT) %>%
         mutate(name="Κύπρος (Kypros)",
                country="CY",
                comment="",

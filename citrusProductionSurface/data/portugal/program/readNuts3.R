@@ -1,0 +1,117 @@
+p_load(zoo)
+
+filterNumericGarbage <-  function(df) {
+    df %>%
+        filter(Citrinos!="o") %>%
+        filter(Citrinos!="...") %>%
+        filter(Citrinos!="-")
+} 
+
+readPortugalCsv <- function(name,fileNumber) {
+    read_csv(paste0(getwd(),"/portugal/original/",name,"/",fileNumber,".csv"),locale=iso88591Locale(),skip=2) 
+}
+
+
+readSheet <- function(name,fileNumber,sliceStart,sliceEnd) {
+    dataSheet <- readPortugalCsv(name,fileNumber)
+
+    names(dataSheet)[1] <- "nuts3"
+    names(dataSheet)[2] <- "concelho"
+    names(dataSheet)[3] <- "unit"
+    dataSheet <- dataSheet[,1:6]
+    dataSheet  %>% slice(sliceStart:(n()+sliceEnd)) %>%  makeColNamesUserFriendly() %>%
+        select(nuts3,Citrinos) %>%
+        filterNumericGarbage() %>%
+        mutate(Citrinos=gsub(" ","",Citrinos)) %>%
+        mutate(Citrinos=as.numeric(Citrinos))
+   
+}
+
+
+read_edm016 <- function() {
+    data_edm016 <- readPortugalCsv("213_RGA EDM","016")
+    names(data_edm016)[2] <- "nuts3"
+    names(data_edm016)[3] <- "concelho"
+    names(data_edm016)[4] <- "unit"
+    data_edm016<- data_edm016[,1:8]
+    data_edm016 <- data_edm016 %>%
+        makeColNamesUserFriendly() %>%
+        slice(3:(n()-1)) %>%
+        select(nuts3,Citrinos) %>%
+        filterNumericGarbage() %>%
+        mutate(Citrinos=gsub(",","",Citrinos)) %>%
+        mutate(Citrinos=as.numeric(Citrinos))
+    data_edm016
+
+}
+read_beira019 <- function() {
+    data_beira019 <-  readPortugalCsv("216_RGA Beira Litoral","019")
+    names(data_beira019)[2:4] <- c("nuts3","concelho","unit")
+    data_beira019 <- data_beira019 %>%
+        select(nuts3,Citrinos) %>%
+        slice(3:(n()-1)) %>%
+        filterNumericGarbage() %>%
+        mutate(Citrinos=gsub(",","",Citrinos)) %>%
+        mutate(Citrinos=as.numeric(Citrinos))
+    data_beira019
+
+}
+
+read_montes010 <- function() {
+    data_montes010 <- readPortugalCsv("217_RGA Trás Montes","010")
+    names(data_montes010)[2:4] <- c("nuts3","concelho","unit")
+
+    data_montes010 %>%
+        select(nuts3,Citrinos) %>%
+        slice(3:(n()-1)) %>%
+        filterNumericGarbage() %>%
+        mutate(Citrinos=gsub(",","",Citrinos)) %>%
+        mutate(Citrinos=as.numeric(Citrinos))
+    
+    
+}
+
+readCitrus2009Census <- function() {
+
+    names <- c("212_RGA Açores",
+               "213_RGA EDM", #done
+               "214_RGA Madeira",
+               "216_RGA Beira Litoral", #done
+               "217_RGA Trás Montes",
+               "218_RGA Alentejo", #done
+               "219_RGA Algarve")
+
+    
+    for (name in names) {
+        unzip(paste0(getwd(),"/portugal/original/",name,".zip"),
+              exdir=paste0(getwd(),"/portugal/original/",name))
+    }
+
+    data_edm016 <-read_edm016()
+    data_beira019 <-  read_beira019()
+
+    data_montes010 <- read_montes010() 
+
+    
+    data_alentejo020<- readSheet("218_RGA Alentejo","020",3,-1)
+    data_alentejo021<- readSheet("218_RGA Alentejo","021",1,-1)      
+    data <- bind_rows(data_alentejo020,data_alentejo021,
+                      data_edm016, data_beira019,data_montes010)
+    
+  
+
+    data %>%
+        mutate(ha=lead(Citrinos)) %>%
+        filter(!is.na(nuts3)) %>%
+        rename(name=nuts3) %>%
+        select(-Citrinos) %>%
+        mutate(country="PT", 
+               year=2009,
+               comment="",
+               source="http://ra09.ine.pt",
+               link="",
+               nutsVersion="1995PT",
+               date="11/01/2016")
+    
+}
+

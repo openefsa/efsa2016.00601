@@ -55,6 +55,6 @@ readCitrusHectar_italy <- function() {
         group_by(name,year,country) %>%
         mutate(ha=sum(ha))  %>%
         filter(row_number()==1) 
-
+    italy
     
 }
