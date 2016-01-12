@@ -40,7 +40,7 @@ run <- function() {
     plotCitrusMap(europe %>% filter(year==2013))
                                         #dev.off()
     capture.output(sessionInfo(),file="sessionInfo.txt")
-    
+    europe
 }
 
 
