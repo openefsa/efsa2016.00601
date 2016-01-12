@@ -1,14 +1,18 @@
 p_load(zoo)
 
-filterNumericGarbage <-  function(df) {
+fixCitrino <-  function(df) {
     df %>%
         filter(Citrinos!="o") %>%
         filter(Citrinos!="...") %>%
-        filter(Citrinos!="-")
+        filter(Citrinos!="-")  %>%
+        mutate(Citrinos=gsub(" ","",Citrinos)) %>%
+        mutate(Citrinos=gsub("\\.","",Citrinos)) %>%
+        mutate(Citrinos=gsub(",","",Citrinos)) %>%
+        mutate(Citrinos=as.numeric(Citrinos))
 } 
 
-readPortugalCsv <- function(name,fileNumber) {
-    read_csv(paste0(getwd(),"/portugal/original/",name,"/",fileNumber,".csv"),locale=iso88591Locale(),skip=2) 
+readPortugalCsv <- function(name,fileNumber,skip=2) {
+    read_csv(paste0(getwd(),"/portugal/original/",name,"/",fileNumber,".csv"),locale=iso88591Locale(),skip=skip) 
 }
 
 
@@ -21,9 +25,7 @@ readSheet <- function(name,fileNumber,sliceStart,sliceEnd) {
     dataSheet <- dataSheet[,1:6]
     dataSheet  %>% slice(sliceStart:(n()+sliceEnd)) %>%  makeColNamesUserFriendly() %>%
         select(nuts3,Citrinos) %>%
-        filterNumericGarbage() %>%
-        mutate(Citrinos=gsub(" ","",Citrinos)) %>%
-        mutate(Citrinos=as.numeric(Citrinos))
+        fixCitrino()
    
 }
 
@@ -34,26 +36,22 @@ read_edm016 <- function() {
     names(data_edm016)[3] <- "concelho"
     names(data_edm016)[4] <- "unit"
     data_edm016<- data_edm016[,1:8]
-    data_edm016 <- data_edm016 %>%
+    data_edm016 %>%
         makeColNamesUserFriendly() %>%
         slice(3:(n()-1)) %>%
         select(nuts3,Citrinos) %>%
-        filterNumericGarbage() %>%
-        mutate(Citrinos=gsub(",","",Citrinos)) %>%
-        mutate(Citrinos=as.numeric(Citrinos))
-    data_edm016
+        fixCitrino()
+
 
 }
 read_beira019 <- function() {
     data_beira019 <-  readPortugalCsv("216_RGA Beira Litoral","019")
     names(data_beira019)[2:4] <- c("nuts3","concelho","unit")
-    data_beira019 <- data_beira019 %>%
+    data_beira019 %>%
         select(nuts3,Citrinos) %>%
         slice(3:(n()-1)) %>%
-        filterNumericGarbage() %>%
-        mutate(Citrinos=gsub(",","",Citrinos)) %>%
-        mutate(Citrinos=as.numeric(Citrinos))
-    data_beira019
+        fixCitrino()
+
 
 }
 
@@ -64,12 +62,29 @@ read_montes010 <- function() {
     data_montes010 %>%
         select(nuts3,Citrinos) %>%
         slice(3:(n()-1)) %>%
-        filterNumericGarbage() %>%
-        mutate(Citrinos=gsub(",","",Citrinos)) %>%
-        mutate(Citrinos=as.numeric(Citrinos))
+        fixCitrino()
     
     
 }
+read_roeste017 <- function() {
+    data_roeste017 <- readPortugalCsv("220_RGA ROeste","017",skip=3)
+    names(data_roeste017)[2:4] <- c("nuts3","concelho","unit")
+    data_roeste017 %>%
+        select(nuts3,Citrinos) %>%
+        slice(3:(n()-1)) %>%
+        fixCitrino()
+
+}
+
+read_roeste018 <- function() {
+    data_roeste018 <- readPortugalCsv("220_RGA ROeste","018",skip=3)
+    names(data_roeste018)[2:4] <- c("nuts3","concelho","unit")
+    data_roeste018 <- data_roeste018 %>%
+        select(nuts3,Citrinos) %>%
+        slice(3:(n()-1)) %>%
+        fixCitrino()
+}
+
 
 readCitrus2009Census <- function() {
 
@@ -79,7 +94,8 @@ readCitrus2009Census <- function() {
                "216_RGA Beira Litoral", #done
                "217_RGA Trás Montes",
                "218_RGA Alentejo", #done
-               "219_RGA Algarve")
+               "219_RGA Algarve",
+               "220_RGA ROeste")
 
     
     for (name in names) {
@@ -94,12 +110,19 @@ readCitrus2009Census <- function() {
 
     
     data_alentejo020<- readSheet("218_RGA Alentejo","020",3,-1)
-    data_alentejo021<- readSheet("218_RGA Alentejo","021",1,-1)      
-    data <- bind_rows(data_alentejo020,data_alentejo021,
-                      data_edm016, data_beira019,data_montes010)
-    
-  
+    data_alentejo021<- readSheet("218_RGA Alentejo","021",1,-1)
 
+    data_roeste017 <- read_roeste017()
+
+    data_roeste018 <- read_roeste018()
+    
+    data <- bind_rows(data_alentejo020,data_alentejo021,
+                      data_edm016, data_beira019,data_montes010,
+                      data_roeste017,data_roeste018
+                      )
+    
+    
+    
     data %>%
         mutate(ha=lead(Citrinos)) %>%
         filter(!is.na(nuts3)) %>%
