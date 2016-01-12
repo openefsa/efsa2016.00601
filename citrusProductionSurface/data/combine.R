@@ -43,16 +43,3 @@ run <- function() {
     europe
 }
 
-
-## name
-## (chr)
-## 1             Minho Lima
-## 2           Grande Porto
-## 3                 Tâmega
-## 4    Entre Douro e Vouga
-## 5            Baixo Vouga
-## 6          Baixo Mondego
-## 7         Pinhal Litoral
-## 8  Pinhal Interior Norte
-## 9             Dão-Lafões
-## 10   Alto Trás os Montes

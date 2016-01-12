@@ -1,13 +1,9 @@
 p_load(zoo)
 
-fixCitrino <-  function(df) {
+fixCitrinos <-  function(df) {
     df %>%
-        filter(Citrinos!="o") %>%
-        filter(Citrinos!="...") %>%
-        filter(Citrinos!="-")  %>%
-        mutate(Citrinos=gsub(" ","",Citrinos)) %>%
-        mutate(Citrinos=gsub("\\.","",Citrinos)) %>%
-        mutate(Citrinos=gsub(",","",Citrinos)) %>%
+        filter(!Citrinos %in% c("o","...","-")) %>%
+        mutate(Citrinos=gsub("[ |\\.|,]","",Citrinos)) %>%
         mutate(Citrinos=as.numeric(Citrinos))
 } 
 
@@ -18,7 +14,7 @@ readPortugalCsv <- function(name,fileNumber,skip,sliceStart,sliceEnd) {
     data <- data[,1:8]
     data  %>% select(nuts3,Citrinos) %>%
         slice(sliceStart:(n()+sliceEnd))  %>% 
-        fixCitrino()
+        fixCitrinos()
 }
 
 
