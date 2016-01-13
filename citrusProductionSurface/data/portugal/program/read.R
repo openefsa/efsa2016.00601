@@ -20,7 +20,8 @@ readCitrusHectar_portugal <- function() {
     colnames(dataNuts) <- c("name",paste0("y",seq(2014,1986,-1)))
 
 
-    dataNuts <- dataNuts  %>% slice(1:11) %>%
+    dataNuts <- tbl_df(dataNuts)   %>%
+        slice(1:11) %>%
         mutate(y2014=as.numeric(y2014),
                name=sub(".+:","",name),
                name=str_trim(name)) %>%
@@ -44,12 +45,13 @@ readCitrusHectar_portugal <- function() {
                ) %>%
                                       
         melt(c("name","Level","NUTS.Code"),variable.name="year",value.name="ha") %>%
+        tbl_df() %>%
         mutate(year=sub("y","",year),
                year=as.numeric(year)) %>%
         select(name,year,ha,Level) %>%
         mutate(country="PT",
                comment="",
-               source="",
+               source="https://www.ine.pt",
                link="",
                date="11/01/2016")
 
