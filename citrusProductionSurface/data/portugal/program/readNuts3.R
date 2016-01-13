@@ -10,12 +10,13 @@ fixCitrinos <-  function(df) {
 readPortugalCsv <- function(name,fileNumber,skip,sliceStart,sliceEnd,link) {
     data <- read_csv(paste0(getwd(),"/portugal/original/",name,"/",fileNumber,".csv"),
                      locale=iso88591Locale(),skip=skip)
-    names(data)[2:4] <- c("nuts3","concelho","unit")
+    names(data)[1:3] <- c("nuts3","concelho","unit")
     data <- data[,1:8]
     data  %>% select(nuts3,Citrinos) %>%
         slice(sliceStart:(n()+sliceEnd))  %>% 
         fixCitrinos() %>%
-        mutate(link=link)
+        mutate(link=link) %>%
+        filter(!grepl("^Fonte:",nuts3))
 }
 
 
@@ -56,6 +57,7 @@ readCitrus2009Census <- function() {
                source="http://ra09.ine.pt",
                nutsVersion="1995PT",
                date="11/01/2016")
+    data
     
 }
 
