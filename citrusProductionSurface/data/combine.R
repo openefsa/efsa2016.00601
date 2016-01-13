@@ -15,6 +15,7 @@ source("france/program/read.R")
 source("italy/program/read.R")
 source("portugal/program/read.R")
 source("cyprus/program/read.R")
+source("croatia/program/read.R")
 
 
 run <- function() {
@@ -27,7 +28,9 @@ run <- function() {
         readCitrusHectar_france(),
         readCitrusHectar_italy(),
         readCitrusHectar_portugal(),
-        readCitrusHectar_cyprus()) %>%
+        readCitrusHectar_cyprus(),
+        readCitrusHectar_croatia()) %>%
+        tbl_df() %>%
         addNewData("nutsReplacements.csv") %>%
         left_join(nutsLevels,by = c('name'='Description')) %>%
         rename(NUTS3.name = name) %>%
