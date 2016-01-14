@@ -4,12 +4,29 @@ p_load(dplyr)
 p_load(stringr)
 
 
-
-
-readCitrusHectar_spain <- function() {
-
+distributeToNuts3 <- function(df,nuts2,name) {
     nutsLevels <- readNutsLevels()
     nutsAreas <- getNuts3Areas()
+    
+    nutsLevels %>%
+        filter(grepl(paste0(nuts2,".+"),NUTS.Code)) %>%
+        left_join(nutsAreas) %>%
+        mutate(total=sum(Shape_Area),
+               perc=Shape_Area/total,name=name) %>%
+        left_join(df) %>%
+        mutate(ha=ha*perc) %>%
+        select(-Level,-id,-Shape_Area,-total,-perc,-name) %>%
+        mutate(NUTS.Code.Country=NUTS.Code) %>%
+        rename(name=Description) %>%
+        mutate(comment="ES53 was distributed to ES531,ES532,ES533 according to area size") %>%
+        select(-NUTS.Code)
+    
+
+}
+
+readCitrusHectar_spain_sheet<- function(sheet) {
+
+   
 
     
     
@@ -26,18 +43,18 @@ readCitrusHectar_spain <- function() {
                                         #name=c("1","2","3"))
    
     df <- df %>% select(name,ha) %>%
-        filter(!name %in% c("GALICIA",
-                            "GALICIA",
-                            "PAÍS VASCO",
-                            "CATALUÑA",
+        filter(!name %in% c(
+                              "GALICIA",
+                              "PAÍS VASCO",
+                              "CATALUÑA",
                                         # "BALEARES", to keep
-                            "CASTILLA Y LEÓN",
-                            "C. VALENCIANA",
+                              "CASTILLA Y LEÓN",
+                              "C. VALENCIANA",
                                         # "R. DE MURCIA",
-                            "EXTREMADURA",
-                            "ANDALUCÍA",
-                            "CANARIAS",
-                            "ESPAÑA")) %>%
+                              "EXTREMADURA",
+                              "ANDALUCÍA",
+                              "CANARIAS",
+                              "ESPAÑA")) %>%
         filter(!ha=="-") %>%
         mutate(ha=as.numeric(ha)) %>%
         filter(!is.na(ha)) %>%
@@ -46,29 +63,21 @@ readCitrusHectar_spain <- function() {
                comment="",
                source="http://www.magrama.gob.es/es/estadistica/temas/publicaciones/anuario-de-estadistica/2014/default.aspx?parte=3&capitulo=13",
                link="http://www.magrama.gob.es/estadistica/pags/anuario/2014/AE_2014_13.xlsx",
-               date="06/01/2015")# %>%
-                                        #bind_rows(balleares) %>%
-                                        #filter(!name=="BALEARES")
-    
+               date="06/01/2015")# 
    
-    nuts3_balleares <- nutsLevels %>%
-        filter(grepl("ES53.+",NUTS.Code)) %>%
-        left_join(nutsAreas) %>%
-        mutate(total=sum(Shape_Area),
-               perc=Shape_Area/total,name="BALEARES") %>%
-        left_join(df) %>%
-        mutate(ha=ha*perc) %>%
-        select(-Level,-id,-Shape_Area,-total,-perc,-name) %>%
-        rename(NUTS.Code.Country=NUTS.Code,
-               name=Description) %>%
-        mutate(comment="ES53 was dsitributed to ES531,ES532,ES533 according to area size")
-    
-    df <- df %>%
-        bind_rows(nuts3_balleares) %>%
-        filter(!name=="BALEARES")
-    
+        
+    baleares <- distributeToNuts3(df,"ES53","BALEARES")
+    murcias <- distributeToNuts3(df,"ES62","R. DE MURCIA")
+    df %>%
+        bind_rows(baleares,murcias) %>%
+        filter(!name %in% c("BALEARES","R. DE MURCIA")) 
+        
 }
 
+
+readCitrusHectar_spain <- function() {
+    readCitrusHectar_spain_sheet("13.8.2.2")
+}
                                         #13.8.2.7 - 244
                                         #13.8.3.2 - 246
                                         #13.8.4.2 - 249
