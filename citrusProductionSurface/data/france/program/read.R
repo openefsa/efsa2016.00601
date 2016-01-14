@@ -3,13 +3,9 @@ p_load(readxl)
 p_load(dplyr)
 
 readCitrusHectar_france_<- function() {
-    nuts.data <- data_frame(NUTS.Code=nuts3.spdf@data$id,id=row.names(nuts3.spdf@data))
-    polygon_data <- data_frame(id=sapply(slot(nuts3.spdf, "polygons"), slot, "ID"),
-                               Shape_Area= sapply(slot(nuts3.spdf, "polygons"), slot, "area"))
-    nuts.area <- left_join(nuts.data,polygon_data)
-    
     
     nutsLevels <- readNutsLevels()
+    nuts.area <-  getNuts3Areas()
     
     df <- read_excel("france/original/verger2015T6bsva.xls",2,F,skip=8) %>%
         tbl_df() %>%

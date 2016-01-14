@@ -6,7 +6,11 @@ p_load(stringr)
 
 
 readCitrusHectar_croatia <- function() {
+    nutsLevels <- readNutsLevels()
+    nuts.area <-  getNuts3Areas() 
 
+
+    
     nuts2 <- read_csv(paste0(getwd(),"/croatia/original/CP421_ENG.csv"),skip=2) %>%
         
         group_by(Category) %>%
