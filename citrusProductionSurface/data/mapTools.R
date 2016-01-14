@@ -14,10 +14,11 @@ getNuts3Areas <-  function() {
 
 EU_NUTS <- readOGR(dsn = "./geo/NUTS_2013_60M_SH/data", layer = "NUTS_RG_60M_2013")
 EU_NUTS.0 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==0,]
+EU_NUTS.3 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==3,]
 
 
 warnIfUnkownIds <- function(europe) {
-    diff <- setdiff(europe$NUTS.Code,EU_NUTS@data$NUTS_ID)
+    diff <- setdiff(europe$NUTS.Code,EU_NUTS.3@data$NUTS_ID)
     missingNutsIds <- europe %>%
         filter(NUTS.Code %in% diff) %>%
         select(NUTS.Code,NUTS3.name) %>% distinct()  
@@ -25,14 +26,10 @@ warnIfUnkownIds <- function(europe) {
 }
 
 plotCitrusMap <- function(europe,large=F) {
-    EU_NUTS.tr <- spTransform(EU_NUTS,CRS("+proj=longlat +ellps=WGS84"))
+    EU_NUTS.3.tr <- spTransform(EU_NUTS.3,CRS("+proj=longlat +ellps=WGS84"))
 
     warnIfUnkownIds(europe)
     
-    
-    EU_NUTS.tr <- spTransform(EU_NUTS,CRS("+proj=longlat +ellps=WGS84"))
-
-
                                         #         48
                                         #   -10         32
                                         #         35
@@ -47,16 +44,20 @@ plotCitrusMap <- function(europe,large=F) {
                                      
    
 
-    EU_NUTS.tr <- raster::crop(EU_NUTS.tr,extent)
+    EU_NUTS.3.tr <- raster::crop(EU_NUTS.3.tr,extent)
 
                                        
 
     EU_NUTS.0.tr <- spTransform(EU_NUTS.0,CRS("+proj=longlat +ellps=WGS84"))
     EU_NUTS.0.tr <- raster::crop(EU_NUTS.0.tr,extent)
-    world.spdf.tr <- spTransform(world.spdf,CRS("+proj=longlat +ellps=WGS84"))
-    world.spdf.tr.clean <- clgeo_Clean(world.spdf.tr , print.log = TRUE)
-    world.spdf.tr.clean <- raster::crop(world.spdf.tr.clean,extent)
 
+
+    world.eu <- readOGR(dsn = "./geo/CNTR_60M_2013_SH/data", layer = "CNTR_RG_60M_2013") %>%
+        spTransform(CRS("+proj=longlat +ellps=WGS84")) %>%
+        raster::crop(extent)
+    world.eu <- world.eu[!world.eu@data$CNTR_ID %in%  as.character(EU_NUTS.0.tr@data$NUTS_ID),]
+    
+  
     cols <- carto.pal(pal1 = "red.pal", # first color gradient
                       n1 = 8) #, # number of colors in the first gradiant
                                         #pal2 = "red.pal", # second color gradient
@@ -81,9 +82,9 @@ plotCitrusMap <- function(europe,large=F) {
                     )
     }
     
-                                        #plot(world.spdf.tr.clean,col  = "#E3DEBF", border=NA,add=large)
+    plot(world.eu,col  = "#E3DEBF", border= NA, ,add=large)
     
-    choroLayer(spdf = EU_NUTS.tr, # SpatialPolygonsDataFrame of the regions
+    choroLayer(spdf = EU_NUTS.3.tr, # SpatialPolygonsDataFrame of the regions
                df = europe, # data frame with compound annual growth rate
                dfid="NUTS.Code",
                var = "t_ha", # compound annual growth rate field in df
@@ -94,7 +95,7 @@ plotCitrusMap <- function(europe,large=F) {
                legend.pos = legend.pos, # position of the legend
                legend.title.txt = "Citrus production surface \nin thousand ha", # title of the legend
                legend.values.rnd = 2, # number of decimal in the legend values
-               add = F) # add the layer to the current plot
+               add = T) # add the layer to the current plot
 
     plot(EU_NUTS.0.tr,border = "grey20", lwd=0.5, add=TRUE)
 
@@ -105,7 +106,7 @@ plotCitrusMap <- function(europe,large=F) {
             rename(id=country) %>%
             data.frame()
     
-        labelLayer(spdf = nuts0.spdf.tr, # SpatialPolygonsDataFrame used to plot he labels
+        labelLayer(spdf = EU_NUTS.0.tr, # SpatialPolygonsDataFrame used to plot he labels
                    df = totals, # data frame containing the lables
                    txt = "total", # label field in df
                    col = "black",  
