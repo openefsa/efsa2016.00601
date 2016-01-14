@@ -11,12 +11,26 @@ getNuts3Areas <-  function() {
     nuts.area
 }
 
+
+EU_NUTS <- readOGR(dsn = "./geo/NUTS_2013_60M_SH/data", layer = "NUTS_RG_60M_2013")
+EU_NUTS.0 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==0,]
+
+
+warnIfUnkownIds <- function(europe) {
+    diff <- setdiff(europe$NUTS.Code,EU_NUTS@data$NUTS_ID)
+    missingNutsIds <- europe %>%
+        filter(NUTS.Code %in% diff) %>%
+        select(NUTS.Code,NUTS3.name) %>% distinct()  
+    warning("The following nuts3 ids exist in the data but not in the map. So there values will not be shown.",missingNutsIds)
+}
+
 plotCitrusMap <- function(europe,large=F) {
+    EU_NUTS.tr <- spTransform(EU_NUTS,CRS("+proj=longlat +ellps=WGS84"))
 
-   
-
+    warnIfUnkownIds(europe)
     
-    nuts3.spdf.tr <- spTransform(nuts3.spdf,CRS("+proj=longlat +ellps=WGS84"))
+    
+    EU_NUTS.tr <- spTransform(EU_NUTS,CRS("+proj=longlat +ellps=WGS84"))
 
 
                                         #         48
@@ -33,12 +47,12 @@ plotCitrusMap <- function(europe,large=F) {
                                      
    
 
-    nuts3.spdf.tr <- raster::crop(nuts3.spdf.tr,extent)
+    EU_NUTS.tr <- raster::crop(EU_NUTS.tr,extent)
 
-                                        #nuts3.spdf@data <- nuts3.spdf@data
+                                       
 
-    nuts0.spdf.tr <- spTransform(nuts0.spdf,CRS("+proj=longlat +ellps=WGS84"))
-    nuts0.spdf.tr <- raster::crop(nuts0.spdf.tr,extent)
+    EU_NUTS.0.tr <- spTransform(EU_NUTS.0,CRS("+proj=longlat +ellps=WGS84"))
+    EU_NUTS.0.tr <- raster::crop(EU_NUTS.0.tr,extent)
     world.spdf.tr <- spTransform(world.spdf,CRS("+proj=longlat +ellps=WGS84"))
     world.spdf.tr.clean <- clgeo_Clean(world.spdf.tr , print.log = TRUE)
     world.spdf.tr.clean <- raster::crop(world.spdf.tr.clean,extent)
@@ -67,23 +81,22 @@ plotCitrusMap <- function(europe,large=F) {
                     )
     }
     
-
-    plot(world.spdf.tr.clean,col  = "#E3DEBF", border=NA,add=large)
+                                        #plot(world.spdf.tr.clean,col  = "#E3DEBF", border=NA,add=large)
     
-    choroLayer(spdf = nuts3.spdf.tr, # SpatialPolygonsDataFrame of the regions
+    choroLayer(spdf = EU_NUTS.tr, # SpatialPolygonsDataFrame of the regions
                df = europe, # data frame with compound annual growth rate
                dfid="NUTS.Code",
                var = "t_ha", # compound annual growth rate field in df
                breaks = c(0,.1,1,2,5,10,20,30,40), # list of breaks
                col = cols,
                border = "grey10", # color of the polygons borders
-               lwd = 0.05,, #0.05, # width of the borders
+               lwd = 0.1,, #0.05, # width of the borders
                legend.pos = legend.pos, # position of the legend
                legend.title.txt = "Citrus production surface \nin thousand ha", # title of the legend
                legend.values.rnd = 2, # number of decimal in the legend values
-               add = T) # add the layer to the current plot
-    
-    plot(nuts0.spdf.tr,border = "grey20", lwd=0.5, add=TRUE)
+               add = F) # add the layer to the current plot
+
+    plot(EU_NUTS.0.tr,border = "grey20", lwd=0.5, add=TRUE)
 
     if (large) {
         totals <- europe %>%
