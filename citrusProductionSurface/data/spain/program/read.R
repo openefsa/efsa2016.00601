@@ -19,18 +19,19 @@ distributeToNuts3 <- function(df,nuts2,name) {
         mutate(NUTS.Code.Country=NUTS.Code) %>%
         rename(name=Description) %>%
         mutate(comment="ES53 was distributed to ES531,ES532,ES533 according to area size") %>%
-        select(-NUTS.Code)
+        select(-NUTS.Code) %>%
+        filter(!is.na(ha))
     
 
 }
 
-readCitrusHectar_spain_sheet<- function(sheet) {
+readCitrusHectar_spain_sheet<- function(sheet,startRow=9) {
 
    
 
     
     
-    df <- read.xlsx(paste0(getwd(),"/spain/original/AE_2014_13.xlsx"),sheet="13.8.2.2",startRow = 9,rowNames =T) %>%
+    df <- read.xlsx(paste0(getwd(),"/spain/original/AE_2014_13.xlsx"),sheet=sheet,startRow = startRow,rowNames =T) %>%
       
         mutate(name=str_trim(row.names(.))) %>%
         rename(ha=X3) %>%
@@ -55,7 +56,7 @@ readCitrusHectar_spain_sheet<- function(sheet) {
                               "ANDALUCÍA",
                               "CANARIAS",
                               "ESPAÑA")) %>%
-        filter(!ha=="-") %>%
+        filter(!ha=="–") %>%
         mutate(ha=as.numeric(ha)) %>%
         filter(!is.na(ha)) %>%
         mutate(country="ES",
@@ -76,7 +77,22 @@ readCitrusHectar_spain_sheet<- function(sheet) {
 
 
 readCitrusHectar_spain <- function() {
-    readCitrusHectar_spain_sheet("13.8.2.2")
+    sheets <- c("13.8.2.2","13.8.2.7","13.8.3.2","13.8.4.2","13.8.5.2","13.8.6.2")
+    startRows <- c(9,9,9,9,8,8) 
+
+
+    data <- list()
+    for (i in seq_along(sheets)) {
+        data[[i]] <- readCitrusHectar_spain_sheet(sheets[i],startRows[i])
+         
+    }
+    data <- bind_rows(data) %>%
+        group_by(name) %>%
+        mutate(ha=sum(ha)) %>%
+        slice(1) %>%
+        ungroup()
+    
+    
 }
                                         #13.8.2.7 - 244
                                         #13.8.3.2 - 246
