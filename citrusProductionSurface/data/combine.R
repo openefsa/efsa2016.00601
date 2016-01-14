@@ -16,20 +16,19 @@ source("italy/program/read.R")
 source("portugal/program/read.R")
 source("cyprus/program/read.R")
 source("croatia/program/read.R")
-
+source("greece/program/read.R")
 
 run <- function() {
 
     nutsLevels <- readNutsLevels()
-
-
     europe <- bind_rows(
         readCitrusHectar_spain(),
         readCitrusHectar_france(),
         readCitrusHectar_italy(),
         readCitrusHectar_portugal(),
         readCitrusHectar_cyprus(),
-        readCitrusHectar_croatia()) %>%
+        readCitrusHectar_croatia(),
+        readCitrusHectar_greece()) %>%
         tbl_df() %>%
         addNewData("nutsReplacements.csv") %>%
         left_join(nutsLevels,by = c('name'='Description')) %>%
@@ -49,3 +48,7 @@ run <- function() {
     europe
 }
 
+
+
+
+                 
