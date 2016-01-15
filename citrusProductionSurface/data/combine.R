@@ -36,11 +36,8 @@ run <- function() {
         mutate(NUTS.Code = ifelse(is.na(NUTS.Code.Country),NUTS.Code,NUTS.Code.Country)) %>%
         select(country,year,NUTS3.name,NUTS.Code,ha,comment,source,link,date)
 
-
-    
+   
     write.csv(europe,"output/citrusProduction.csv")
-
-
                                         #pdf()
     plotCitrusMap(europe %>% filter(year==2013))
                                         #dev.off()
