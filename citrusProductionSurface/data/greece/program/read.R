@@ -3,6 +3,7 @@ p_load(dplyr)
 p_load(readr)
 p_load(readxl)
 p_load(tidyr)
+source("greece/program/readNuts3.R")
 
 convertNutsIds <- function(data) {
     nuts3Change2010 <- read_excel(paste0(getwd(),"/geo/nutsChanges2006-2010.xls"),1,skip=1)
@@ -15,13 +16,8 @@ convertNutsIds <- function(data) {
         mutate(NUTS.Code.Country=ifelse(is.na(Code_2010),NUTS.Code.Country,Code_2010)) %>%
         select(-Code_2010)
     
-    nuts3Change2013 <- read_excel(paste0(getwd(),"/geo/NUTS 2010 - NUTS 2013.xls"),4)
-                                        #,col_types=rep("text",12),col_names=paste0("X",seq(1,12)))
-    names(nuts3Change2013)[1:2]<-c("Code_2010","Code_2013")
-    nuts3Change2013 <- nuts3Change2013 %>%
-        select(Code_2010,Code_2013) %>%
-        separate(Code_2013,into=c("Code_2013","change2010_2013_comment"),sep=" ",fill="right")
-    
+    nuts3Change2013 <- read_nuts3Change2013()
+
     data  %>%  left_join(nuts3Change2013,by=c("NUTS.Code.Country"="Code_2010")) %>%
         mutate(NUTS.Code.Country=ifelse(is.na(Code_2013),NUTS.Code.Country,Code_2013)) %>%
         select(-Code_2013,-change2010_2013_comment)
@@ -62,6 +58,7 @@ readCitrusHectar_greece <- function() {
                link="http://www.efsa.europa.eu/en/efsajournal/pub/3557",
                date="14/01/2016") %>%
         bind_rows(EL30x) %>%
-        filter(!NUTS.Code.Country=="EL300")
+        filter(!NUTS.Code.Country=="EL300") %>%
+        bind_rows(read_greekNuts3())
     
 }

@@ -34,7 +34,7 @@ run <- function() {
         left_join(nutsLevels,by = c('name'='Description')) %>%
         rename(NUTS3.name = name) %>%
         mutate(NUTS.Code = ifelse(is.na(NUTS.Code.Country),NUTS.Code,NUTS.Code.Country)) %>%
-        select(country,year,NUTS3.name,NUTS.Code,ha,comment,source,link,date)
+        select(country,year,NUTS3.name,NUTS.Code,ha,comment,source,link,date,sourceFile)
 
    
     write.csv(europe,"output/citrusProduction.csv")
