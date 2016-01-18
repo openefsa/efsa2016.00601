@@ -20,7 +20,9 @@ source("greece/program/read.R")
 
 run <- function() {
 
-    nutsLevels <- readNutsLevels()
+    nutsLevels <- readNutsLevels() %>%
+        filter(Level==3) %>%
+        filter(!NUTS.Code=="CY00")
     europe <- bind_rows(
         readCitrusHectar_spain(),
         readCitrusHectar_france(),
