@@ -13,7 +13,7 @@ getNuts3Areas <-  function() {
 }
 
 
-EU_NUTS <- readOGR(dsn = "./geo/NUTS_2013_60M_SH/data", layer = "NUTS_RG_60M_2013")
+EU_NUTS <- readOGR(dsn = "./geo/NUTS_2013_01M_SH/data", layer = "NUTS_RG_01M_2013")
 EU_NUTS.0 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==0,]
 EU_NUTS.3 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==3,]
 
@@ -48,14 +48,14 @@ plotCitrusMap <- function(europe,large=F) {
     EU_NUTS.0.tr <- raster::crop(EU_NUTS.0.tr,extent)
 
     
-    world.eu <- readOGR(dsn = "./geo/CNTR_60M_2013_SH/data", layer = "CNTR_RG_60M_2013")
+    world.eu <- readOGR(dsn = "./geo/CNTR_01M_2013_SH/data", layer = "CNTR_RG_01M_2013")
     world.eu <- world.eu[!world.eu@data$CNTR_ID %in%  as.character(EU_NUTS.0.tr@data$NUTS_ID),] %>%
         spTransform(CRS("+proj=longlat +ellps=WGS84")) %>%
         raster::crop(extent)
     
   
     cols <- carto.pal(pal1 = "red.pal", # first color gradient
-                      n1 = 8) #, # number of colors in the first gradiant
+                     n1 = 8) #, # number of colors in the first gradiant
                                         #pal2 = "red.pal", # second color gradient
                                         #n2 = 4) # number of colors in the second gradiant
    
