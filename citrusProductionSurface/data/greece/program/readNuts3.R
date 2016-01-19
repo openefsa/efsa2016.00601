@@ -47,8 +47,8 @@ read_greekNuts3 <- function() {
 
    
     namesCorrespondents <- namesCorrespondents %>%
-        filter(!is.na(Correspondence.to.column..nuts.seq.)) %>%
-        filter(!is.na(Nuts3...2010))
+        filter(!is.na(Correspondence.to.column..nuts.seq.)) 
+  
 
     data <- data %>%
         left_join(namesCorrespondents,by=c("greekName"="Stats.from.greece")) %>%
@@ -72,7 +72,7 @@ read_greekNuts3 <- function() {
         rename(name=Nuts3...2010.y,
                NUTS.Code.Country=Code_2013) %>%
         mutate(year=2012,
-               country="GR",
+               country="EL",
                ha=as.numeric(ha),
                date="18/01/2016",
                comment="132944 out of 549833 ha from the data could not be mapped to the official NUTS 2013 regions and are omitted from the data.",
