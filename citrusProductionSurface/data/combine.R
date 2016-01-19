@@ -17,12 +17,13 @@ source("portugal/program/read.R")
 source("cyprus/program/read.R")
 source("croatia/program/read.R")
 source("greece/program/read.R")
+source("malta/program/read.R")
 
 run <- function() {
 
     nutsLevels <- readNutsLevels() %>%
         filter(Level==3) %>%
-        filter(!NUTS.Code=="CY00")
+        filter(!NUTS.Code %in% c("CY00","MT00"))
     europe <- bind_rows(
         readCitrusHectar_spain(),
         readCitrusHectar_france(),
@@ -30,7 +31,9 @@ run <- function() {
         readCitrusHectar_portugal(),
         readCitrusHectar_cyprus(),
         readCitrusHectar_croatia(),
-        readCitrusHectar_greece()) %>%
+        readCitrusHectar_greece(),
+        read_CitrusHectarMalta()
+    ) %>%
         tbl_df() %>%
         addNewData("nutsReplacements.csv") %>%
         left_join(nutsLevels,by = c('name'='Description')) %>%
@@ -47,6 +50,8 @@ run <- function() {
     europe
 }
 
+
+# todo check crete
 
 
 
