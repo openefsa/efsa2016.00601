@@ -76,10 +76,12 @@ plotCitrusMap <- function(europe,large=F) {
         layoutLayer(col = NA, coltitle = "black",
                     sources = "", author = "",
                     frame = FALSE,
+                    title="",
+                    scale=NULL,
                     extent=EU_NUTS.0.tr)
     }
 
-    plot(world.eu,col  = "#E3DEBF", border= NA, ,add=F)
+    plot(world.eu,col  = "#E3DEBF", border= NA, ,add=T)
     choroLayer(spdf = EU_NUTS.3.tr, # SpatialPolygonsDataFrame of the regions
                df = europe, # data frame with compound annual growth rate
                dfid="NUTS.Code",
