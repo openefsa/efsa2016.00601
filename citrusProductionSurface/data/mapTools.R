@@ -70,7 +70,7 @@ plotCitrusMap <- function(europe,large=F) {
                     bg = "#A6CAE0",
                     author = "Author: EFSA",
                     sources = "Sources: EU member states official statistics",
-                    extent==EU_NUTS.0.tr
+                    extent=EU_NUTS.0.tr
                     ) 
     } else {
         layoutLayer(col = NA, coltitle = "black",
