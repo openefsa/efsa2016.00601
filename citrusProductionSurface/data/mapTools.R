@@ -70,10 +70,15 @@ plotCitrusMap <- function(europe,large=F) {
                     bg = "#A6CAE0",
                     author = "Author: EFSA",
                     sources = "Sources: EU member states official statistics",
-                    extent=world.spdf.tr.clean
-                    )
+                    extent==EU_NUTS.0.tr
+                    ) 
+    } else {
+        layoutLayer(col = NA, coltitle = "black",
+                    sources = "", author = "",
+                    frame = FALSE,
+                    extent=EU_NUTS.0.tr)
     }
-    
+
     plot(world.eu,col  = "#E3DEBF", border= NA, ,add=F)
     choroLayer(spdf = EU_NUTS.3.tr, # SpatialPolygonsDataFrame of the regions
                df = europe, # data frame with compound annual growth rate
@@ -97,7 +102,7 @@ plotCitrusMap <- function(europe,large=F) {
             summarize(total=paste0(as.character(round(sum(t_ha)),0))) %>%
             rename(id=country) %>%
             data.frame()
-    
+        
         labelLayer(spdf = EU_NUTS.0.tr, # SpatialPolygonsDataFrame used to plot he labels
                    df = totals, # data frame containing the lables
                    txt = "total", # label field in df
