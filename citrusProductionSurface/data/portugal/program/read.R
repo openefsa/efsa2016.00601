@@ -59,7 +59,8 @@ readCitrusHectar_portugal <- function() {
 
                                        
     dataNuts3  %>%  select(-Level) %>%
-        bind_rows(readCitrus2009Census())
-    
+        bind_rows(readCitrus2009Census_singleFile())
+
+   
 }
                                       

@@ -1,0 +1,71 @@
+
+Statistical table extracted on January 19, 2016 (16:51:44)
+http://www.ine.pt
+
+
+
+Geographic localization (NUTS - 2001);Area of permanent crops (ha) by Geographic localization (NUTS - 2001) and Type (permanent crops) -  Decennial;
+;Data reference period;
+;2009;
+;Type (permanent crops);
+;Citrus plantations;
+;ha ;
+10101: Minho-Lima;64;
+10102: Cávado;161;
+10103: Ave;64;
+10104: Grande Porto;35;
+10105: Tâmega;120;
+10106: Entre Douro e Vouga;6;
+10107: Douro;443;
+10108: Alto Trás-os-Montes;28;
+10201: Baixo Vouga;61;
+10202: Baixo Mondego;137;
+10203: Pinhal Litoral;26;
+10204: Pinhal Interior Norte;22;
+10205: Dão-Lafões;61;
+10206: Pinhal Interior Sul;50;
+10207: Serra da Estrela;5;
+10208: Beira Interior Norte;5;
+10209: Beira Interior Sul;138;
+10210: Cova da Beira;51;
+10301: Oeste;262;
+10302: Grande Lisboa;57;
+10303: Península de Setúbal;380;
+10304: Médio Tejo;254;
+10305: Lezíria do Tejo;572;
+10401: Alentejo Litoral;599;
+10402: Alto Alentejo;295;
+10403: Alentejo Central;226;
+10404: Baixo Alentejo;733;
+10501: Algarve;11533;
+20101: Região Autónoma dos Açores;441;
+30101: Região Autónoma da Madeira;100;
+
+Area of permanent crops (ha) by Geographic localization (NUTS - 2001) and Type (permanent crops) -  Decennial - Statistics Portugal, Agriculture census - historical series
+
+
+This data last updated:august 16, 2011
+
+
+Table Metadata
+
+Area of permanent crops (ha)
+Name;Area of permanent crops (ha) by Geographic localization (NUTS - 2001) and Type (permanent crops) -  Decennial
+Regularity;Decennial
+Source;Statistics Portugal,  Agriculture census - historical series
+First available period;1989
+Last available period;2009
+Dimensions
+     Dimension 1;Data reference period
+     Dimension 2;Geographic localization (NUTS - 2001)
+     Dimension 3;Type (permanent crops)
+Concepts
+     REFERENCE PERIOD;The length of time for which data are collected, e.g. a specific day, month or year.
+     PERMANENT CROPS;Crops which occupy the soil for a long period and provide repeated yields of crops over several years and do not rotate with other crops. They do not include permanent grasslands and pastures. In relation to fruit trees, only regular plantations with a minimum density of 100 trees, or 45 trees in regard to olive, fig and nut trees, are considered.
+     EXPLORAÇÃO AGRÍCOLA;Unidade técnico-económica que utiliza factores de produção comuns, tais como: mão-de-obra, máquinas, instalações, terrenos, entre outros, e que deve satisfazer obrigatoriamente as quatro condições seguintes: 1. produzir produtos agrícolas ou manter em boas condições agrícolas e ambientais as terras que já não são utilizadas para fins produtivos; 2. atingir ou ultrapassar uma certa dimensão (área, número de animais); 3. estar submetida a uma gestão única; 4. estar localizada num local bem determinado e identificável.
+Definition;
+Formule;
+Measure unit (symbol);Hectare (ha)
+Power of 10;0
+Observations;Data for 1989, 1999, 2009, based on census (Agricultural Census). Between these periods, biennial for odd years and with exception for 1991 and 2001, the information is based on sampling surveys (Farm structure survey).
+Last update date;16-Aug-2011
