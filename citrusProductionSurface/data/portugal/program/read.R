@@ -57,19 +57,9 @@ readCitrusHectar_portugal <- function() {
 
     dataNuts3 <- dataNuts %>% filter(Level==3)
 
-                                        # todo someting with nuts2 data and with nuts3 from 2009 in other file
+                                       
     dataNuts3  %>%  select(-Level) %>%
         bind_rows(readCitrus2009Census())
     
 }
-                                        #%>% select(name,Level,NUTS.Code)
-
-
-
-
-
-
-                                        #http://ra09.ine.pt/xportal/xmain?xpid=RA2009&xpgid=ine_ra2009_indicador&contexto=ind&indOcorrCod=0004965&selTab=tab10
-
-                                        #data=read.csv(paste0(getwd(),"/portugal/original/gKfNUrJHUlYsbNQeENAWJimm_54530.csv"),
-                                        #sep=";",skip=12,fileEncoding="ISO-8859-1",header=F,stringsAsFactor=F) 
+                                      
