@@ -23,7 +23,7 @@ run <- function() {
 
     nutsLevels <- readNutsLevels() %>%
         filter(Level==3) %>%
-        filter(!NUTS.Code %in% c("CY00","MT00"))
+        filter(!NUTS.Code %in% c("CY00","MT00","PT17", "PT15", "PT20", "PT30", "PT113", "PT114", "PT115", "PT116", "PT117"))
     europe <- bind_rows(
         readCitrusHectar_spain(),
         readCitrusHectar_france(),
@@ -43,15 +43,20 @@ run <- function() {
 
    
     write.csv(europe,"output/citrusProduction.csv")
+
+    mostRecentData <-  europe %>%
+        group_by(NUTS.Code) %>%
+        mutate(max_year=max(year)) %>%
+        filter(year==max_year)
+    
                                         #pdf()
-    plotCitrusMap(europe %>% filter(year==2013))
+    plotCitrusMap(mostRecentData)
                                         #dev.off()
     capture.output(sessionInfo(),file="sessionInfo.txt")
     europe
 }
 
 
-# todo check crete
 
 
 
