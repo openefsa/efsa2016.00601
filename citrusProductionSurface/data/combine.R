@@ -47,7 +47,7 @@ run <- function() {
     mostRecentData <-  europe %>%
         group_by(NUTS.Code) %>%
         mutate(max_year=max(year)) %>%
-        filter(year==max_year)
+        filter(year==max_year) 
     
                                         #pdf()
     plotCitrusMap(mostRecentData)

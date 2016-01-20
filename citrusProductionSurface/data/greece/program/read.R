@@ -33,7 +33,8 @@ readCitrusHectar_greece <- function() {
                name=Name,
                NUTS.Code.Country=NUTS_ID) %>%
         mutate(year=2007) %>%
-        convertNutsIds()
+        convertNutsIds() %>%
+        mutate(country="EL")
 
     EL30x <-  EU_NUTS@data %>%
         filter(grepl("EL30.+",NUTS_ID)) %>%
