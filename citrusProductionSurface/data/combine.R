@@ -23,7 +23,7 @@ run <- function() {
 
     nutsLevels <- readNutsLevels() %>%
         filter(Level==3) %>%
-        filter(!NUTS.Code %in% c("CY00","MT00","PT17", "PT15", "PT20", "PT30", "PT113", "PT114", "PT115", "PT116", "PT117"))
+        filter(!NUTS.Code %in% c("CY00","MT00","PT17", "PT15", "PT20", "PT30", "PT113", "PT114", "PT115", "PT116", "PT117","ES13"))
     europe <- bind_rows(
         readCitrusHectar_spain(),
         readCitrusHectar_france(),
