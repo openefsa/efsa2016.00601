@@ -22,8 +22,10 @@ warnIfUnkownIds <- function(europe) {
     diff <- setdiff(europe$NUTS.Code,EU_NUTS.3@data$NUTS_ID)
     missingNutsIds <- europe %>%
         filter(NUTS.Code %in% diff) %>%
-        select(NUTS.Code,NUTS3.name) %>% distinct()  
-    warning("The following nuts3 ids exist in the data but not in the map. So there values will not be shown: \n",missingNutsIds)
+        select(NUTS.Code,NUTS3.name) %>% distinct()
+    if(nrow(missingNutsIds)>0) {
+        warning("The following nuts3 ids exist in the data but not in the map. So there values will not be shown: \n",missingNutsIds)
+    }
 }
 
 plotCitrusMap <- function(europe,large=F) {
