@@ -1,65 +1,68 @@
-library(pacman)
 p_load(dplyr)
-p_load(readr)
+p_load(stringr)
 p_load(readxl)
 p_load(tidyr)
-source("greece/program/readNuts3.R")
-
-convertNutsIds <- function(data) {
-    nuts3Change2010 <- read_excel(paste0(getwd(),"/geo/nutsChanges2006-2010.xls"),1,skip=1)
-   
-    
-    names(nuts3Change2010)[2:3]<-c("Code_2006","Code_2010")
-    nuts3Change2010 <-  nuts3Change2010 %>% select(Code_2006,Code_2010)
-    data <- data  %>%  left_join(nuts3Change2010,by=c("NUTS.Code.Country"="Code_2006")) %>%
-                                 
-        mutate(NUTS.Code.Country=ifelse(is.na(Code_2010),NUTS.Code.Country,Code_2010)) %>%
-        select(-Code_2010)
-    
-    nuts3Change2013 <- read_nuts3Change2013()
-
-    data  %>%  left_join(nuts3Change2013,by=c("NUTS.Code.Country"="Code_2010")) %>%
-        mutate(NUTS.Code.Country=ifelse(is.na(Code_2013),NUTS.Code.Country,Code_2013)) %>%
-        select(-Code_2013,-change2010_2013_comment)
-    
-  
-}
-
-
-
+source("utils.R")
 readCitrusHectar_greece <- function() {
-    data <- read_delim(paste0(getwd(),"/greece/original/efsaOpinion2014.txt"),delim=" ") %>%
-        rename(country=Country,
-               name=Name,
-               NUTS.Code.Country=NUTS_ID) %>%
-        mutate(year=2007) %>%
-        convertNutsIds() %>%
-        mutate(country="EL")
 
-    EL30x <-  EU_NUTS@data %>%
-        filter(grepl("EL30.+",NUTS_ID)) %>%
-        mutate(EL30_total=sum(Shape_Area),
-               perc=Shape_Area/EL30_total,
-               NUTS.Code.Country="EL300") %>%
-        
-        select(NUTS_ID, perc,NUTS.Code.Country) %>%
-        left_join(data) %>%
-        mutate(ha=perc * ha) %>%
-        select(country,
-               NUTS.Code.Country=NUTS_ID,
-               name,
-               ha,year) %>%
-        mutate(name=paste0(name,"_",row_number()),
-               comment="EL300 was distributed into E30x according to size")
-                           
+   
+    nonNuts3 <- c("Greece Total",
+                 "Region of Eastern Macedonia and Thrace",
+                 "Region of Central Macedonia",
+                 "Region of Epirus",
+                 "Region of Thessally",
+                 "Region of Central Greece",
+                 "Region of Ionian Islands",
+                 "Region of Western Greece",
+                 "Region of Peloponnese",
+                 "Region of Attica",
+                 "Region of Northern Aegean",
+                 "Region of Southern Aegean",
+                 "Region of Crete")
+
+  
+    
+    data <- read_excel(paste0(getwd(),"/greece/original/Κουφάκης/5α.Δενδρ.καλ.,εκτ.συνεχ.κανον.δενδρ.,Περιφέρεια, Π.Ε.,2012.xls"),skip=6,
+                      col_types=rep("text",24),
+                      col_names= letters[1:24]) %>%
+        select(a,c,u) %>%
+        slice(1:101) %>%
+        rename(name=u,
+               stremma=c,
+               greekName=a) %>%
+        mutate(stremma=ifelse(stremma=="—",NA,stremma),
+               name=str_trim(name),
+               greekName=str_trim(greekName)) %>%
+        filter(!is.na(name)) %>%
+        filter(!name %in% nonNuts3) 
+
+    corr2 <-  read_excel(paste0(getwd(),"/greece/original/correspondance2.xlsx")) %>%
+        mutate(Stats_greek=str_trim(Stats_greek),
+               stats_latin=str_trim(stats_latin))
+    
     
 
-    data %>%
-        mutate(source="10.2903/j.efsa.2014.3557 appendix f",
-               link="http://www.efsa.europa.eu/en/efsajournal/pub/3557",
-               date="14/01/2016") %>%
-        bind_rows(EL30x) %>%
-        filter(!NUTS.Code.Country=="EL300") %>%
-        bind_rows(read_greekNuts3())
-    
+    data <- data %>%
+        left_join(corr2,by=c("greekName"="Stats_greek")) %>%
+        left_join(corr2,by=c("nuts3Code"="nutsCode 2013")) %>%
+        select(stremma,nuts3Code,`nutsName 2013.y`) %>%
+        rename(name=`nutsName 2013.y`,
+               NUTS.Code.Country=nuts3Code) %>%
+        mutate(stremma=as.numeric(stremma),
+               ha=stremma/10) %>%
+        select(-stremma) %>% 
+        group_by(name) %>%
+        mutate(ha_sum=sum(ha,na.rm=T)) %>%
+        filter(row_number()==1) %>%
+        mutate(ha=ha_sum) %>%
+        select(-ha_sum) %>%
+                                        #filter(ha>0) %>%
+        mutate(year=2012,
+               country="EL",
+               date="18/01/2016",
+               comment="",
+               source="Via email on 15/01/2016 from ELSTAT",
+               sourceFile="Κουφάκης/5α.Δενδρ.καλ.,εκτ.συνεχ.κανον.δενδρ.,Περιφέρεια, Π.Ε.,2012.xls")
+
+    data
 }
