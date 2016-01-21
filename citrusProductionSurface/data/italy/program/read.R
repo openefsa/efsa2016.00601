@@ -14,9 +14,12 @@ getDataFromSheet <- function(file,sheet,year,comment) {
         tbl_df() %>%
         select(X1,X3,X8,X13,X18) %>%
         rename(name=X1) %>% mutate(name=str_trim(name)) %>%
-        filter(!name %in% c("Piemonte", "Valle d'Aosta/Vallée d'Aoste",
-                            "Lombardia", "Liguria",
-                            "Trentino-Alto Adige", "Veneto",                                   
+        filter(!name %in% c("Piemonte",
+                            "Valle d'Aosta/Vallée d'Aoste",
+                            "Lombardia",
+                            "Liguria",
+                            "Trentino-Alto Adige",
+                            "Veneto",                                   
                             "Friuli-Venezia Giulia",
                             "Emilia-Romagna",
                             "Toscana",
@@ -24,7 +27,14 @@ getDataFromSheet <- function(file,sheet,year,comment) {
                             "Marche",
                             "Lazio",
                             "Abruzzo",
-                            "Molise","Campania","Puglia","Basilicata","Calabria","Sicilia","Sardegna","ITALIA"
+                            "Molise",
+                            "Campania",
+                            "Puglia",
+                            "Basilicata",
+                            "Calabria",
+                            "Sicilia",
+                            "Sardegna",
+                            "ITALIA"
                             )) %>%
    
        mutate_each(funs(ifelse(. == "-",0,.))) %>%
