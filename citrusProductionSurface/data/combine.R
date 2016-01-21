@@ -48,8 +48,9 @@ run <- function() {
         group_by(NUTS.Code) %>%
         mutate(max_year=max(year)) %>%
         filter(year==max_year) 
-    
-                                        #pdf()
+    write.csv(mostRecentData,"output/citrusProduction_latest.csv")
+
+                                        #png()
     plotCitrusMap(mostRecentData)
                                         #dev.off()
     capture.output(sessionInfo(),file="sessionInfo.txt")
