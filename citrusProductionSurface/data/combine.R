@@ -19,7 +19,18 @@ source("croatia/program/read.R")
 source("greece/program/read.R")
 source("malta/program/read.R")
 
+EU_NUTS <- readOGR(dsn = "./geo/NUTS_2013_01M_SH/data", layer = "NUTS_RG_01M_2013")
+EU_NUTS.0 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==0,]
+EU_NUTS.3 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==3,]
+
+
+
+
 run <- function() {
+
+    sizeEurope_sq_ha <- 1018000000
+    sumAreaShapeEurope <-  sum(EU_NUTS.3@data$Shape_Area)
+    conversion_sa_ha <- sizeEurope_sq_ha / sumAreaShapeEurope
 
     nutsLevels <- readNutsLevels() %>%
         filter(Level==3) %>%
@@ -39,7 +50,10 @@ run <- function() {
         left_join(nutsLevels,by = c('name'='Description')) %>%
         rename(NUTS3.name = name) %>%
         mutate(NUTS.Code = ifelse(is.na(NUTS.Code.Country),NUTS.Code,NUTS.Code.Country)) %>%
-        select(country,year,NUTS3.name,NUTS.Code,ha,comment,source,link,date,sourceFile)
+        select(country,year,NUTS3.name,NUTS.Code,ha,comment,source,link,date,sourceFile) %>%
+        left_join(EU_NUTS.3@data,by=c("NUTS.Code"="NUTS_ID")) %>%
+        mutate(Spape_Area_ha = Shape_Area * conversion_sa_ha,citrus_density=ha/Spape_Area_ha)
+    
 
    
     write.csv(europe,"output/citrusProduction.csv")
@@ -47,18 +61,29 @@ run <- function() {
     mostRecentData <-  europe %>%
         group_by(NUTS.Code) %>%
         mutate(max_year=max(year)) %>%
-        filter(year==max_year) 
+        filter(year==max_year) %>%
+        ungroup()
+    
     write.csv(mostRecentData,"output/citrusProduction_latest.csv")
 
                                         #png()
-    plotCitrusMap(mostRecentData)
+    par(bg = "white")           # default is likely to be transparent
+    split.screen(c(2, 1))
+    screen(1)
+    breaks=cut2(mostRecentData$citrus_density,onlycuts=T,g=10)
+    plotCitrusMap(mostRecentData,large=F,breaks,"citrus_density")
+    screen(2)
+    breaks=cut2(mostRecentData$ha,onlycuts=T,g=10)
+    plotCitrusMap(mostRecentData,large=F,breaks,"ha")
+    close.screen(all = TRUE)
                                         #dev.off()
     capture.output(sessionInfo(),file="sessionInfo.txt")
-    europe
+    
 }
 
 
 
 
 
-                 
+
+

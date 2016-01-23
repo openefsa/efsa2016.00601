@@ -3,6 +3,7 @@ p_load(cartography)
 p_load_gh("eblondel/cleangeo")
 p_unload(raster)
 p_load(rgdal)
+p_load(Hmisc)
 
 getNuts3Areas <-  function() {
     nuts.data <- data_frame(NUTS.Code=nuts3.spdf@data$id,id=row.names(nuts3.spdf@data))
@@ -12,10 +13,6 @@ getNuts3Areas <-  function() {
     nuts.area
 }
 
-
-EU_NUTS <- readOGR(dsn = "./geo/NUTS_2013_01M_SH/data", layer = "NUTS_RG_01M_2013")
-EU_NUTS.0 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==0,]
-EU_NUTS.3 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==3,]
 
 
 warnIfUnkownIds <- function(europe) {
@@ -28,7 +25,7 @@ warnIfUnkownIds <- function(europe) {
     }
 }
 
-plotCitrusMap <- function(europe,large=F) {
+plotCitrusMap <- function(europe,large=F,breaks,var) {
     EU_NUTS.3.tr <- spTransform(EU_NUTS.3,CRS("+proj=longlat +ellps=WGS84"))
     EU_NUTS.0.tr <- spTransform(EU_NUTS.0,CRS("+proj=longlat +ellps=WGS84"))
     
@@ -43,7 +40,7 @@ plotCitrusMap <- function(europe,large=F) {
         legend.pos = "left"
     } else {
         extent <- raster::extent(-10,34,34,48) #small
-        legend.pos = "none"
+        legend.pos = "right"
     }
                                      
     EU_NUTS.3.tr <- raster::crop(EU_NUTS.3.tr,extent)
@@ -56,16 +53,14 @@ plotCitrusMap <- function(europe,large=F) {
         raster::crop(extent)
     
   
-    cols <- carto.pal(pal1 = "red.pal", # first color gradient
-                     n1 = 8) #, # number of colors in the first gradiant
-                                        #pal2 = "red.pal", # second color gradient
-                                        #n2 = 4) # number of colors in the second gradiant
+    cols <- carto.pal(pal1 = "red.pal",
+                     n1 = 10) 
    
     europe <- data.frame(europe) %>%
         mutate(t_ha=ha/1000)
 
     if(large) {
-        layoutLayer(title = "Citrus production surface per NUTS3 area", # title of the map
+        layoutLayer(title = "Citrus production surface per NUTS3 area", 
                     scale = NULL,
                     coltitle = "white", # color of the title
                     frame = F,  # no frame around the map
@@ -84,19 +79,20 @@ plotCitrusMap <- function(europe,large=F) {
     }
 
     plot(world.eu,col  = "#E3DEBF", border= NA, ,add=T)
-    choroLayer(spdf = EU_NUTS.3.tr, # SpatialPolygonsDataFrame of the regions
-               df = europe, # data frame with compound annual growth rate
+    plot(EU_NUTS.0.tr,border = "grey20", lwd=0.5, add=TRUE)
+    choroLayer(spdf = EU_NUTS.3.tr,
+               df = europe,
                dfid="NUTS.Code",
-               var = "t_ha", # compound annual growth rate field in df
-               breaks = c(0,.1,1,2,5,10,20,30,40), # list of breaks
+               var=var,                      
+               breaks=breaks,
                col = cols,
                border = "grey10", # color of the polygons borders
                lwd = 0.1,, #0.05, # width of the borders
                legend.pos = legend.pos, # position of the legend
                legend.title.txt = "Citrus production surface \nin thousand ha", # title of the legend
-               legend.values.rnd = 2, # number of decimal in the legend values
+               legend.values.rnd = 5, # number of decimal in the legend values
                add = T) # add the layer to the current plot
-                                        #plot(world.eu,col  = "#E3DEBF", border= NA, ,add=T)
+                                     
     
     plot(EU_NUTS.0.tr,border = "grey20", lwd=0.5, add=TRUE)
 
