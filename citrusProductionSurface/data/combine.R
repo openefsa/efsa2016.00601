@@ -5,6 +5,7 @@ p_load(PBSmapping)
 p_load(maptools)
 p_load(dplyr)
 p_load(readr)
+p_load(memoise)
 
 source("replace.R")
 source("mapTools.R")
@@ -19,14 +20,21 @@ source("croatia/program/read.R")
 source("greece/program/read.R")
 source("malta/program/read.R")
 
-EU_NUTS <- readOGR(dsn = "./geo/NUTS_2013_01M_SH/data", layer = "NUTS_RG_01M_2013")
+if (!exists("readOGR_mem"))
+    readOGR_mem <- memoise(readOGR)
+                                        #EU_NUTS <- readOGR(dsn = "./geo/NUTS_2013_01M_SH/data", layer = "NUTS_RG_01M_2013")
+
+resolution <- "01M"  #60M
+
+EU_NUTS <- readOGR_mem(dsn = sprintf("./geo/NUTS_2013_%s_SH/data",resolution), layer = sprintf("NUTS_RG_%s_2013",resolution))
 EU_NUTS.0 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==0,]
 EU_NUTS.3 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==3,]
 
+world.eu <- readOGR_mem(dsn = sprintf("./geo/CNTR_%s_2013_SH/data",resolution), layer = sprintf("CNTR_RG_%s_2013",resolution))
 
 
 
-run <- function() {
+extractCitrusData <- function() {
 
     sizeEurope_sq_ha <- 1018000000
     sumAreaShapeEurope <-  sum(EU_NUTS.3@data$Shape_Area)
@@ -43,8 +51,7 @@ run <- function() {
         readCitrusHectar_cyprus(),
         readCitrusHectar_croatia(),
         readCitrusHectar_greece(),
-        read_CitrusHectarMalta()
-    ) %>%
+        read_CitrusHectarMalta()) %>%
         tbl_df() %>%
         addNewData("nutsReplacements.csv") %>%
         left_join(nutsLevels,by = c('name'='Description')) %>%
@@ -66,24 +73,35 @@ run <- function() {
     
     write.csv(mostRecentData,"output/citrusProduction_latest.csv")
 
+    mostRecentData
+}
+
+plotCitrusData <- function(data) {
                                         #png()
     par(bg = "white")           # default is likely to be transparent
     split.screen(c(2, 1))
     screen(1)
-    breaks=cut2(mostRecentData$citrus_density,onlycuts=T,g=10)
-    plotCitrusMap(mostRecentData,large=F,breaks,"citrus_density")
+    breaks=cut2(data$citrus_density,onlycuts=T,g=10)
+    plotCitrusMap(data,large=F,breaks,"citrus_density")
     screen(2)
-    breaks=cut2(mostRecentData$ha,onlycuts=T,g=10)
-    plotCitrusMap(mostRecentData,large=F,breaks,"ha")
+    breaks=cut2(data$ha,onlycuts=T,g=10)
+    plotCitrusMap(data,large=F,breaks,"ha")
     close.screen(all = TRUE)
                                         #dev.off()
     capture.output(sessionInfo(),file="sessionInfo.txt")
-    
+    width <- 1366
+    height <- 768
+    png("citrusMapHa.png",width = width,height = height)
+    plotCitrusMap(data,large=F,breaks,"ha")
+    dev.off()
+  
 }
 
 
-
-
-
+plotCitrusMap_svg <- function(data) {
+    svg(width=12,height=6)
+    breaks=cut2(data$ha,onlycuts=T,g=10)
+    plotCitrusMap(data,large=F,breaks,"ha")    
+}
 
 

@@ -1,0 +1,215 @@
+#+PROPERTY: session *R-orgmode*
+#+PROPERTY: cache yes 
+#+PROPERTY: exports both
+#+PROPERTY: tangle yes
+
+#+BEGIN_SRC R 
+library(pacman)
+#p_load(knitr)
+#p_load(rmarkdown)
+#opts_chunk$set(dpi=75)
+#+END_SRC
+
+#+RESULTS:
+| pacman    |
+| stats     |
+| graphics  |
+| grDevices |
+| utils     |
+| datasets  |
+| methods   |
+| base      |
+
+The followoing data is available:
+
+
+#+BEGIN_SRC R 
+  source("combine.R")
+  data <-  extractCitrusData() 
+  mostRecentData <- data %>%
+     select(country,year,NUTS.Code,NUTS3.name,ha) %>%
+      arrange(NUTS.Code)
+
+  #kable(mostRecentData,digits=1,caption="Citrus product surface area per NUTS3 region")
+  mostRecentData
+
+#+END_SRC
+
+#+RESULTS:
+| CY | 2013 | CY000 | Κύπρος (Kypros)                                                                                                                 |              2629 |
+| EL | 2012 | EL301 | Βόρειος Τομέας Αθηνών (Voreios Tomeas Athinon)                                                                                  |                 0 |
+| EL | 2012 | EL302 | Δυτικός Τομέας Αθηνών (Dytikos Tomeas Athinon)                                                                                  |                 0 |
+| EL | 2012 | EL303 | Κεντρικός Τομέας Αθηνών (Kentrikos Tomeas Athinon)                                                                              |                 0 |
+| EL | 2012 | EL304 | Νότιος Τομέας Αθηνών (Notios Tomeas Athinon)                                                                                    |                 0 |
+| EL | 2012 | EL305 | Ανατολική Αττική (Anatoliki Attiki)                                                                                             |              75.1 |
+| EL | 2012 | EL306 | Δυτική Αττική (Dytiki Attiki)                                                                                                   |                 5 |
+| EL | 2012 | EL307 | Πειραιάς, Νήσοι (Peiraias, Nisoi)                                                                                               |             604.8 |
+| EL | 2012 | EL411 | Λέσβος, Λήμνος (Lesvos, Limnos)                                                                                                 |             115.8 |
+| EL | 2012 | EL412 | Ικαρία, Σάμος (Ikaria, Samos)                                                                                                   |             130.5 |
+| EL | 2012 | EL413 | Χίος (Chios)                                                                                                                    |             632.8 |
+| EL | 2012 | EL421 | Κάλυμνος, Κάρπαθος, Κως, Ρόδος (Kalymnos, Karpathos, Kos, Rodos)                                                                |             919.6 |
+| EL | 2012 | EL422 | Άνδρος, Θήρα, Κέα, Μήλος, Μύκονος, Νάξος, Πάρος, Σύρος, Τήνος (Andros, Thira, Kea, Milos, Mykonos, Naxos, Paros,  Syros, Tinos) |             298.7 |
+| EL | 2012 | EL431 | Ηράκλειο (Irakleio)                                                                                                             |             610.5 |
+| EL | 2012 | EL432 | Λασίθι (Lasithi)                                                                                                                |               107 |
+| EL | 2012 | EL433 | Ρεθύμνη (Rethymni)                                                                                                              |             374.5 |
+| EL | 2012 | EL434 | Χανιά (Chania)                                                                                                                  |            4512.5 |
+| EL | 2012 | EL511 | Έβρος (Evros)                                                                                                                   |                 0 |
+| EL | 2012 | EL512 | Ξάνθη (Xanthi)                                                                                                                  |                 0 |
+| EL | 2012 | EL513 | Ροδόπη (Rodopi)                                                                                                                 |                 0 |
+| EL | 2012 | EL514 | Δράμα (Drama)                                                                                                                   |                 0 |
+| EL | 2012 | EL515 | Θάσος, Καβάλα (Thasos, Kavala)                                                                                                  |               0.3 |
+| EL | 2012 | EL521 | Ημαθία (Imathia)                                                                                                                |                 0 |
+| EL | 2012 | EL522 | Θεσσαλονίκη (Thessaloniki)                                                                                                      |                 0 |
+| EL | 2012 | EL523 | Κιλκίς (Kilkis)                                                                                                                 |                 0 |
+| EL | 2012 | EL524 | Πέλλα (Pella)                                                                                                                   |                 0 |
+| EL | 2012 | EL525 | Πιερία (Pieria)                                                                                                                 |                 0 |
+| EL | 2012 | EL526 | Σέρρες (Serres)                                                                                                                 |                 0 |
+| EL | 2012 | EL527 | Χαλκιδική (Chalkidiki)                                                                                                          |              11.9 |
+| EL | 2012 | EL531 | Γρεβενά, Κοζάνη (Grevena, Kozani)                                                                                               |                 0 |
+| EL | 2012 | EL532 | Καστοριά (Kastoria)                                                                                                             |                 0 |
+| EL | 2012 | EL533 | Φλώρινα (Florina)                                                                                                               |                 0 |
+| EL | 2012 | EL541 | Άρτα, Πρέβεζα (Arta, Preveza)                                                                                                   |            6468.5 |
+| EL | 2012 | EL542 | Θεσπρωτία (Thesprotia)                                                                                                          |            1342.7 |
+| EL | 2012 | EL543 | Ιωάννινα (Ioannina)                                                                                                             |               1.2 |
+| EL | 2012 | EL611 | Καρδίτσα, Τρίκαλα (Karditsa, Trikala)                                                                                           |                 0 |
+| EL | 2012 | EL612 | Λάρισα (Larisa)                                                                                                                 |               0.5 |
+| EL | 2012 | EL613 | Μαγνησία, Σποράδες (Magnisia, Sporades)                                                                                         |                80 |
+| EL | 2012 | EL621 | Ζάκυνθος (Zakynthos)                                                                                                            |               157 |
+| EL | 2012 | EL622 | Κέρκυρα (Kerkyra)                                                                                                               |             559.4 |
+| EL | 2012 | EL623 | Ιθάκη, Κεφαλληνία (Ithaki, Kefallinia)                                                                                          |             146.2 |
+| EL | 2012 | EL624 | Λευκάδα (Lefkada)                                                                                                               |             155.8 |
+| EL | 2012 | EL631 | Αιτωλοακαρνανία (Aitoloakarnania)                                                                                               |            3504.9 |
+| EL | 2012 | EL632 | Αχαΐα (Achaia)                                                                                                                  |            3296.2 |
+| EL | 2012 | EL633 | Ηλεία (Ileia)                                                                                                                   |            4518.9 |
+| EL | 2012 | EL641 | Βοιωτία (Voiotia)                                                                                                               |              11.2 |
+| EL | 2012 | EL642 | Εύβοια (Evvoia)                                                                                                                 |             309.4 |
+| EL | 2012 | EL643 | Ευρυτανία (Evrytania)                                                                                                           |                 0 |
+| EL | 2012 | EL644 | Φθιώτιδα (Fthiotida)                                                                                                            |               3.3 |
+| EL | 2012 | EL645 | Φωκίδα (Fokida)                                                                                                                 |             194.6 |
+| EL | 2012 | EL651 | Αργολίδα, Αρκαδία (Argolida, Arkadia)                                                                                           |           12694.2 |
+| EL | 2012 | EL652 | Κορινθία (Korinthia)                                                                                                            |              3377 |
+| EL | 2012 | EL653 | Λακωνία, Μεσσηνία (Lakonia, Messinia)                                                                                           |            9763.3 |
+| ES | 2013 | ES111 | A Coruña                                                                                                                        |               201 |
+| ES | 2013 | ES112 | Lugo                                                                                                                            |                 7 |
+| ES | 2013 | ES113 | Ourense                                                                                                                         |                 2 |
+| ES | 2013 | ES114 | Pontevedra                                                                                                                      |               105 |
+| ES | 2013 | ES130 | Cantabria                                                                                                                       |                24 |
+| ES | 2013 | ES213 | Bizkaia                                                                                                                         |                 1 |
+| ES | 2013 | ES415 | Salamanca                                                                                                                       |                 3 |
+| ES | 2013 | ES431 | Badajoz                                                                                                                         |                44 |
+| ES | 2013 | ES432 | Cáceres                                                                                                                         |                 2 |
+| ES | 2013 | ES511 | Barcelona                                                                                                                       |                 3 |
+| ES | 2013 | ES514 | Tarragona                                                                                                                       |              8940 |
+| ES | 2013 | ES521 | Alicante / Alacant                                                                                                              |             29208 |
+| ES | 2013 | ES522 | Castellón / Castelló                                                                                                            |             34392 |
+| ES | 2013 | ES523 | Valencia / València                                                                                                             |             87216 |
+| ES | 2013 | ES531 | Eivissa y Formentera                                                                                                            |  252.668792091951 |
+| ES | 2013 | ES532 | Mallorca                                                                                                                        |   1337.0271506057 |
+| ES | 2013 | ES533 | Menorca                                                                                                                         |  255.304057302351 |
+| ES | 2013 | ES611 | Almería                                                                                                                         |              8501 |
+| ES | 2013 | ES612 | Cádiz                                                                                                                           |              2690 |
+| ES | 2013 | ES613 | Córdoba                                                                                                                         |             11121 |
+| ES | 2013 | ES614 | Granada                                                                                                                         |              1035 |
+| ES | 2013 | ES615 | Huelva                                                                                                                          |             19479 |
+| ES | 2013 | ES616 | Jaén                                                                                                                            |                 9 |
+| ES | 2013 | ES617 | Málaga                                                                                                                          |             10752 |
+| ES | 2013 | ES618 | Sevilla                                                                                                                         |             29022 |
+| ES | 2013 | ES620 | Murcia                                                                                                                          |             35731 |
+| ES | 2013 | ES705 | Gran Canaria                                                                                                                    |               893 |
+| ES | 2013 | ES709 | Tenerife                                                                                                                        |               520 |
+| FR | 2013 | FR821 | Alpes-de-Haute-Provence                                                                                                         |  1.82345922149603 |
+| FR | 2013 | FR822 | Hautes-Alpes                                                                                                                    |   1.0535105099724 |
+| FR | 2013 | FR823 | Alpes-Maritimes                                                                                                                 | 0.908292336573161 |
+| FR | 2013 | FR824 | Bouches-du-Rhône                                                                                                                |  1.52062657478362 |
+| FR | 2013 | FR825 | Var                                                                                                                             |  1.47399659533576 |
+| FR | 2013 | FR826 | Vaucluse                                                                                                                        | 0.810114761839027 |
+| FR | 2013 | FR831 | Corse-du-Sud                                                                                                                    |  782.367322386051 |
+| FR | 2013 | FR832 | Haute-Corse                                                                                                                     |  811.552061760291 |
+| HR | 2014 | HR031 | Primorsko-goranska županija                                                                                                     |  276.078778595425 |
+| HR | 2014 | HR032 | Ličko-senjska županija                                                                                                          |  366.135405058067 |
+| HR | 2014 | HR033 | Zadarska županija                                                                                                               |  247.015685114649 |
+| HR | 2014 | HR034 | Šibensko-kninska županija                                                                                                       |  167.582106452102 |
+| HR | 2014 | HR035 | Splitsko-dalmatinska županija                                                                                                   |  344.647604798619 |
+| HR | 2014 | HR036 | Istarska županija                                                                                                               |  172.806387433284 |
+| HR | 2014 | HR037 | Dubrovačko-neretvanska županija                                                                                                 |  213.734032547853 |
+| IT | 2015 | ITC31 | Imperia                                                                                                                         |                43 |
+| IT | 2015 | ITC32 | Savona                                                                                                                          |                20 |
+| IT | 2015 | ITC34 | La Spezia                                                                                                                       |                 6 |
+| IT | 2015 | ITF14 | Chieti                                                                                                                          |                 6 |
+| IT | 2015 | ITF31 | Caserta                                                                                                                         |               451 |
+| IT | 2015 | ITF33 | Napoli                                                                                                                          |              1008 |
+| IT | 2015 | ITF34 | Avellino                                                                                                                        |                16 |
+| IT | 2015 | ITF35 | Salerno                                                                                                                         |              1390 |
+| IT | 2015 | ITF43 | Taranto                                                                                                                         |              7660 |
+| IT | 2015 | ITF44 | Brindisi                                                                                                                        |               145 |
+| IT | 2015 | ITF45 | Lecce                                                                                                                           |               570 |
+| IT | 2015 | ITF46 | Foggia                                                                                                                          |               612 |
+| IT | 2015 | ITF47 | Bari                                                                                                                            |               128 |
+| IT | 2015 | ITF48 | Barletta-Andria-Trani                                                                                                           |                15 |
+| IT | 2015 | ITF51 | Potenza                                                                                                                         |                71 |
+| IT | 2015 | ITF52 | Matera                                                                                                                          |              6952 |
+| IT | 2015 | ITF61 | Cosenza                                                                                                                         |             16748 |
+| IT | 2015 | ITF62 | Crotone                                                                                                                         |              1565 |
+| IT | 2015 | ITF63 | Catanzaro                                                                                                                       |              3730 |
+| IT | 2015 | ITF64 | Vibo Valentia                                                                                                                   |              2041 |
+| IT | 2015 | ITF65 | Reggio di Calabria                                                                                                              |             13134 |
+| IT | 2015 | ITG11 | Trapani                                                                                                                         |               610 |
+| IT | 2015 | ITG12 | Palermo                                                                                                                         |              7030 |
+| IT | 2015 | ITG13 | Messina                                                                                                                         |              5880 |
+| IT | 2015 | ITG14 | Agrigento                                                                                                                       |              5151 |
+| IT | 2015 | ITG15 | Caltanissetta                                                                                                                   |               216 |
+| IT | 2015 | ITG16 | Enna                                                                                                                            |              2984 |
+| IT | 2015 | ITG17 | Catania                                                                                                                         |             31700 |
+| IT | 2015 | ITG18 | Ragusa                                                                                                                          |              2710 |
+| IT | 2015 | ITG19 | Siracusa                                                                                                                        |             23530 |
+| IT | 2015 | ITG25 | Sassari                                                                                                                         |               172 |
+| IT | 2015 | ITG26 | Nuoro                                                                                                                           |               422 |
+| IT | 2015 | ITG27 | Cagliari                                                                                                                        |              3212 |
+| IT | 2015 | ITG28 | Oristano                                                                                                                        |               556 |
+| IT | 2015 | ITG29 | Olbia-Tempio                                                                                                                    |                63 |
+| IT | 2015 | ITG2A | Ogliastra                                                                                                                       |               387 |
+| IT | 2015 | ITG2B | Medio Campidano                                                                                                                 |               140 |
+| IT | 2015 | ITG2C | Carbonia-Iglesias                                                                                                               |               146 |
+| IT | 2015 | ITI11 | Massa-Carrara                                                                                                                   |                10 |
+| IT | 2015 | ITI12 | Lucca                                                                                                                           |                 3 |
+| IT | 2015 | ITI16 | Livorno                                                                                                                         |                10 |
+| IT | 2015 | ITI1A | Grosseto                                                                                                                        |                 4 |
+| IT | 2015 | ITI43 | Roma                                                                                                                            |                10 |
+| IT | 2015 | ITI44 | Latina                                                                                                                          |               605 |
+| IT | 2015 | ITI45 | Frosinone                                                                                                                       |                10 |
+| MT | 2010 | MT001 | Malta                                                                                                                           |              52.7 |
+| MT | 2010 | MT002 | Gozo and Comino / Għawdex u Kemmuna                                                                                             |              58.6 |
+| PT | 2009 | PT111 | Minho-Lima                                                                                                                      |                64 |
+| PT | 2009 | PT112 | Cávado                                                                                                                          |               161 |
+| PT | 2009 | PT119 | Ave                                                                                                                             |                64 |
+| PT | 2009 | PT11A | Grande Porto                                                                                                                    |                35 |
+| PT | 2009 | PT11B | Tâmega                                                                                                                          |               120 |
+| PT | 2009 | PT11C | Entre Douro e Vouga                                                                                                             |                 6 |
+| PT | 2009 | PT11D | Douro                                                                                                                           |               443 |
+| PT | 2009 | PT11E | Alto Trás-os-Montes                                                                                                             |                28 |
+| PT | 2014 | PT150 | Algarve                                                                                                                         |             14222 |
+| PT | 2009 | PT16B | Oeste                                                                                                                           |               262 |
+| PT | 2009 | PT16D | Baixo Mondego                                                                                                                   |               137 |
+| PT | 2009 | PT16E | Pinhal Litoral                                                                                                                  |                26 |
+| PT | 2009 | PT16F | Pinhal Interior Norte                                                                                                           |                22 |
+| PT | 2009 | PT16G | Baixo Vouga                                                                                                                     |                61 |
+| PT | 2009 | PT16H | Beira Interior Sul                                                                                                              |               138 |
+| PT | 2009 | PT16I | Dão-Lafões                                                                                                                      |               365 |
+| PT | 2009 | PT16J | Serra da Estrela                                                                                                                |                61 |
+| PT | 2014 | PT170 | Área Metropolitana de Lisboa                                                                                                    |               390 |
+| PT | 2009 | PT181 | Alentejo Litoral                                                                                                                |               599 |
+| PT | 2009 | PT184 | Baixo Alentejo                                                                                                                  |               733 |
+| PT | 2009 | PT185 | Lezíria do Tejo                                                                                                                 |               572 |
+| PT | 2009 | PT186 | Alto Alentejo                                                                                                                   |               295 |
+| PT | 2009 | PT187 | Alentejo Central                                                                                                                |               226 |
+| PT | 2014 | PT200 | Região Autónoma dos Açores                                                                                                      |               417 |
+| PT | 2014 | PT300 | Região Autónoma da Madeira                                                                                                      |               117 |
+
+#+BEGIN_SRC R  :file map.png 
+  breaks=cut2(mostRecentData$ha,onlycuts=T,g=10)
+  plotCitrusMap(mostRecentData,large=F,breaks,"ha")      
+#+END_SRC
+
+#+RESULTS:
+[[file:map.png]]
+

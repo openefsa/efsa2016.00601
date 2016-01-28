@@ -1,0 +1,46 @@
+---
+output: word_document
+---
+
+```{r echo=F, results="hide"}
+library(pacman)
+p_load(knitr)
+p_load(rmarkdown)
+opts_chunk$set(dpi=75)
+```
+
+
+```{r echo=F,warning=F,error=F,message=F}
+source("combine.R")
+data <-  extractCitrusData() 
+mostRecentData <- data %>%
+   select(country,year,NUTS.Code,NUTS3.name,ha) %>%
+    arrange(NUTS.Code)
+
+kable(mostRecentData,digits=1,caption="Citrus product surface area per NUTS3 region")
+```
+
+```{r echo=F,warning=F,error=F,message=F}
+countryHa <- data %>%
+    group_by(country) %>% summarise(sum(ha))
+
+kable(countryHa,digits=0,caption="Citrus product surface area per country")
+```
+
+```{r echo=F,warning=F,error=F,message=F}
+ comments <- data %>%
+      mutate(comment=ifelse(is.na(comment),"",comment)) %>%
+      group_by(country,year,comment) %>%
+      select(country,comment) %>%
+      slice(1)
+kable(comments,caption="Notes on potential data transformations")
+```
+
+
+```{r fig.height=6, fig.width=12,dpi=600,echo=F}
+    breaks=cut2(mostRecentData$ha,onlycuts=T,g=10)
+    plotCitrusMap(mostRecentData,large=F,breaks,"ha")
+    #svg("citrusMap_ha.svg",width=12,height=6)
+    #plotCitrusMap(mostRecentData,large=F,breaks,"ha")
+    #dev.off() 
+```

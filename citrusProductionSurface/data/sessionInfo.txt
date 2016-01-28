@@ -1,24 +1,21 @@
-R version 3.2.0 (2015-04-16)
+R version 3.2.3 (2015-12-10)
 Platform: x86_64-pc-linux-gnu (64-bit)
 Running under: Ubuntu 14.10
 
 locale:
- [1] LC_CTYPE=de_DE.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8       
- [4] LC_COLLATE=de_DE.UTF-8     LC_MONETARY=en_US.UTF-8    LC_MESSAGES=de_DE.UTF-8   
- [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                  LC_ADDRESS=C              
-[10] LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+ [1] LC_CTYPE=de_DE.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8        LC_COLLATE=de_DE.UTF-8     LC_MONETARY=en_US.UTF-8    LC_MESSAGES=de_DE.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                  LC_ADDRESS=C               LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
 
 attached base packages:
-[1] stats     graphics  grDevices utils     datasets  methods   base     
+[1] splines   stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] zoo_1.7-12         reshape2_1.4.1     openxlsx_3.0.0     cleangeo_0.1-2    
- [5] maptools_0.8-37    PBSmapping_2.69.76 rgdal_1.0-4        cartography_1.1   
- [9] sp_1.2-1           readr_0.2.2        tidyr_0.3.1        stringr_1.0.0     
-[13] dplyr_0.4.3        readxl_0.1.0.9000  pacman_0.3.0      
+ [1] tidyr_0.3.1        zoo_1.7-12         reshape2_1.4.1     readxl_0.1.0.9000  stringr_1.0.0      openxlsx_3.0.0     Hmisc_3.17-1       ggplot2_2.0.0      Formula_1.2-1     
+[10] survival_2.37-7    lattice_0.20-29    cleangeo_0.1-2     readr_0.2.2        dplyr_0.4.3        maptools_0.8-37    PBSmapping_2.69.76 rgdal_1.0-4        cartography_1.1   
+[19] sp_1.2-1           pacman_0.3.0      
 
 loaded via a namespace (and not attached):
- [1] Rcpp_0.12.3     raster_2.3-40   magrittr_1.5    lattice_0.20-29 R6_2.0.1       
- [6] plyr_1.8.3      tools_3.2.0     parallel_3.2.0  grid_3.2.0      e1071_1.6-4    
-[11] DBI_0.3.1       rgeos_0.3-15    class_7.3-11    lazyeval_0.1.10 assertthat_0.1 
-[16] stringi_0.5-2   compiler_3.2.0  classInt_0.1-23 foreign_0.8-61 
+ [1] Rcpp_0.12.3         RColorBrewer_1.1-2  plyr_1.8.3          class_7.3-11        tools_3.2.3         rpart_4.1-8         gtable_0.1.2        DBI_0.3.1           parallel_3.2.3     
+[10] gridExtra_2.0.0     e1071_1.6-4         raster_2.3-40       cluster_1.15.2      rgeos_0.3-15        classInt_0.1-23     grid_3.2.3          nnet_7.3-8          R6_2.0.1           
+[19] foreign_0.8-61      latticeExtra_0.6-26 magrittr_1.5        scales_0.3.0        assertthat_0.1      colorspace_1.2-6    stringi_0.5-2       acepack_1.3-3.3     lazyeval_0.1.10    
+[28] munsell_0.4.2      

@@ -31,7 +31,7 @@ plotCitrusMap <- function(europe,large=F,breaks,var) {
     
     warnIfUnkownIds(europe)
     
-                                        #         48
+             #         48
                                         #   -10         32
                                         #         35
                                         # osm
@@ -47,7 +47,6 @@ plotCitrusMap <- function(europe,large=F,breaks,var) {
     EU_NUTS.0.tr <- raster::crop(EU_NUTS.0.tr,extent)
 
     
-    world.eu <- readOGR(dsn = "./geo/CNTR_01M_2013_SH/data", layer = "CNTR_RG_01M_2013")
     world.eu <- world.eu[!world.eu@data$CNTR_ID %in%  as.character(EU_NUTS.0.tr@data$NUTS_ID),] %>%
         spTransform(CRS("+proj=longlat +ellps=WGS84")) %>%
         raster::crop(extent)
@@ -72,7 +71,7 @@ plotCitrusMap <- function(europe,large=F,breaks,var) {
     } else {
         layoutLayer(col = NA, coltitle = "black",
                     sources = "", author = "",
-                    frame = FALSE,
+                    frame = T,
                     title="",
                     scale=NULL,
                     extent=EU_NUTS.0.tr)
