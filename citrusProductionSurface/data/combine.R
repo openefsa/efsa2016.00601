@@ -22,7 +22,6 @@ source("malta/program/read.R")
 
 if (!exists("readOGR_mem"))
     readOGR_mem <- memoise(readOGR)
-                                        #EU_NUTS <- readOGR(dsn = "./geo/NUTS_2013_01M_SH/data", layer = "NUTS_RG_01M_2013")
 
 resolution <- "01M"  #60M
 
@@ -59,7 +58,8 @@ extractCitrusData <- function() {
         mutate(NUTS.Code = ifelse(is.na(NUTS.Code.Country),NUTS.Code,NUTS.Code.Country)) %>%
         select(country,year,NUTS3.name,NUTS.Code,ha,comment,source,link,date,sourceFile) %>%
         left_join(EU_NUTS.3@data,by=c("NUTS.Code"="NUTS_ID")) %>%
-        mutate(Spape_Area_ha = Shape_Area * conversion_sa_ha,citrus_density=ha/Spape_Area_ha)
+        mutate(Shape_Area_ha = Shape_Area * conversion_sa_ha,citrus_density=ha/Shape_Area_ha) %>%
+        select(-STAT_LEVL_,-Shape_Leng,-Shape_Area,-Shape_Area_ha)
     
 
    
@@ -78,30 +78,30 @@ extractCitrusData <- function() {
 
 plotCitrusData <- function(data) {
                                         #png()
-    par(bg = "white")           # default is likely to be transparent
-    split.screen(c(2, 1))
-    screen(1)
-    breaks=cut2(data$citrus_density,onlycuts=T,g=10)
-    plotCitrusMap(data,large=F,breaks,"citrus_density")
-    screen(2)
-    breaks=cut2(data$ha,onlycuts=T,g=10)
-    plotCitrusMap(data,large=F,breaks,"ha")
-    close.screen(all = TRUE)
+        par(bg = "white")           # default is likely to be transparent
+        split.screen(c(2, 1))
+        screen(1)
+        breaks=cut2(data$citrus_density,onlycuts=T,g=10)
+        plotCitrusMap(data,large=F,breaks,"citrus_density")
+        screen(2)
+        breaks=cut2(data$ha,onlycuts=T,g=10)
+        plotCitrusMap(data,large=F,breaks,"ha")
+        close.screen(all = TRUE)
                                         #dev.off()
-    capture.output(sessionInfo(),file="sessionInfo.txt")
-    width <- 1366
-    height <- 768
-    png("citrusMapHa.png",width = width,height = height)
-    plotCitrusMap(data,large=F,breaks,"ha")
-    dev.off()
+        capture.output(sessionInfo(),file="sessionInfo.txt")
+        width <- 1366
+        height <- 768
+        png("citrusMapHa.png",width = width,height = height)
+        plotCitrusMap(data,large=F,breaks,"ha")
+        dev.off()
   
-}
+    }
 
 
-plotCitrusMap_svg <- function(data) {
-    svg(width=12,height=6)
-    breaks=cut2(data$ha,onlycuts=T,g=10)
-    plotCitrusMap(data,large=F,breaks,"ha")    
-}
+    plotCitrusMap_svg <- function(data) {
+        svg(width=12,height=6)
+        breaks=cut2(data$ha,onlycuts=T,g=10)
+        plotCitrusMap(data,large=F,breaks,"ha")    
+    }
 
 
