@@ -69,8 +69,9 @@ extractCitrusData <- function() {
         group_by(NUTS.Code) %>%
         mutate(max_year=max(year)) %>%
         filter(year==max_year) %>%
-        ungroup()
-    
+        ungroup() %>%
+        select(-max_year)
+                           
     write.csv(mostRecentData,"output/citrusProduction_latest.csv")
 
     mostRecentData
