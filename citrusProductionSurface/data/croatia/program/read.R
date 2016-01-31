@@ -42,9 +42,11 @@ readCitrusHectar_croatia <- function() {
         select(Description,year,ha_area)%>%
         rename(ha=ha_area) %>%
         mutate(country="HR",
-               comment="Total area of citrus production in Adriatic Croatia distributed to regions of level 3 proportional to the area of the regions") %>%
+               comment="Total area of citrus production in Adriatic Croatia distributed to regions of level 3 proportional to the area of the regions",
+               link="http://www.dzs.hr/App/PXWeb/PXWebEng/Selection.aspx?px_tableid=T421_Eng.px&px_path=Agriculture%2c+Hunting%2c+Forestry+and+Fishing__Crop+production&px_language=en&px_db=Agriculture%2c+Hunting%2c+Forestry+and+Fishing&rxid=04654694-2080-4769-8ff9-1140ef84ab42") %>%
+        
         rename(name=Description)
     interpolated_by_area
     
 }
-                                        #mutate(link="http://www.dzs.hr/App/PXWeb/PXWebEng/Selection.aspx?px_tableid=T421_Eng.px&px_path=Agriculture%2c+Hunting%2c+Forestry+and+Fishing__Crop+production&px_language=en&px_db=Agriculture%2c+Hunting%2c+Forestry+and+Fishing&rxid=04654694-2080-4769-8ff9-1140ef84ab42") %>%             
+                                          
