@@ -7,6 +7,7 @@ p_load(dplyr)
 p_load(readr)
 p_load(memoise)
 
+
 source("replace.R")
 source("mapTools.R")
 source("utils.R")
@@ -23,7 +24,7 @@ source("malta/program/read.R")
 if (!exists("readOGR_mem"))
     readOGR_mem <- memoise(readOGR)
 
-resolution <- "01M"  #60M
+resolution <- "01M"  # 60M
 
 EU_NUTS <- readOGR_mem(dsn = sprintf("./geo/NUTS_2013_%s_SH/data",resolution), layer = sprintf("NUTS_RG_%s_2013",resolution))
 EU_NUTS.0 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==0,]
@@ -73,36 +74,38 @@ extractCitrusData <- function() {
         select(-max_year)
                            
     write.csv(mostRecentData,"output/citrusProduction_latest.csv")
-
+   
     mostRecentData
 }
 
 plotCitrusData <- function(data) {
-                                        #png()
-        par(bg = "white")           # default is likely to be transparent
-        split.screen(c(2, 1))
-        screen(1)
-        breaks=cut2(data$citrus_density,onlycuts=T,g=10)
-        plotCitrusMap(data,large=F,breaks,"citrus_density")
-        screen(2)
-        breaks=cut2(data$ha,onlycuts=T,g=10)
-        plotCitrusMap(data,large=F,breaks,"ha")
-        close.screen(all = TRUE)
-                                        #dev.off()
-        capture.output(sessionInfo(),file="sessionInfo.txt")
-        width <- 1366
-        height <- 768
-        png("citrusMapHa.png",width = width,height = height)
-        plotCitrusMap(data,large=F,breaks,"ha")
-        dev.off()
+    ## png()
+    par(bg = "white")           # default is likely to be transparent
+    split.screen(c(2, 1))
+    screen(1)
+    breaks=cut2(data$citrus_density,onlycuts=T,g=10)
+    plotCitrusMap(data,large=F,breaks,"citrus_density")
+    screen(2)
+    breaks=cut2(data$ha,onlycuts=T,g=10)
+    plotCitrusMap(data,large=F,breaks,"ha")
+    close.screen(all = TRUE)
+    ## dev.off()
+    capture.output(sessionInfo(),file="sessionInfo.txt")
+    width <- 1366
+    height <- 768
+    png("citrusMapHa.png",width = width,height = height)
+    plotCitrusMap(data,large=F,breaks,"ha")
+    dev.off()
   
-    }
+}
 
 
-    plotCitrusMap_svg <- function(data) {
-        svg(width=12,height=6)
-        breaks=cut2(data$ha,onlycuts=T,g=10)
-        plotCitrusMap(data,large=F,breaks,"ha")    
-    }
+plotCitrusMap_svg <- function(data) {
+    svg(width=12,height=6)
+    breaks=cut2(data$ha,onlycuts=T,g=10)
+    plotCitrusMap(data,large=F,breaks,"ha")    
+}
+
+
 
 
