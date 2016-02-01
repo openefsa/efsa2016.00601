@@ -27,16 +27,12 @@ distributeToNuts3 <- function(df,nuts2,name) {
 
 readCitrusHectar_spain_sheet<- function(sheet,startRow=9) {
 
-    
-    df <- read.xlsx(paste0(getwd(),"/spain/original/AE_2014_13.xlsx"),sheet=sheet,startRow = startRow,rowNames =T) %>%
-      
-        mutate(name=str_trim(row.names(.))) %>%
-        rename(ha=X3) %>%
-        tbl_df() 
-    
-    row.names(df)<-NULL
-  
-    df <- df %>% select(name,ha) %>%
+    df <- read_excel(paste0(getwd(),"/spain/original/AE_2014_13.xlsx"),sheet=sheet,skip = startRow -1)
+    names(df) <- c("name","ha",paste0("X",seq(3,9)))
+    df <- df %>%
+        mutate(name=str_trim(name)) %>%
+        tbl_df() %>%
+        select(name,ha) %>%
         filter(!name %in% c(
                               "GALICIA",
                               "PAÍS VASCO",
