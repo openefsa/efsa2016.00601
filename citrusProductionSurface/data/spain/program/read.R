@@ -25,10 +25,10 @@ distributeToNuts3 <- function(df,nuts2,name) {
 
 }
 
-readCitrusHectar_spain_sheet<- function(sheet,startRow=9) {
+readCitrusHectar_spain_sheet<- function(filename,year,sheet,skip=8) {
 
-    df <- read_excel(paste0(getwd(),"/spain/original/AE_2014_13.xlsx"),sheet=sheet,skip = startRow -1)
-    names(df) <- c("name","ha",paste0("X",seq(3,9)))
+    df <- read_excel_mem(paste0(getwd(),"/spain/original/",filename),sheet=sheet,skip = skip)
+    names(df) <- c("name","X2","ha",paste0("X",seq(4,9)))
     df <- df %>%
         mutate(name=str_trim(name)) %>%
         tbl_df() %>%
@@ -49,11 +49,11 @@ readCitrusHectar_spain_sheet<- function(sheet,startRow=9) {
         mutate(ha=as.numeric(ha)) %>%
         filter(!is.na(ha)) %>%
         mutate(country="ES",
-               year=2013,
-               source="http://www.magrama.gob.es/es/estadistica/temas/publicaciones/anuario-de-estadistica/2014/default.aspx?parte=3&capitulo=13",
-               link="http://www.magrama.gob.es/estadistica/pags/anuario/2014/AE_2014_13.xlsx",
-               date="06/01/2015",
-               file="AE_2014_13.xlsx")
+               year=year,
+               source=sprintf("http://www.magrama.gob.es/es/estadistica/temas/publicaciones/anuario-de-estadistica/%d/default.aspx?parte=3&capitulo=13",year),
+               link=sprintf("http://www.magrama.gob.es/estadistica/pags/anuario/%d/%s",year,filename),
+               date="02/02/2016",
+               file=filename)
    
         
     baleares <- distributeToNuts3(df,"ES53","BALEARES")
@@ -66,17 +66,23 @@ readCitrusHectar_spain_sheet<- function(sheet,startRow=9) {
 
 
 readCitrusHectar_spain <- function() {
+    files <- c("AE_2014_13.xlsx","AE_2013_13.xls")
+    years <- c(2013,2012)
     sheets <- c("13.8.2.2","13.8.2.7","13.8.3.2","13.8.4.2","13.8.5.2","13.8.6.2")
-    startRows <- c(9,9,9,9,8,8) 
+    startRows <- c(8,8,8,8,7,7) 
 
 
     data <- list()
-    for (i in seq_along(sheets)) {
-        data[[i]] <- readCitrusHectar_spain_sheet(sheets[i],startRows[i])
-         
+    index <- 1
+    for (i in seq_along(years)) {
+        for (j in seq_along(sheets)) {
+            data[[index]] <- readCitrusHectar_spain_sheet(files[i],years[i],sheets[j],startRows[j])
+            index <- index + 1
+        }
+        
     }
     data <- bind_rows(data) %>%
-        group_by(name) %>%
+        group_by(year,name) %>%
         mutate(ha=sum(ha)) %>%
         slice(1) %>%
         ungroup()
