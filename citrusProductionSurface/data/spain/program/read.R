@@ -27,7 +27,7 @@ distributeToNuts3 <- function(df,nuts2,name) {
 
 readCitrusHectar_spain_sheet<- function(filename,year,sheet,skip=8) {
 
-    df <- read_excel_mem(paste0(getwd(),"/spain/original/",filename),sheet=sheet,skip = skip)
+    df <- read_excel(paste0(getwd(),"/spain/original/",filename),sheet=sheet,skip = skip)
     names(df) <- c("name","X2","ha",paste0("X",seq(4,9)))
     df <- df %>%
         mutate(name=str_trim(name)) %>%

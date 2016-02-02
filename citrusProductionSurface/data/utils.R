@@ -47,7 +47,7 @@ read_nuts3Change2013 <- function() {
     nuts3Change2013
 }
 
-if (!exists("readOGR_mem"))
-    readOGR_mem <- memoise(readOGR)
-if (!exists("read_excel_mem"))
-    read_excel_mem <- memoise(read_excel)
+if (!is.memoised(readOGR))
+    readOGR <- memoise(rgdal::readOGR)
+if (!is.memoised(read_excel))
+    read_excel <- memoise(readxl::read_excel)

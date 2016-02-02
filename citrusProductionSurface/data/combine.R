@@ -25,11 +25,11 @@ source("malta/program/read.R")
 
 resolution <- "01M"  # 60M
 
-EU_NUTS <- readOGR_mem(dsn = sprintf("./geo/NUTS_2013_%s_SH/data",resolution), layer = sprintf("NUTS_RG_%s_2013",resolution))
+EU_NUTS <- readOGR(dsn = sprintf("./geo/NUTS_2013_%s_SH/data",resolution), layer = sprintf("NUTS_RG_%s_2013",resolution))
 EU_NUTS.0 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==0,]
 EU_NUTS.3 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==3,]
 
-world.eu <- readOGR_mem(dsn = sprintf("./geo/CNTR_%s_2013_SH/data",resolution), layer = sprintf("CNTR_RG_%s_2013",resolution))
+world.eu <- readOGR(dsn = sprintf("./geo/CNTR_%s_2013_SH/data",resolution), layer = sprintf("CNTR_RG_%s_2013",resolution))
 
 
 
