@@ -21,8 +21,7 @@ source("croatia/program/read.R")
 source("greece/program/read.R")
 source("malta/program/read.R")
 
-if (!exists("readOGR_mem"))
-    readOGR_mem <- memoise(readOGR)
+
 
 resolution <- "01M"  # 60M
 
@@ -66,19 +65,22 @@ extractCitrusData <- function() {
    
     write.csv(europe,"output/citrusProduction.csv")
 
-    mostRecentData <-  europe %>%
+   
+    europe
+}
+
+plotCitrusData <- function() {
+
+    data <-  extractCitrusData() %>%
         group_by(NUTS.Code) %>%
         mutate(max_year=max(year)) %>%
         filter(year==max_year) %>%
         ungroup() %>%
         select(-max_year)
-                           
-    write.csv(mostRecentData,"output/citrusProduction_latest.csv")
-   
-    mostRecentData
-}
+    
+    write.csv(data,"output/citrusProduction_latest.csv")
 
-plotCitrusData <- function(data) {
+
     ## png()
     par(bg = "white")           # default is likely to be transparent
     split.screen(c(2, 1))
