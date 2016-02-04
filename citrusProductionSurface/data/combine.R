@@ -7,7 +7,6 @@ p_load(dplyr)
 p_load(readr)
 p_load(memoise)
 
-
 source("replace.R")
 source("mapTools.R")
 source("utils.R")
@@ -98,7 +97,7 @@ plotCitrusData <- function() {
     png("citrusMapHa.png",width = width,height = height)
     plotCitrusMap(data,large=F,breaks,"ha")
     dev.off()
-  
+     
 }
 
 

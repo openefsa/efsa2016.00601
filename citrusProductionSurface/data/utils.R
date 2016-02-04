@@ -1,6 +1,7 @@
+library(pacman)
 p_load(readr)
 p_load(readxl)
-
+p_load(memoise)
 condDownload <- function(url,destFile) {
     if(!file.exists(destFile)) {
         download.file(url,destFile)

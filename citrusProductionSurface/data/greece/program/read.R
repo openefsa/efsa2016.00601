@@ -1,9 +1,13 @@
+library(pacman)
 p_load(dplyr)
 p_load(stringr)
 p_load(readxl)
 p_load(tidyr)
+p_load(rgdal)
+
 source("utils.R")
-readCitrusHectar_greece <- function() {
+
+readCitrusHectar_sheet <- function(year) {
 
    
     nonNuts3 <- c("Greece Total",
@@ -20,9 +24,8 @@ readCitrusHectar_greece <- function() {
                  "Region of Southern Aegean",
                  "Region of Crete")
 
-  
-    
-    data <- read_excel(paste0(getwd(),"/greece/original/Κουφάκης/5α.Δενδρ.καλ.,εκτ.συνεχ.κανον.δενδρ.,Περιφέρεια, Π.Ε.,2012.xls"),skip=6,
+    filename <- sprintf("5α.Δενδρ.καλ.,εκτ.συνεχ.κανον.δενδρ.,Περιφέρεια, Π.Ε.,%d.xls",year)
+    data <- read_excel(paste0(getwd(),"/greece/original/Κουφάκης/",filename),skip=6,
                       col_types=rep("text",24),
                       col_names= letters[1:24]) %>%
         select(a,c,u) %>%
@@ -30,12 +33,11 @@ readCitrusHectar_greece <- function() {
         rename(name=u,
                stremma=c,
                greekName=a) %>%
-        mutate(stremma=ifelse(stremma=="—",NA,stremma),
+        mutate(stremma=ifelse(stremma %in% c("\xe2\x80\x94","\xe2\x80\x95"),NA,stremma),
                name=str_trim(name),
                greekName=str_trim(greekName)) %>%
         filter(!is.na(name)) %>%
         filter(!name %in% nonNuts3) 
-
     corr2 <-  read_excel(paste0(getwd(),"/greece/original/correspondance2.xlsx")) %>%
         mutate(Stats_greek=str_trim(Stats_greek),
                stats_latin=str_trim(stats_latin))
@@ -56,13 +58,18 @@ readCitrusHectar_greece <- function() {
         filter(row_number()==1) %>%
         mutate(ha=ha_sum) %>%
         select(-ha_sum) %>%
-                                        #filter(ha>0) %>%
-        mutate(year=2012,
+        filter(ha>0) %>%
+        mutate(year=year,
                country="EL",
                date="18/01/2016",
                comment="",
                source="Via email on 15/01/2016 from ELSTAT",
-               sourceFile="Κουφάκης/5α.Δενδρ.καλ.,εκτ.συνεχ.κανον.δενδρ.,Περιφέρεια, Π.Ε.,2012.xls")
+               sourceFile=filename)
 
     data
+}
+readCitrusHectar_greece <- function() {
+    bind_rows(readCitrusHectar_sheet(2011),
+              readCitrusHectar_sheet(2012)
+              )
 }
