@@ -7,16 +7,17 @@ source("portugal/program/readNuts3.R")
 
 readCitrusHectar_portugal <- function() {
 
-    nutsLevels <- readNutsLevels()
+    nutsLevels <- readNutsLevels() %>%
+        select(-Description.latin,-Description.countryLang)
                                         #https://www.ine.pt/xportal/xmain?xpid=INE&xpgid=ine_indicadores&indOcorrCod=0000020&contexto=bd&selTab=tab2
    
     dataNuts <- read_csv2(paste0(getwd(),"/portugal/original/eSFjCZvkxI27xPkYFHeKHPoy_55629.csv"),
                           
-                          skip=12,
+                         skip=12,
                                         #fileEncoding="ISO-8859-1",
-                          col_names=F,
-                          n_max=11,
-                          locale=iso88591Locale()) %>% tbl_df() %>% select(-X31)
+                         col_names=F,
+                         n_max=11,
+                         locale=iso88591Locale()) %>% tbl_df() %>% select(-X31)
     colnames(dataNuts) <- c("name",paste0("y",seq(2014,1986,-1)))
 
 
@@ -49,7 +50,8 @@ readCitrusHectar_portugal <- function() {
         mutate(year=sub("y","",year),
                year=as.numeric(year)) %>%
         select(name,year,ha,Level) %>%
-        mutate(country="PT",
+        mutate(ha=as.numeric(ha),
+               country="PT",
                comment="",
                source="https://www.ine.pt",
                link="",
