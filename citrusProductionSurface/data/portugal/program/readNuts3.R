@@ -77,7 +77,7 @@ readCitrus2009Census_singleFile <- function() {
     data <- read_csv2(paste0(getwd(),"/portugal/original/nuts3DataCensus2009.csv"),skip=11, locale=iso88591Locale())
     names(data) <- c("name","ha","nothing")
 
-    data %>% select(name,ha) %>%
+    data <- data %>% select(name,ha) %>%
         separate(name,into = c("code","name"),sep=":") %>%
         select(-code) %>%
         mutate(name=str_trim(name)) %>%
@@ -97,6 +97,6 @@ readCitrus2009Census_singleFile <- function() {
         group_by(NUTS.Code.Country) %>%
         mutate(ha=sum(ha)) %>%
         slice(1)
-    
+    data 
     
 }
