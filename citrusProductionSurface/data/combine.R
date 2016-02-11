@@ -6,6 +6,7 @@ p_load(maptools)
 p_load(dplyr)
 p_load(readr)
 p_load(memoise)
+p_load(maptools)
 
 source("replace.R")
 source("mapTools.R")
@@ -140,8 +141,11 @@ plotOverlay <- function(inFile=F) {
 
     }
     plotCitrusMap(europe,large=F,breaks,"ha")
-    plot(EU_NUTS.3.tr[EU_NUTS.3.tr@data$NUTS_ID %in% mag2015Data$NUTS_ID,],lwd=1,add=T)
+    plot(EU_NUTS.3.tr[EU_NUTS.3.tr@data$NUTS_ID %in% mag2015Data$NUTS_ID,],lwd=0.5,add=T,border="blue")
     points(mag2015Data$Lon,mag2015Data$Lat,col="blue",cex=1.5,pch=19)
+    xy <- pointLabel(mag2015Data$Lon,mag2015Data$Lat,labels = paste0(seq_along(mag2015Data$Lon)),col="blue",cex=2,doPlot = F)
+    points(xy$x,xy$y,col="white",cex=2.5,pch=19)
+    text(xy$x,xy$y,col="blue")
     if (inFile) {
         dev.off()
     }
