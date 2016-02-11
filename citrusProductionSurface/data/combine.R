@@ -25,11 +25,15 @@ source("malta/program/read.R")
 
 resolution <- "01M"  # 60M
 
-EU_NUTS <- readOGR(dsn = sprintf("./geo/NUTS_2013_%s_SH/data",resolution), layer = sprintf("NUTS_RG_%s_2013",resolution))
+EU_NUTS <- readOGR(dsn = sprintf("./geo/NUTS_2013_%s_SH/data",resolution),
+                  layer = sprintf("NUTS_RG_%s_2013",resolution))
+EU_NUTS <- EU_NUTS[!grepl("TR.*|MT.*|MK.*|ME.*|CH.*",EU_NUTS@data$NUTS_ID),]
+
 EU_NUTS.0 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==0,]
 EU_NUTS.3 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==3,]
 
-world.eu <- readOGR(dsn = sprintf("./geo/CNTR_%s_2013_SH/data",resolution), layer = sprintf("CNTR_RG_%s_2013",resolution))
+world.eu <- readOGR(dsn = sprintf("./geo/CNTR_%s_2013_SH/data",resolution),
+                   layer = sprintf("CNTR_RG_%s_2013",resolution))
 
 
 
@@ -84,12 +88,8 @@ plotCitrusData <- function() {
     
     write.csv(data,"output/citrusProduction_latest.csv")
 
-
-    breaks=cut2(data$ha,onlycuts=T,g=10)
     breaks=c(0,500,2500,5000,10000,25000,Inf)
     plotCitrusMap(data,breaks)
-    ##close.screen(all = TRUE)
-    ## dev.off()
     capture.output(sessionInfo(),file="sessionInfo.txt")
     width <- 1366
     height <- 768
@@ -102,8 +102,7 @@ plotCitrusData <- function() {
 
 plotCitrusMap_svg <- function(data) {
     svg(width=12,height=6)
-    breaks=cut2(data$ha,onlycuts=T,g=10)
-    plotCitrusMap(data,large=F,breaks,"ha")    
+    plotCitrusData()
 }
 
 
