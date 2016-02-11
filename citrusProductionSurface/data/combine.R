@@ -85,22 +85,16 @@ plotCitrusData <- function() {
     write.csv(data,"output/citrusProduction_latest.csv")
 
 
-    ## png()
-    par(bg = "white")           # default is likely to be transparent
-    split.screen(c(2, 1))
-    screen(1)
-    breaks=cut2(data$citrus_density,onlycuts=T,g=10)
-    plotCitrusMap(data,large=F,breaks,"citrus_density")
-    screen(2)
     breaks=cut2(data$ha,onlycuts=T,g=10)
-    plotCitrusMap(data,large=F,breaks,"ha")
-    close.screen(all = TRUE)
+    breaks=c(0,500,2500,5000,10000,25000,Inf)
+    plotCitrusMap(data,breaks)
+    ##close.screen(all = TRUE)
     ## dev.off()
     capture.output(sessionInfo(),file="sessionInfo.txt")
     width <- 1366
     height <- 768
     png("citrusMapHa.png",width = width,height = height)
-    plotCitrusMap(data,large=F,breaks,"ha")
+    plotCitrusMap(data,breaks)
     dev.off()
      
 }
@@ -133,14 +127,16 @@ plotOverlay <- function(inFile=F) {
         select(-STAT_LEVL_,-Shape_Leng,-Shape_Area) %>%
         left_join((europe %>% select(NUTS.Code,NUTS3.name,ha)),by=c("NUTS_ID"="NUTS.Code"))  
     write.csv(mag2015Data,"mag2015Nuts3.csv")
-    breaks=cut2(europe$ha,onlycuts=T,g=10)
+    
+    plotCitrusData()
     if (inFile) {
         width <- 1366
         height <- 768
+        par(mar=c(0,0,0,0))
         png("mag2015Nuts3.png",width = width,height = height)
 
     }
-    plotCitrusMap(europe,large=F,breaks,"ha")
+    
     plot(EU_NUTS.3.tr[EU_NUTS.3.tr@data$NUTS_ID %in% mag2015Data$NUTS_ID,],lwd=0.5,add=T,border="blue")
     points(mag2015Data$Lon,mag2015Data$Lat,col="blue",cex=1.5,pch=19)
     xy <- pointLabel(mag2015Data$Lon,mag2015Data$Lat,labels = paste0(seq_along(mag2015Data$Lon)),col="blue",cex=2,doPlot = F)

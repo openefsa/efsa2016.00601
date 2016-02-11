@@ -29,7 +29,7 @@ warnIfUnkownIds <- function(europe) {
     }
 }
 
-plotCitrusMap <- function(europe,large=F,breaks,var) {
+plotCitrusMap <- function(europe,breaks) {
                                
     
     warnIfUnkownIds(europe)
@@ -37,17 +37,13 @@ plotCitrusMap <- function(europe,large=F,breaks,var) {
                                         #         48
                                         #   -10         32
                                         #         35
-                                        # osm
-    if(large) {
-        extent <- raster::extent(-26,53,34,72) #large
-        legend.pos = "left"
 
-    } else {
-        extent <- raster::extent(-10,34,34,48) #small
-        legend.pos = "right"
+                                        # osm
+    extent <- raster::extent(-10,34,34,48) #small
+    legend.pos = "right"
         
         
-    }
+
     EU_NUTS.0.tr <- postProcessMap(EU_NUTS.0,extent)
     EU_NUTS.3.tr <- postProcessMap(EU_NUTS.3,extent)
     
@@ -60,60 +56,35 @@ plotCitrusMap <- function(europe,large=F,breaks,var) {
     
   
     cols <- carto.pal(pal1 = "red.pal",
-                     n1 = 10) 
+                     n1 = length(breaks)) 
    
     europe <- data.frame(europe) %>%
         mutate(t_ha=ha/1000)
 
-    if(large) {
-        layoutLayer(title = "Citrus production surface per NUTS3 area", 
-                    scale = NULL,
-                    coltitle = "white", # color of the title
-                    frame = F,  # no frame around the map
-                    bg = "#A6CAE0",
-                    author = "Author: EFSA",
-                    sources = "Sources: EU member states official statistics",
-                    extent=EU_NUTS.0.tr
-                    ) 
-    } else {
-        layoutLayer(col = NA, coltitle = "black",
-                    sources = "", author = "",
-                    frame = T,
-                    title="",
-                    scale=NULL,
-                    extent=EU_NUTS.0.tr)
-    }
+    layoutLayer(col = NA, coltitle = "black",
+                sources = "", author = "",
+                frame = T,
+                title="",
+                scale=NULL,
+                extent=EU_NUTS.0.tr)
+
 
     plot(world.eu,col  = "#E3DEBF", border= NA, ,add=T)
     plot(EU_NUTS.0.tr,border = "grey20", lwd=0.5, add=TRUE)
     choroLayer(spdf = EU_NUTS.3.tr,
                df = europe,
                dfid="NUTS.Code",
-               var=var,                      
+               var="ha",                      
                breaks=breaks,
                col = cols,
                border = "grey10", # color of the polygons borders
                lwd = 0.1,, #0.05, # width of the borders
                legend.pos = legend.pos, # position of the legend
-               legend.title.txt = "Citrus production surface \nin thousand ha", # title of the legend
-               legend.values.rnd = 5, # number of decimal in the legend values
+               legend.title.txt = "Citrus production \nsurface in ha", # title of the legend
+               legend.values.rnd = 0, # number of decimal in the legend values
                add = T) # add the layer to the current plot
                                      
     
     plot(EU_NUTS.0.tr,border = "grey20", lwd=0.5, add=TRUE)
 
-    if (large) {
-        totals <- europe %>%
-            group_by(country) %>%
-            summarize(total=paste0(as.character(round(sum(t_ha)),0))) %>%
-            rename(id=country) %>%
-            data.frame()
-        
-        labelLayer(spdf = EU_NUTS.0.tr, # SpatialPolygonsDataFrame used to plot he labels
-                   df = totals, # data frame containing the lables
-                   txt = "total", # label field in df
-                   col = "black",  
-                   cex = 1, # size of the labels
-                   font = 2) # label font
-    }
 }
