@@ -68,14 +68,18 @@ extractCitrusData <- function() {
     europe
 }
 
-plotCitrusData <- function() {
-
-    data <-  extractCitrusData() %>%
+latestData <- function() {
+    extractCitrusData() %>%
         group_by(NUTS.Code) %>%
         mutate(max_year=max(year)) %>%
         filter(year==max_year) %>%
         ungroup() %>%
         select(-max_year)
+}
+
+plotCitrusData <- function() {
+
+    data <-  latestData()
     
     write.csv(data,"output/citrusProduction_latest.csv")
 
@@ -107,6 +111,41 @@ plotCitrusMap_svg <- function(data) {
     plotCitrusMap(data,large=F,breaks,"ha")    
 }
 
+
+plotOverlay <- function(inFile=F) {
+    EU_NUTS.3.tr <- postProcessMap(EU_NUTS.3)
+    europe <- latestData()
+    
+    mag2015Data <- read_csv("./mag2015_table1.csv",skip=2) %>%
+        mutate(Lat=gsub("−","-",Lat,fixed=T),
+               Lon=gsub("−","-",Lon,fixed=T),
+               Lat=as.numeric(Lat),
+               Lon=as.numeric(Lon)
+                              
+               )
+    pts <- mag2015Data %>% select(Lon,Lat) %>% data.frame() %>% SpatialPoints(CRS("+proj=longlat +ellps=WGS84"))
+    
+    
+    match <- (over(pts,EU_NUTS.3.tr))
+    mag2015Data <- bind_cols(mag2015Data,match)  %>%
+        filter(!is.na(NUTS_ID)) %>%
+        select(-STAT_LEVL_,-Shape_Leng,-Shape_Area) %>%
+        left_join((europe %>% select(NUTS.Code,NUTS3.name,ha)),by=c("NUTS_ID"="NUTS.Code"))  
+    write.csv(mag2015Data,"mag2015Nuts3.csv")
+    breaks=cut2(europe$ha,onlycuts=T,g=10)
+    if (inFile) {
+        width <- 1366
+        height <- 768
+        png("mag2015Nuts3.png",width = width,height = height)
+
+    }
+    plotCitrusMap(europe,large=F,breaks,"ha")
+    plot(EU_NUTS.3.tr[EU_NUTS.3.tr@data$NUTS_ID %in% mag2015Data$NUTS_ID,],lwd=1,add=T)
+    points(mag2015Data$Lon,mag2015Data$Lat,col="blue",cex=1.5,pch=19)
+    if (inFile) {
+        dev.off()
+    }
+}
 
 
 
