@@ -125,7 +125,7 @@ latestData <- function() {
 
 
 
-citrusSurface_layer <- function() {
+citrusSurface_layer <- function(alpha=1) {
 
     data <- latestData()
     warnIfUnkownIds(data)
@@ -138,12 +138,12 @@ citrusSurface_layer <- function() {
     EU_NUTS.3.ha@data <- newData
 
     tm_shape(world.eu) +
-        tm_fill(col = "#E3DEBF") +
+        tm_fill(col = "#E3DEBF",alpha=alpha) +
         tm_shape(EU_NUTS.3.ha) +
-        tm_fill("ha",palette = pal,breaks = breaks,textNA = NA,colorNA = "white") +
-        tm_borders(lwd=0.1,col="grey10") +
+        tm_fill("ha",palette = pal,breaks = breaks,textNA = NA,colorNA = "white",alpha = alpha) +
+        tm_borders(lwd=0.1,col="grey10",alpha=alpha) +
         tm_shape(EU_NUTS.0) +
-        tm_borders(lwd=0.5,col="grey20") #+
+        tm_borders(lwd=0.5,col="grey20",alpha = alpha) #+
                                         #tm_format_Europe()
 }
 
@@ -166,9 +166,10 @@ magarey_layer <- function() {
     write.csv(mag2015Data,"mag2015Nuts3.csv")
 
     lonLat <- mag2015Data %>% select(Lon,Lat) %>% data.frame()
-    print(qtm(world.eu)) # to make pointLabel happy
-    xy <- pointLabel(lonLat$Lon,lonLat$Lat,labels = paste0(seq_along(lonLat$Lon)),doPlot = F,cex=2)
-    
+    plot(EU_NUTS.0) # to make pointLabel happy
+    xy <- pointLabel(lonLat$Lon,lonLat$Lat,labels = paste0(seq_along(lonLat$Lon)),doPlot = F,cex=2) 
+
+
     spts <- SpatialPointsDataFrame(coords=lonLat,
                                   data=data.frame(index=seq_along(mag2015Data$Lon)),
                                   proj4string = crs)
@@ -185,14 +186,25 @@ magarey_layer <- function() {
 }
 
 
-aschmann_layer <- function() {
-    aschmann <- raster::raster("./geo/martinez2015/rasters/mediterranean/ASCHMANN/Aschmann_med.grd")
+aschmann_layer <- function(alpha=0.3) {
+    aschmann <- raster::raster("./geo/martinez2015/rasters/mediterranean/ASCHMANN/Aschmann_med.grd") %>%
+        raster::crop(extent)
     raster::values(aschmann) <- ifelse(is.na(raster::values(aschmann)),0,1)
-    aschmann <- raster::crop(aschmann,extent)
+    
     tm_shape(aschmann) +
-        tm_raster(alpha = 0.2,legend.show = F)
-
-
+        tm_raster(alpha = alpha,legend.show = F)
+}
+## type: med,Bsk_Bsh,Csa_Csb
+koppen_layer <- function(type,alpha=0.2) {
+    koppen <- raster::raster(sprintf("./geo/martinez2015/rasters/mediterranean/KOPPEN/koppen_%s.grd",type)) %>%
+        
+        raster::crop(extent) 
+        
+    tm_shape(koppen) +
+        tm_raster(alpha = alpha,legend.show = T) 
+        
+    
+    
 }
 
 ##              x        y
@@ -201,6 +213,18 @@ aschmann_layer <- function() {
 
 ##
 ##
+                                        #    width <- 1366
+                                        #    height <- 768
+
+png("citrusMagAschmann.png",width = 1366,height=768)
 citrusSurface_layer() +
-    magarey_layer() +
-    aschmann_layer()
+    magarey_layer()  +
+    aschmann_layer(0.3)
+
+dev.off()
+png("citrusKoppenMed.png",width = 1366,height=768)
+
+
+koppen_layer("med",alpha = 1) +
+    citrusSurface_layer(alpha = 0.5)
+dev.off()
