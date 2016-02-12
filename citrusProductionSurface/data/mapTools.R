@@ -13,11 +13,6 @@ getNuts3Areas <-  function() {
     nuts.area
 }
 
-postProcessMap <- function(map,extent=raster::extent(-10,34,34,48)) {
-    map <- spTransform(map,CRS("+proj=longlat +ellps=WGS84"))
-    map <- raster::crop(map,extent)
-    map
-}
 
 warnIfUnkownIds <- function(europe) {
     diff <- setdiff(europe$NUTS.Code,EU_NUTS.3@data$NUTS_ID)
@@ -39,21 +34,6 @@ plotCitrusMap <- function(europe,breaks) {
                                         #         35
 
                                         # osm
-    extent <- raster::extent(-10,34,34,48) #small
-    legend.pos = "right"
-        
-        
-
-    EU_NUTS.0.tr <- postProcessMap(EU_NUTS.0,extent)
-    EU_NUTS.3.tr <- postProcessMap(EU_NUTS.3,extent)
-    
-    
-
-    
-    world.eu <- world.eu[!world.eu@data$CNTR_ID %in%  as.character(EU_NUTS.0.tr@data$NUTS_ID),] %>%
-        spTransform(CRS("+proj=longlat +ellps=WGS84")) %>%
-        raster::crop(extent)
-    
   
     cols <- carto.pal(pal1 = "red.pal",
                      n1 = length(breaks)) 
@@ -88,3 +68,4 @@ plotCitrusMap <- function(europe,breaks) {
     plot(EU_NUTS.0.tr,border = "grey20", lwd=0.5, add=TRUE)
 
 }
+

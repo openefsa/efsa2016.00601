@@ -7,6 +7,7 @@ p_load(dplyr)
 p_load(readr)
 p_load(memoise)
 p_load(maptools)
+p_load(tmap)
 
 source("replace.R")
 source("mapTools.R")
@@ -22,8 +23,20 @@ source("greece/program/read.R")
 source("malta/program/read.R")
 
 
+postProcessMap <- function(map,extent=raster::extent(-10,34,34,48)) {
+    map <- spTransform(map,CRS("+proj=longlat +ellps=WGS84"))
+    map <- raster::crop(map,extent)
+    map
+}
+
+
+par(cex=1)
 
 resolution <- "01M"  # 60M
+
+
+extent <- raster::extent(-10,34,34,48) #small
+legend.pos = "right"
 
 EU_NUTS <- readOGR(dsn = sprintf("./geo/NUTS_2013_%s_SH/data",resolution),
                   layer = sprintf("NUTS_RG_%s_2013",resolution))
@@ -31,9 +44,19 @@ EU_NUTS <- EU_NUTS[!grepl("TR.*|MT.*|MK.*|ME.*|CH.*",EU_NUTS@data$NUTS_ID),]
 
 EU_NUTS.0 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==0,]
 EU_NUTS.3 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==3,]
+EU_NUTS.0.tr <- postProcessMap(EU_NUTS.0,extent)
+EU_NUTS.3.tr <- postProcessMap(EU_NUTS.3,extent)
+
 
 world.eu <- readOGR(dsn = sprintf("./geo/CNTR_%s_2013_SH/data",resolution),
                    layer = sprintf("CNTR_RG_%s_2013",resolution))
+
+world.eu <- world.eu[!world.eu@data$CNTR_ID %in%  as.character(EU_NUTS.0.tr@data$NUTS_ID),] %>%
+    spTransform(CRS("+proj=longlat +ellps=WGS84")) %>%
+    raster::crop(extent)
+
+
+
 
 
 
@@ -148,3 +171,77 @@ plotOverlay <- function(inFile=F) {
 
 
 
+plotTmap <- function() {
+
+    data <- latestData()
+    breaks=c(1,500,2500,5000,10000,25000,Inf)
+    pal <- carto.pal(pal1 = "red.pal",n1 = length(breaks)) 
+    newData <- EU_NUTS.3.tr@data %>% left_join(data,by=c("NUTS_ID"="NUTS.Code"))
+    EU_NUTS.3.tr@data <- newData
+
+    tm_shape(world.eu) +
+        tm_fill(col = "#E3DEBF") +
+        tm_shape(EU_NUTS.3.tr) +
+        tm_fill("ha",palette = pal,breaks = breaks,textNA = NA,colorNA = "white") +
+        tm_borders(lwd=0.1,col="grey10") +
+        tm_shape(EU_NUTS.0.tr) +
+        tm_borders(lwd=0.5,col="grey20") +
+        tm_format_Europe()
+}
+
+plotOverlayTmap <- function() {
+
+    europe <- latestData()
+    crs <- CRS("+proj=longlat +ellps=WGS84")
+    mag2015Data <- read_csv("./mag2015_table1.csv",skip=2) %>%
+        mutate(Lat=gsub("−","-",Lat,fixed=T),
+               Lon=gsub("−","-",Lon,fixed=T),
+               Lat=as.numeric(Lat),
+               Lon=as.numeric(Lon)
+               
+               )
+    pts <- mag2015Data %>% select(Lon,Lat) %>% data.frame() %>% SpatialPoints(crs)
+    
+    
+    match <- (over(pts,EU_NUTS.3.tr))
+    mag2015Data <- bind_cols(mag2015Data,match)  %>%
+        filter(!is.na(NUTS_ID)) %>%
+        select(-STAT_LEVL_,-Shape_Leng,-Shape_Area) %>%
+        left_join((europe %>% select(NUTS.Code,NUTS3.name,ha)),by=c("NUTS_ID"="NUTS.Code"))  
+    write.csv(mag2015Data,"mag2015Nuts3.csv")
+
+    lonLat <- mag2015Data %>% select(Lon,Lat) %>% data.frame()
+    print(plotTmap) # to make pointLabel happy
+    xy <- pointLabel(lonLat$Lon,lonLat$Lat,labels = paste0(seq_along(lonLat$Lon)),doPlot = F,trace = T,cex=2)
+    
+    spts <- SpatialPointsDataFrame(coords=lonLat,
+                                  data=data.frame(index=seq_along(mag2015Data$Lon)),
+                                  proj4string = crs)
+                         
+    text_sp <- SpatialPointsDataFrame(coords=xy,data=data.frame(index=seq_along(mag2015Data$Lon)),
+                                     proj4string = crs)
+
+    
+    
+    plotTmap() +
+        tm_shape(spts) +
+        tm_dots(col="blue",size=0.5) +
+
+                                        tm_shape(text_sp) +
+    tm_bubbles(size=1.1,col="white",alpha=0.5)+
+    tm_text("index",col="blue") 
+    
+
+}
+
+                                        #plotOverlay()
+
+
+    plotOverlayTmap()
+
+    ##              x        y
+    ##[1,] 33.602809 34.83600
+    ##[2,]  9.485809 42.52425
+
+    ##
+    ##
