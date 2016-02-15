@@ -4,7 +4,7 @@ p_load(dplyr)
 
 readCitrusHectar_france_<- function() {
     
-    nutsLevels <- readNutsLevels()
+    nutsLevels <- nutsLevels()
     nuts.area <-  getNuts3Areas()
     
     df <- read_excel("france/original/verger2015T6bsva.xls",2,F,skip=8) %>%

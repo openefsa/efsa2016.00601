@@ -5,7 +5,7 @@ p_load(stringr)
 
 
 distributeToNuts3 <- function(df,nuts2,name) {
-    nutsLevels <- readNutsLevels()
+    nutsLevels <- nutsLevels()
     nutsAreas <- getNuts3Areas()
     
     nutsLevels %>%

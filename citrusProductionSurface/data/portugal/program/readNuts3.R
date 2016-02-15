@@ -68,7 +68,7 @@ readCitrus2009Census <- function() {
 }
     
 readCitrus2009Census_singleFile <- function() {
-    nuts2010 <- readNutsLevels(2010) %>%
+    nuts2010 <- nutsLevels(2010) %>%
         filter(grepl("^PT",NUTS.Code),Level==3) %>%
         filter(!NUTS.Code %in% c("PT1",   "PT2" ,  "PT3",   "PTZ" ,  "PT11",  "PT15",  "PT16" , "PT17",  "PT18",  "PT20",  "PT30"))
     

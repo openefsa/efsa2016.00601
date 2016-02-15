@@ -14,9 +14,9 @@ p_load_gh("eblondel/cleangeo")
 p_load(Hmisc)
 p_load(dplyr)
 p_load(readxl)
+p_load(efsagis)
 
 source("replace.R")
-source("mapTools.R")
 source("utils.R")
 
 source("spain/program/read.R")
@@ -29,37 +29,27 @@ source("greece/program/read.R")
 source("malta/program/read.R")
 
 crs <- CRS("+proj=longlat +ellps=WGS84")
-extent=raster::extent(-10,34,34,48)
-
-postProcessMap <- function(map) {
-    map <- spTransform(map,crs)
-    map <- raster::crop(map,extent)
-    map
-}
 
 
 
 
-resolution <- "01M"  # 60M
 
-
+resolution <- "01M"
 extent <- raster::extent(-10,34,34,48) #small
+data(NUTS_01M_2013,countries_01M_2013)
 
+EU_NUTS <- NUTS_01M_2013 %>%
+    retainEU28()
 
-EU_NUTS <- readOGR(dsn = sprintf("./geo/NUTS_2013_%s_SH/data",resolution),
-                  layer = sprintf("NUTS_RG_%s_2013",resolution))
-EU_NUTS <- EU_NUTS[!grepl("TR.*|MT.*|MK.*|ME.*|CH.*",EU_NUTS@data$NUTS_ID),]
 
 EU_NUTS.0 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==0,] %>%
-    postProcessMap()
+    postProcessMap(crs,extent)
 EU_NUTS.3 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==3,] %>%
-    postProcessMap()
+    postProcessMap(crs,extent)
 
 
-world.eu <- readOGR(dsn = sprintf("./geo/CNTR_%s_2013_SH/data",resolution),
-                   layer = sprintf("CNTR_RG_%s_2013",resolution))
 
-world.eu <- postProcessMap(world.eu[!world.eu@data$CNTR_ID %in%  as.character(EU_NUTS.0@data$NUTS_ID),])
+                                        #world.eu <- postProcessMap(world.eu[!world.eu@data$CNTR_ID %in%  as.character(EU_NUTS.0@data$NUTS_ID),])
 
 
 
@@ -78,11 +68,11 @@ warnIfUnkownIds <- function(europe) {
 
 extractCitrusData <- function() {
 
-    sizeEurope_sq_ha <- 1018000000
+    sizeEurope_sq_ha <- 432478200
     sumAreaShapeEurope <-  sum(EU_NUTS.3@data$Shape_Area)
     conversion_sa_ha <- sizeEurope_sq_ha / sumAreaShapeEurope
 
-    nutsLevels <- readNutsLevels() %>%
+    nutsLevels <- nutsLevels() %>%
         filter(Level==3) %>%
         filter(!NUTS.Code %in% c("CY00","MT00","PT17", "PT15", "PT20", "PT30", "PT113", "PT114", "PT115", "PT116", "PT117","ES13"))
     europe <- bind_rows(
@@ -123,8 +113,6 @@ latestData <- function() {
     data
 }
 
-
-
 citrusSurface_layer <- function(alpha=1) {
 
     data <- latestData()
@@ -136,14 +124,13 @@ citrusSurface_layer <- function(alpha=1) {
     newData <- EU_NUTS.3@data %>% left_join(data,by=c("NUTS_ID"="NUTS.Code"))
     
     EU_NUTS.3.ha@data <- newData
-
-    tm_shape(world.eu) +
-        tm_fill(col = "#E3DEBF",alpha=alpha) +
-        tm_shape(EU_NUTS.3.ha) +
+    
+    tm_shape(EU_NUTS.3.ha) +
         tm_fill("ha",palette = pal,breaks = breaks,textNA = NA,colorNA = "white",alpha = alpha) +
         tm_borders(lwd=0.1,col="grey10",alpha=alpha) +
         tm_shape(EU_NUTS.0) +
         tm_borders(lwd=0.5,col="grey20",alpha = alpha) #+
+
                                         #tm_format_Europe()
 }
 
@@ -190,41 +177,34 @@ aschmann_layer <- function(alpha=0.3) {
     aschmann <- raster::raster("./geo/martinez2015/rasters/mediterranean/ASCHMANN/Aschmann_med.grd") %>%
         raster::crop(extent)
     raster::values(aschmann) <- ifelse(is.na(raster::values(aschmann)),0,1)
-    
+        
     tm_shape(aschmann) +
         tm_raster(alpha = alpha,legend.show = F)
 }
 ## type: med,Bsk_Bsh,Csa_Csb
 koppen_layer <- function(type,alpha=0.2) {
     koppen <- raster::raster(sprintf("./geo/martinez2015/rasters/mediterranean/KOPPEN/koppen_%s.grd",type)) %>%
-        
+            
         raster::crop(extent) 
         
     tm_shape(koppen) +
         tm_raster(alpha = alpha,legend.show = T) 
         
-    
-    
+        
+        
 }
 
-##              x        y
-##[1,] 33.602809 34.83600
-##[2,]  9.485809 42.52425
 
-##
-##
-                                        #    width <- 1366
-                                        #    height <- 768
+## png("citrusMagAschmann.png",width = 1366,height=768)
+## citrusSurface_layer() +
+##     magarey_layer()  +
+##     aschmann_layer(0.3)
 
-png("citrusMagAschmann.png",width = 1366,height=768)
-citrusSurface_layer() +
-    magarey_layer()  +
-    aschmann_layer(0.3)
-
-dev.off()
-png("citrusKoppenMed.png",width = 1366,height=768)
+## dev.off()
+## png("citrusKoppenMed.png",width = 1366,height=768)
 
 
-koppen_layer("med",alpha = 1) +
-    citrusSurface_layer(alpha = 0.5)
-dev.off()
+## koppen_layer("med",alpha = 1) +
+##     citrusSurface_layer(alpha = 0.5)
+## dev.off()
+

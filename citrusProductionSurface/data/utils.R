@@ -4,23 +4,6 @@ condDownload <- function(url,destFile) {
     }
 }
 
-readNutsLevels <- function(year=2013) {
-    nutsLevels <- read_csv(paste0("NUTS_",year,"L.csv"))
-    names(nutsLevels)[names(nutsLevels)=="NUTS-Code"] <- "NUTS.Code"
-    nutsLevels <- nutsLevels %>% select(Level,NUTS.Code,Description)
-    nutsLevels.gr <- nutsLevels %>%
-        filter(grepl("^EL.*",NUTS.Code)) %>%
-        separate(Description,into=c("Description.countryLang","Description.latin"),sep="[\\(|\\)]",remove = F) %>%
-        mutate(Description.countryLang=str_trim(Description.countryLang),
-               Description.latin=str_trim(Description.latin))
-               
-    nutsLevels.noGR <- nutsLevels  %>%
-        filter(!grepl("^EL.*",NUTS.Code)) %>%
-        mutate(Description.countryLang=Description,
-               Description.latin=Description)
-    bind_rows(nutsLevels.gr,nutsLevels.noGR)
-    
-}
 makeColNamesUserFriendly <- function(ds) {
                                         # FIXME: Repetitive.
 
@@ -60,3 +43,5 @@ if (!is.memoised(readOGR))
     readOGR <- memoise(rgdal::readOGR)
 if (!is.memoised(read_excel))
     read_excel <- memoise(readxl::read_excel)
+if (!is.memoised(read_shape))
+    read_shape <- memoise(tmap::read_shape)

@@ -6,7 +6,7 @@ p_load(stringr)
 
 
 readCitrusHectar_croatia <- function() {
-    nutsLevels <- readNutsLevels()
+    nutsLevels <- nutsLevels()
     nuts.area <-  getNuts3Areas() 
 
 
@@ -15,6 +15,7 @@ readCitrusHectar_croatia <- function() {
         
         group_by(Category) %>%
         gather(key=year_region,value=ha,-Category) %>%
+        ungroup() %>%
         rename(species=Category) %>%
         separate(year_region,into=c("year","name"),extra="merge",remove=T) %>%
         
@@ -27,7 +28,7 @@ readCitrusHectar_croatia <- function() {
         select(year,name,ha_citrus) %>%
         rename(ha=ha_citrus) %>%
         mutate(year=as.numeric(year))
-
+    
 
     adriatic_shapes_perc <- nutsLevels %>%
         filter(grepl("HR03.+",NUTS.Code)) %>%

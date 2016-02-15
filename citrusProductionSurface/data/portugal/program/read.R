@@ -7,7 +7,7 @@ source("portugal/program/readNuts3.R")
 
 readCitrusHectar_portugal <- function() {
 
-    nutsLevels <- readNutsLevels() %>%
+    nutsLevels <- nutsLevels() %>%
         select(-Description.latin,-Description.countryLang)
                                         #https://www.ine.pt/xportal/xmain?xpid=INE&xpgid=ine_indicadores&indOcorrCod=0000020&contexto=bd&selTab=tab2
    
