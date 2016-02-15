@@ -133,42 +133,69 @@ citrusSurface_layer <- function(alpha=1) {
 
                                         #tm_format_Europe()
 }
-
-magarey_layer <- function() {
+#' columname: Any of:
+#'  "prevalence"
+#' "asco_pat_average"     
+#' "asco_days_average"
+#' "asco_days_stddev"
+#' "asco_days_years"
+#' "pyc_infection_average"
+#' "pyc_infection_stddev"
+#' "pyc_infection_years"  
+> 
+magarey_layer <- function(columName) {
 
     europe <- latestData()
-    mag2015Data <- read_csv("./mag2015_table1.csv",skip=2) %>%
+    mag2015table1 <- read_csv("./mag2015_table1.csv",skip=2) %>%
         mutate(Lat=gsub("−","-",Lat,fixed=T),
                Lon=gsub("−","-",Lon,fixed=T),
                Lat=as.numeric(Lat),
-               Lon=as.numeric(Lon))
-    pts <- mag2015Data %>% select(Lon,Lat) %>% data.frame() %>% SpatialPoints(crs)
+               Lon=as.numeric(Lon)) %>%
+        rename(Location=`Location<comma> Stateb`) %>%
+        mutate(Location=gsub("<comma>",".",Location))
+    pts <- mag2015table1 %>% select(Lon,Lat) %>% data.frame() %>% SpatialPoints(crs)
     
     
     match <- (over(pts,EU_NUTS.3))
-    mag2015Data <- bind_cols(mag2015Data,match)  %>%
+    mag2015Data <- bind_cols(mag2015table1,match)  %>%
         filter(!is.na(NUTS_ID)) %>%
         select(-STAT_LEVL_,-Shape_Leng,-Shape_Area) %>%
-        left_join((europe %>% select(NUTS.Code,NUTS3.name,ha)),by=c("NUTS_ID"="NUTS.Code"))  
+        left_join((europe %>% select(NUTS.Code,NUTS3.name,ha)),by=c("NUTS_ID"="NUTS.Code"))
+    
+    mag2015table2 <- read_csv("./mag2015_table2.csv",skip=5) %>%
+        setNames(c("Location","Country","prevalence","asco_pat_average","asco_days_average","asco_days_stddev","asco_days_years","pyc_infection_average","pyc_infection_stddev","pyc_infection_years")) %>%
+                                        #select(Location,asco_days_average) %>%
+        mutate(Location=gsub("<comma>",".",Location)) %>%
+        mutate(Location=gsub("-","/",Location,fixed=T),
+               Location=gsub("Larnaca Cyprus","Larnaca",Location),
+               Location=gsub("^Palermo/Punta$","Palermo/Punta Raisi",Location)) 
+        
+     
+    mag2015Data <- mag2015Data %>% left_join(mag2015table2,by=c("Location"))
+
+
+
+
     write.csv(mag2015Data,"mag2015Nuts3.csv")
 
     lonLat <- mag2015Data %>% select(Lon,Lat) %>% data.frame()
-    plot(EU_NUTS.0) # to make pointLabel happy
+    plot(EU_NUTS.0,col = "white") # to make pointLabel happy
     xy <- pointLabel(lonLat$Lon,lonLat$Lat,labels = paste0(seq_along(lonLat$Lon)),doPlot = F,cex=2) 
 
 
     spts <- SpatialPointsDataFrame(coords=lonLat,
-                                  data=data.frame(index=seq_along(mag2015Data$Lon)),
+                                  data=mag2015Data %>% data.frame(),
                                   proj4string = crs)
                          
-    text_sp <- SpatialPointsDataFrame(coords=xy,data=data.frame(index=seq_along(mag2015Data$Lon)),
+    text_sp <- SpatialPointsDataFrame(coords=xy,data=mag2015Data %>% data.frame(),
                                      proj4string = crs)
+                                     
     tm_shape(spts) +
-        tm_dots(col="blue",size=0.5) +
+        tm_bubbles(size=columName,border.col = "blue") +
 
     tm_shape(text_sp) +
-    tm_bubbles(size=1.1,col="white",alpha=0.5)+
-    tm_text("index",col="blue")
+    tm_bubbles(size=1.1,col=c("white"),alpha=0.5)+
+    tm_text(columName,col="blue")
 
 }
 
