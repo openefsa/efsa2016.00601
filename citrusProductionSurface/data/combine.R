@@ -48,8 +48,8 @@ EU_NUTS.3 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==3,] %>%
     postProcessMap(crs,extent)
 
 
-
-                                        #world.eu <- postProcessMap(world.eu[!world.eu@data$CNTR_ID %in%  as.character(EU_NUTS.0@data$NUTS_ID),])
+world.eu <- postProcessMap(countries_01M_2013[!countries_01M_2013@data$CNTR_ID %in%  as.character(EU_NUTS.0@data$NUTS_ID),],crs=crs,extent = extent
+                          )
 
 
 
@@ -113,6 +113,16 @@ latestData <- function() {
     data
 }
 
+nuts0_layer <- function(alpha=1) {
+    tm_shape(EU_NUTS.0) +
+        tm_borders(lwd=0.5,col="grey20",alpha = alpha) 
+}
+nuts3_layer <- function(alpha=1) {
+    tm_shape(EU_NUTS.3) +
+        tm_borders(lwd=0.1,col="grey10",alpha=alpha) 
+   
+}
+
 citrusSurface_layer <- function(alpha=1) {
 
     data <- latestData()
@@ -126,12 +136,7 @@ citrusSurface_layer <- function(alpha=1) {
     EU_NUTS.3.ha@data <- newData
     
     tm_shape(EU_NUTS.3.ha) +
-        tm_fill("ha",palette = pal,breaks = breaks,textNA = NA,colorNA = "white",alpha = alpha) +
-        tm_borders(lwd=0.1,col="grey10",alpha=alpha) +
-        tm_shape(EU_NUTS.0) +
-        tm_borders(lwd=0.5,col="grey20",alpha = alpha) #+
-
-                                        #tm_format_Europe()
+        tm_fill("ha",palette = pal,breaks = breaks,textNA = NA,colorNA = "white",alpha = alpha) 
 }
 #' columname: Any of:
 #'  "prevalence"
@@ -142,7 +147,7 @@ citrusSurface_layer <- function(alpha=1) {
 #' "pyc_infection_average"
 #' "pyc_infection_stddev"
 #' "pyc_infection_years"  
-> 
+
 magarey_layer <- function(columName) {
 
     europe <- latestData()
@@ -222,6 +227,20 @@ koppen_layer <- function(type,alpha=0.2) {
 }
 
 
+infection_layer <- function(fileName,column,alpha) {
+    data <- read_excel(fileName)
+                                        #data <- left_join(cgms25grid@data,asco,by=c("Grid_Code"="GRID_NO"))
+    data <- left_join(cgms25grid@data,data,by=c("Grid_Code"="GRID_NO")) %>%
+        data.frame()
+
+    dataSpdf <- cgms25grid
+    dataSpdf@data <- data
+    dataSpdf <- dataSpdf[!is.na(dataSpdf[[column]]),]    
+    tm_shape(dataSpdf) +
+        tm_polygons(column,border.col = "grey10",alpha=alpha,border.alpha = alpha)    
+    
+}
+
 ## png("citrusMagAschmann.png",width = 1366,height=768)
 ## citrusSurface_layer() +
 ##     magarey_layer()  +
@@ -235,3 +254,11 @@ koppen_layer <- function(type,alpha=0.2) {
 ##     citrusSurface_layer(alpha = 0.5)
 ## dev.off()
 
+
+nuts0_layer()+
+    worldCountries_layer(world.eu) +
+    nuts3_layer() +
+    citrusSurface_layer(alpha=0.5) +
+    infection_layer(fileName,column,0.1) +
+    magarey_layer("asco_pat_average") +
+    tm_format_Europe()

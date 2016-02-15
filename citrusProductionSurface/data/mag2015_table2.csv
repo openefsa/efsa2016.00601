@@ -1,0 +1,90 @@
+﻿Table 2.
+        Predictions of Proportion of Ascospores Trapped (PAT)<comma> ascosporic and pycnidiosporic infection period scores during the period of fruit susceptibility for study sites.
+Location<comma> Statea,Country,Observed prevalence,Ascospores,Pycnidiospores
+ΔPATb,Infection on days with PAT,Infection
+Average,Average,Std. Dev.,% suitable yearsc,Average,Std. Dev.,% suitable yearsd
+Volusia County<comma> FL,USA,Unknown,0.93,62.4,8.8,100,158.0,22.7,100
+Clermont<comma> FL,USA,Unknown,0.94,62.1,9.1,100,175.4,26.4,100
+Lake County<comma> FL,USA,Unknown,0.94,62.1,9.1,100,175.4,26.4,100
+Belle Chasse<comma> TX,USA,Unknown,0.98,61.8,8.2,100,131.6,21.7,100
+Indian-River-Marsh<comma> FL,USA,Unknown,0.83,57.8,9.9,100,173.4,23.6,100
+Polk County<comma> FL,USA,Unknown,0.88,57.5,8.5,100,174.4,24.2,100
+Lakeland<comma> FL,USA,Unknown,0.93,55.0,8.3,100,176.2,28.9,100
+Sebring<comma> FL,USA,Unknown,0.87,54.9,10.1,100,180.0,26.1,100
+Southern Gardens<comma> FL,USA,Unknown,0.79,53.6,13.7,100,179.1,30.0,100
+Montura Estates<comma> FL,USA,Unknown,0.81,53.6,12.9,100,179.9,28.2,100
+South Florida<comma> FL,USA,Unknown,0.82,53.5,11.0,100,185.7,25.4,100
+Arcadia<comma> FL,USA,Unknown,0.88,52.1,8.8,100,174.3,25.4,100
+DeSoto County<comma> FL,USA,Unknown,0.87,50.9,8.9,100,179.2,24.8,100
+Weslaco<comma> TX,USA,Unknown,0.89,34.8,13.3,89,79.2,25.6,100
+Nelspruit<comma> MP,South Africa,High,0.95,34.5,12.5,100,94.2,35.2,100
+Nkwalini<comma> NL,South Africa,High,0.94,33.3,7.0,100,116.9,24.9,100
+Patterson<comma> NSW,Australia,Endemic,0.92,30.7,9.0,100,75.7,14.1,100
+Letsitele<comma> LP,South Africa,High,0.94,30.6,12.9,100,77.4,38.0,78
+Darwin<comma> NT,Australia,Moderate,0.90,27.7,9.0,100,147.8,28.2,100
+Gayndah<comma> Qld,Australia,Moderate,0.87,27.2,10.7,100,50.1,22.2,33
+Emerald<comma> Qld,Australia,Low,0.74,22.3,14.7,67,43.0,28.3,33
+Mission<comma> TX,USA,Unknown,0.85,22.0,11.2,78,60.7,19.4,67
+Andravida,Greece,Unknown,0.87,20.0,9.5,67,34.7,12.9,11
+Patensie<comma> EC,South Africa,Moderate,0.91,19.6,5.7,89,59.8,7.9,78
+Kirkwood<comma> EC,South Africa,Moderate,0.92,16.3,6.0,78,48.0,7.1,67
+Addo<comma> EC,South Africa,Moderate,0.91,13.4,5.1,44,48.4,6.8,56
+Pontecagnano,Italy,Unknown,0.54,12.3,7.1,56,24.7,9.8,0
+Messina<comma> LP,South Africa,Low<comma> occasional,0.62,11.8,11.5,33,27.8,19.8,22
+Kerkyra,Greece,Unknown,0.55,11.0,5.6,22,21.6,7.9,0
+Reggio Calabria,Italy,Unknown,0.36,10.8,5.4,33,36.0,14.2,11
+Cozzo Spadaro,Italy,Unknown,0.43,10.8,7.8,33,23.1,10.7,0
+Messina,Italy,Unknown,0.46,10.4,6.3,33,26.4,12.9,0
+Siracusa,Italy,Unknown,0.66,9.4,6.5,33,21.9,12.1,0
+Palermo-Punta,Italy,Unknown,0.48,8.8,5.1,11,17.7,10.2,0
+Napoli-Capodichino,Italy,Unknown,0.37,8.8,4.5,22,20.7,7.0,0
+Trapani-Birgi,Italy,Unknown,0.64,8.6,6.4,11,18.0,10.7,0
+Lamezia Terme,Italy,Unknown,0.39,7.1,4.7,11,20.0,10.1,0
+Catania-Fontanarossa,Italy,Unknown,0.32,7.1,2.8,0,29.7,11.7,0
+Jerez De la Frontera,Spain,Unknown,0.28,6.9,2.7,0,19.7,6.5,0
+Faro,Portugal,Unknown,0.62,6.5,3.0,0,15.5,8.7,0
+Sagres,Portugal,Unknown,0.52,6.3,3.2,0,15.7,9.2,0
+Rhodos,Greece,Unknown,0.35,5.6,4.3,11,10.0,5.9,0
+Naxos,Greece,Unknown,0.40,5.5,6.3,11,12.2,9.4,0
+Calvi,France,Unknown,0.27,5.0,1.9,0,10.2,5.5,0
+Murcia,Spain,Unknown,0.50,4.9,2.4,0,15.9,8.4,0
+Luqa Malta,Malta,Unknown,0.30,4.8,2.2,0,9.4,5.3,0
+Grosseto,Italy,Unknown,0.20,4.3,3.5,0,18.9,8.4,0
+Bastia,France,Unknown,0.32,4.1,3.1,0,23.8,6.9,0
+Cabo Carvoeiro,Portugal,Unknown,0.14,3.9,3.1,0,20.8,7.4,0
+Narromine<comma> NSW,Australia,Absent,0.25,3.8,3.0,0,13.7,9.0,0
+Stellenbosch<comma> WC,South Africa,Absent,0.93,3.8,2.2,0,26.9,9.5,0
+Murcia-Alcantarilla,Spain,Unknown,0.41,3.8,2.3,0,13.5,7.8,0
+Montijo,Portugal,Unknown,0.13,3.6,3.4,0,16.9,8.4,0
+Mesa<comma> TX,USA,Unknown,0.74,3.4,3.0,0,9.3,4.4,0
+Larnaca Cyprus,Cyprus,Unknown,0.04,2.3,1.6,0,8.6,4.2,0
+Reus,Spain,Unknown,0.34,2.3,2.5,0,15.6,3.4,0
+Yanco,Australia,Absent,0.24,2.0,1.6,0,7.6,6.1,0
+Pescara,Italy,Unknown,0.37,2.0,2.0,0,19.8,7.9,0
+Fountain Hills<comma> AZ,USA,Unknown,0.26,1.9,1.8,0,10.9,6.6,0
+Athens,Greece,Unknown,0.12,1.7,2.7,0,12.7,7.7,0
+Encinitas,USA,Unknown,0.85,1.7,2.1,0,9.7,11.8,0
+Citrusdal<comma> WC,South Africa,Absent,0.29,1.6,1.6,0,11.3,6.8,0
+Foggia Amendola,Italy,Unknown,0.28,1.6,1.8,0,21.1,9.4,0
+Calepatria-Imperial Valley<comma> CA,USA,Unknown,0.35,1.5,1.3,0,2.6,2.0,0
+Mildura<comma> Vic.,Australia,Absent,0.12,1.4,1.2,0,4.6,4.9,0
+Redlands<comma> CA,USA,Unknown,0.18,1.3,1.7,0,3.1,3.3,0
+Kakamas<comma> NC,South Africa,Absent,0.16,1.1,1.2,0,4.2,2.9,0
+Sun City<comma> AZ,USA,Unknown,0.27,1.1,1.5,0,3.7,3.1,0
+Thessaloniki-Mikra,Greece,Unknown,0.31,1.0,0.9,0,23.1,10.1,0
+Sevilla-San Pablo,Spain,Unknown,0.04,0.9,1.0,0,7.8,3.4,0
+Hemet<comma> CA,USA,Unknown,0.14,0.9,1.5,0,3.3,3.2,0
+Viana Do Castelo,Portugal,Unknown,0.12,0.8,0.6,0,17.0,5.5,0
+Firenze,Italy,Unknown,0.17,0.5,0.8,0,18.0,5.7,0
+Yuma<comma> AZ,USA,Unknown,0.32,0.5,0.7,0,1.2,2.1,0
+Marina Di Ginosa,Italy,Unknown,0.15,0.4,0.9,0,15.9,9.3,0
+Riverside<comma> CA,USA,Unknown,0.03,0.2,0.5,0,1.3,1.6,0
+Larissa,Greece,Unknown,0.08,0.1,0.4,0,8.6,5.5,0
+Coachella Valley<comma> CA,USA,Unknown,0.10,0.1,0.4,0,1.4,1.2,0
+Arroya Grande area<comma> CA,USA,Unknown,0.00,0.0,0.0,0,0.7,1.4,0
+Bakersfield<comma> CA,USA,Unknown,0.00,0.0,0.0,0,0.0,0.0,0
+Borrego Springs<comma> CA,USA,Unknown,0.02,0.0,0.0,0,0.6,1.0,0
+Fresno<comma> CA,USA,Unknown,0.00,0.0,0.0,0,0.1,0.4,0
+Porterville<comma> CA,USA,Unknown,0.01,0.0,0.0,0,0.2,0.5,0
+Tulare<comma> CA,USA,Unknown,0.00,0.0,0.0,0,0.1,0.4,0
+Valley Center<comma> CA,USA,Unknown,0.06,0.0,0.0,0,0.6,1.2,0
