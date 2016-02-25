@@ -15,6 +15,7 @@ p_load(Hmisc)
 p_load(dplyr)
 p_load(readxl)
 p_load(efsagis)
+p_load(gplots)
 
 source("replace.R")
 source("utils.R")
@@ -29,9 +30,6 @@ source("greece/program/read.R")
 source("malta/program/read.R")
 
 crs <- CRS("+proj=longlat +ellps=WGS84")
-
-
-
 
 
 resolution <- "01M"
@@ -67,13 +65,12 @@ warnIfUnkownIds <- function(europe) {
 
 extractCitrusData <- function() {
 
-    sizeEurope_sq_ha <- 432478200
-    sumAreaShapeEurope <-  sum(EU_NUTS.3@data$Shape_Area)
-    conversion_sa_ha <- sizeEurope_sq_ha / sumAreaShapeEurope
+    conversion_sa_ha <- 904436
 
     nutsLevels <- nutsLevels() %>%
         filter(Level==3) %>%
         filter(!NUTS.Code %in% c("CY00","MT00","PT17", "PT15", "PT20", "PT30", "PT113", "PT114", "PT115", "PT116", "PT117","ES13"))
+    
     europe <- bind_rows(
         readCitrusHectar_spain(),
         readCitrusHectar_france(),
@@ -90,8 +87,11 @@ extractCitrusData <- function() {
         mutate(NUTS.Code = ifelse(is.na(NUTS.Code.Country),NUTS.Code,NUTS.Code.Country)) %>%
         select(country,year,NUTS3.name,NUTS.Code,ha,comment,source,link,date,sourceFile) %>%
         left_join(EU_NUTS.3@data,by=c("NUTS.Code"="NUTS_ID")) %>%
-        mutate(Shape_Area_ha = Shape_Area * conversion_sa_ha,citrus_density=ha/Shape_Area_ha) %>%
-        select(-STAT_LEVL_,-Shape_Leng,-Shape_Area,-Shape_Area_ha)    
+        mutate(Shape_Area_ha = Shape_Area * conversion_sa_ha,citrus_density=ha/Shape_Area_ha*100)
+
+                                        #%>%
+        
+                                        #select(-STAT_LEVL_,-Shape_Leng,-Shape_Area,-Shape_Area_ha)    
 
    
     write.csv(europe,"output/citrusProduction.csv")
@@ -131,8 +131,6 @@ nuts3_layer <- function(alpha=1) {
 prepare_citrus_layer <- function() {
     data <- latestData()
     warnIfUnkownIds(data)
-    breaks=c(1,500,2500,5000,10000,25000,Inf)
-    pal <- carto.pal(pal1 = "red.pal",n1 = length(breaks))
     
     EU_NUTS.3.ha <- EU_NUTS.3
     newData <- EU_NUTS.3@data %>% left_join(data,by=c("NUTS_ID"="NUTS.Code"))
@@ -141,10 +139,18 @@ prepare_citrus_layer <- function() {
     EU_NUTS.3.ha <- EU_NUTS.3.ha[!is.na(EU_NUTS.3.ha@data$ha),]
     EU_NUTS.3.ha
 }
+citrusSurface_schraffiert_layer <-  function() {
+
+    spdf <- prepare_citrus_layer()
+    brks <- quantile(spdf@data$citrus_density)
+    dens <- (2:length(brks))*3
+    plot(spfd,density = dens[findInterval(spfd@data$citrus_density,brks,all.inside = T)])
+    
+}
 
 citrusSurface_outline_layer <- function() {
     citrusMap <- prepare_citrus_layer()
-    coords <- coordinates(EU_NUTS.3.ha)
+    coords <- coordinates(citrusMap)
     ID <- cut(coords[,1], range(coords[,1]), include.lowest=TRUE)
     outline <- unionSpatialPolygons(citrusMap, ID)
     tm_shape(outline) +
@@ -158,10 +164,14 @@ citrusSurface_dots_layer <- function() {
 
     shp <- sample_dots(citrusMap,
                       shp.id = "NUTS_ID",
-                      w=200,
-                      npop=total,
+                      w=100,
                       vars="ha",
-                      convert2density = F,nrow=400,ncol=1300)
+                      units="ha",
+                      units.size=1,
+                      convert2density = F,nrow=400,ncol=1300,
+                      npop=total,
+                      total.area=sum(citrusMap@data$Shape_Area_ha))
+                      
     
     tm_shape(shp)+
         tm_dots(size = 0.01,col="red") 
@@ -169,10 +179,25 @@ citrusSurface_dots_layer <- function() {
 }
 
 
-citrusSurface_layer <- function(alpha=1) {
-    
+
+citrusSurface_layer <- function(column,alpha=1) {
+    if (column=="citrus_density") {
+        title=paste0("Citrus production area density \n (ha/km^2)")
+        breaks=NULL
+    } else  if (column=="ha") {
+        title="Citrus production area \n (ha)"
+        breaks=c(1,500,2500,5000,10000,25000,Inf)
+    }
     tm_shape(prepare_citrus_layer()) +
-        tm_fill("ha",palette = pal,breaks = breaks,textNA = NA,colorNA = "white",alpha = alpha,title="Citrus production area (ha)") 
+        tm_fill(column,
+                palette = "Reds",
+                breaks = breaks,
+                textNA = NA,
+                colorNA = "white",
+                alpha = alpha,
+                legend.format = list(scientific=T,format="f"),
+                contras=c(0.2,1),
+                title=title) 
 }
 #' columname: Any of:
 #'  "prevalence"
@@ -236,19 +261,22 @@ magarey_layer <- function(column_size,column_col=NA,title.size=NA,title.col=NA,s
             tm_bubbles(size=column_size,col=column_col,border.col = "blue",alpha=1,
                        title.col = title.col,title.size = title.size,
                        palette = "Blues",
-                       scale=1.5,
-                       style = style) +
+                       scale=1.2,
+                       style = style,
+                       legend.format = list(scientific=T,format="f"),
+
+                       ) +
 
     tm_shape(text_sp) +
                                         #tm_bubbles(size=1.1,col=c("white"),alpha=0.5)+
     tm_text(column_size,col="blue")
 
-    }
+}
 
 
-    aschmann_layer <- function(alpha=1) {
-        aschmann <- raster::raster("./geo/martinez2015/rasters/mediterranean/ASCHMANN/Aschmann_med.grd") %>%
-            raster::crop(extent)
+aschmann_layer <- function(alpha=1) {
+    aschmann <- raster::raster("./geo/martinez2015/rasters/mediterranean/ASCHMANN/Aschmann_med.grd") %>%
+        raster::crop(extent)
                                         #raster::values(aschmann) <- ifelse(is.na(raster::values(aschmann)),0,1)
         
         tm_shape(aschmann) +
@@ -272,7 +300,7 @@ magarey_layer <- function(column_size,column_col=NA,title.size=NA,title.col=NA,s
         
     }
 
-    koppen2_layer <- function(alpha=1) {
+    combined_koppen_layer <- function(alpha=1) {
         koppen1 <- raster::raster(sprintf("./geo/martinez2015/rasters/mediterranean/KOPPEN/koppen_%s.grd","Bsk_Bsh")) %>%
             raster::crop(extent)
         koppen2 <- raster::raster(sprintf("./geo/martinez2015/rasters/mediterranean/KOPPEN/koppen_%s.grd","Csa_Csb")) %>%
@@ -285,7 +313,6 @@ magarey_layer <- function(column_size,column_col=NA,title.size=NA,title.col=NA,s
         koppenCombined <- setValues(koppenCombined,koppenCombinedData)
         tm_shape(koppenCombined) +
             tm_raster(
-                                        #palette = "Set3",
                 palette= c("#F6A200","#FDDA62","#FCFE04","#CECC08"),
                 style = "cat",colorNA = "#FFFFFF00",alpha = alpha,
                 labels=c("BSh","BSk","CSa","CSb"),
@@ -295,8 +322,8 @@ magarey_layer <- function(column_size,column_col=NA,title.size=NA,title.col=NA,s
     }
 
 
-infection_layer <- function(fileName,column,title,alpha=1) {
-    data <- read_excel(fileName)
+    infection_layer <- function(fileName,column,title,alpha=1) {
+        data <- read_excel(fileName)
                                         #data <- left_join(cgms25grid@data,asco,by=c("Grid_Code"="GRID_NO"))
         data <- left_join(cgms25grid@data,data,by=c("Grid_Code"="GRID_NO")) %>%
             data.frame()
@@ -313,27 +340,11 @@ infection_layer <- function(fileName,column,title,alpha=1) {
     
     }
 
-    ## png("citrusMagAschmann.png",width = 1366,height=768)
-    ## citrusSurface_layer() +
-    ##     magarey_layer()  +
-    ##     aschmann_layer(0.3)
-
-    ## dev.off()
-    ## png("citrusKoppenMed.png",width = 1366,height=768)
-
-
-    ## koppen_layer("med",alpha = 1) +
-    ##     citrusSurface_layer(alpha = 0.5)
-    ## dev.off()
-
-
-    ##
-
 
     if(!is.memoised(prepare_citrus_layer)) {
         prepare_citrus_layer <- memoise(prepare_citrus_layer)
     }
 
-if(!is.memoised(sample_dots)) {
-    sample_dots <- memoise(tmap::sample_dots)
-}
+    if(!is.memoised(sample_dots)) {
+        sample_dots <- memoise(tmap::sample_dots)
+    }
