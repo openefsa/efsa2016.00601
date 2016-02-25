@@ -309,8 +309,10 @@ aschmann_layer <- function(alpha=1) {
         koppen2Data <- getValues(koppen2)
         koppenCombinedData <- ifelse(is.na(koppen1Data),0,koppen1Data) + ifelse(is.na(koppen2Data),0,koppen2Data)
         koppenCombinedData <- ifelse(koppenCombinedData==0,NA,koppenCombinedData)
+    koppenCombinedData <- ifelse(koppenCombinedData %in% whichToShow,koppenCombinedData,NA)
         koppenCombined <- koppen1
         koppenCombined <- setValues(koppenCombined,koppenCombinedData)
+    
         tm_shape(koppenCombined) +
             tm_raster(
                 palette= c("#F6A200","#FDDA62","#FCFE04","#CECC08"),
