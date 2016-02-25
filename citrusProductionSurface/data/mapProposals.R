@@ -90,6 +90,16 @@ base_layer() +
 
 
 ##surface + Martinez2015(koppen)
+nextPlot("surface_MartinezKoppenBskBsh")
+
+base_layer() +
+    combined_koppen_layer(whichToShow = c(5,6))+
+    citrusSurface_outline_layer() +
+    nuts3_layer()+
+    nuts0_layer()
+
+
+##surface + Martinez2015(koppen)
 nextPlot("surface_MartinezKoppen")
 
 base_layer() +
@@ -97,6 +107,7 @@ base_layer() +
     citrusSurface_outline_layer() +
     nuts3_layer()+
     nuts0_layer()
+
 
 
 ##surface + Martinez2015(aschmann)
