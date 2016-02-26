@@ -155,6 +155,8 @@ base_layer() +
     
     citrusSurface_dots_layer()
 
+nextPlot("surfaceHatched_MartinezKoppen")
+plot_citrus_koppen_schraffiert_layer()
 
 dev.off()
 

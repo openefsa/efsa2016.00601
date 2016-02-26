@@ -137,7 +137,7 @@ prepare_citrus_layer <- function() {
     EU_NUTS.3.ha <- EU_NUTS.3.ha[!is.na(EU_NUTS.3.ha@data$ha),]
     EU_NUTS.3.ha
 }
-citrus_koppen_schraffiert_layer <-  function() {
+plot_citrus_koppen_schraffiert_layer <-  function() {
 
     spdf <- prepare_citrus_layer()
     koppenCombined <- combined_koppen(whichToShow=c(5,6))
