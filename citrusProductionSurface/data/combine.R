@@ -10,7 +10,7 @@ p_load(memoise)
 p_load(maptools)
 p_load(tmap)
 p_load_gh("eblondel/cleangeo")
-                                        #p_unload(raster)
+p_unload(raster)
 p_load(Hmisc)
 p_load(dplyr)
 p_load(readxl)
@@ -88,16 +88,13 @@ extractCitrusData <- function() {
         mutate(NUTS.Code = ifelse(is.na(NUTS.Code.Country),NUTS.Code,NUTS.Code.Country)) %>%
         select(country,year,NUTS3.name,NUTS.Code,ha,comment,source,link,date,sourceFile) %>%
         left_join(EU_NUTS.3@data,by=c("NUTS.Code"="NUTS_ID")) %>%
-        mutate(Shape_Area_ha = Shape_Area * conversion_sa_ha,citrus_density=ha/Shape_Area_ha*100)
+        mutate(Shape_Area_ha = Shape_Area * conversion_sa_ha,citrus_density=ha/Shape_Area_ha*100) %>%
+        select(-STAT_LEVL_,-Shape_Leng,-Shape_Area,-Shape_Area_ha)    
 
-                                        #%>%
-        
-                                        #select(-STAT_LEVL_,-Shape_Leng,-Shape_Area,-Shape_Area_ha)    
-
-   
+    
     write.csv(europe,"output/citrusProduction.csv")
 
-   
+    
     europe
 }
 
@@ -140,13 +137,24 @@ prepare_citrus_layer <- function() {
     EU_NUTS.3.ha <- EU_NUTS.3.ha[!is.na(EU_NUTS.3.ha@data$ha),]
     EU_NUTS.3.ha
 }
-citrusSurface_schraffiert_layer <-  function() {
+citrus_koppen_schraffiert_layer <-  function() {
 
     spdf <- prepare_citrus_layer()
+    koppenCombined <- combined_koppen(whichToShow=c(5,6))
     brks <- quantile(spdf@data$citrus_density)
     dens <- (2:length(brks))*3
-    plot(spfd,density = dens[findInterval(spfd@data$citrus_density,brks,all.inside = T)])
+
+    plot(koppenCombined,
+         col= c("#F6A200","#FDDA62","#FCFE04","#CECC08"),
+         breaks=c(4,5,6),
+         axis.args = list(at=c(5,6), labels=c("BSh","BSk")),
+         axes=F,
+         frame.plot = F
+         )
     
+    plot(EU_NUTS.0,add=T)
+    plot(spdf,density = dens[findInterval(spdf@data$citrus_density,brks,all.inside = T)],add=T)
+
 }
 
 citrusSurface_outline_layer <- function() {
@@ -172,10 +180,10 @@ citrusSurface_dots_layer <- function() {
                       convert2density = F,nrow=400,ncol=1300,
                       npop=total,
                       total.area=sum(citrusMap@data$Shape_Area_ha))
-                      
+    
     
     tm_shape(shp)+
-        tm_dots(size = 0.01,col="red") 
+        tm_dots(size = 0.01,col="black") 
 
 }
 
@@ -194,11 +202,11 @@ citrusSurface_layer <- function(column,alpha=1) {
                 palette = "Reds",
                 breaks = breaks,
                 textNA = NA,
-                colorNA = "white",
                 alpha = alpha,
                 legend.format = list(scientific=T,format="f"),
                 contras=c(0.2,1),
                 title=title) 
+    
 }
 
 
@@ -223,8 +231,8 @@ magarey_layer <- function(column_size,column_col=NA,title.size=NA,title.col=NA,s
         mutate(Location=gsub("-","/",Location,fixed=T),
                Location=gsub("Larnaca Cyprus","Larnaca",Location),
                Location=gsub("^Palermo/Punta$","Palermo/Punta Raisi",Location)) 
-        
-     
+    
+    
     mag2015Data <- mag2015Data %>% left_join(mag2015table2,by=c("Location")) 
     
 
@@ -241,10 +249,10 @@ magarey_layer <- function(column_size,column_col=NA,title.size=NA,title.col=NA,s
     spts <- SpatialPointsDataFrame(coords=lonLat,
                                   data=mag2015Data %>% data.frame(),
                                   proj4string = crs)
-                         
+    
     text_sp <- SpatialPointsDataFrame(coords=xy,data=mag2015Data %>% data.frame(),
                                      proj4string = crs)
-                                     
+    
     tm_shape(spts) +
         tm_bubbles(size=column_size,col=column_col,border.col = "blue",alpha=1,
                    title.col = title.col,title.size = title.size,
@@ -265,12 +273,9 @@ magarey_layer <- function(column_size,column_col=NA,title.size=NA,title.col=NA,s
 aschmann_layer <- function(alpha=1) {
     aschmann <- raster::raster("./geo/martinez2015/rasters/mediterranean/ASCHMANN/Aschmann_med.grd") %>%
         raster::crop(extent)
-                                        #raster::values(aschmann) <- ifelse(is.na(raster::values(aschmann)),0,1)
-        
     tm_shape(aschmann) +
         tm_raster(alpha = alpha,legend.show = T,style="cat",
                   palette=c("grey"),
-                  colorNA="white",
                   textNA = NA,
                   title="",
                   labels=c("Aschmann's mediteranea type"))
@@ -278,39 +283,39 @@ aschmann_layer <- function(alpha=1) {
 ## type: med,Bsk_Bsh,Csa_Csb
 koppen_layer <- function(type,alpha=0.2,palette=NULL) {
     koppen <- raster::raster(sprintf("./geo/martinez2015/rasters/mediterranean/KOPPEN/koppen_%s.grd",type)) %>%
-            
         raster::crop(extent) 
-        
+    
     tm_shape(koppen) +
         tm_raster(alpha = alpha,legend.show = T,palette = palette) 
-        
-            
-        
+    
 }
 
-
-##
-##  labels=c("BSh","BSk","CSa","CSb"),
-combined_koppen_layer <- function(alpha=1,whichToShow=c(5,6,8,9)) {
+combined_koppen <- function(whichToShow=c(5,6,8,9)) {
     koppen1 <- raster::raster(sprintf("./geo/martinez2015/rasters/mediterranean/KOPPEN/koppen_%s.grd","Bsk_Bsh")) %>%
         raster::crop(extent)
     koppen2 <- raster::raster(sprintf("./geo/martinez2015/rasters/mediterranean/KOPPEN/koppen_%s.grd","Csa_Csb")) %>%
         raster::crop(extent)
-    koppen1Data <- getValues(koppen1)
-    koppen2Data <- getValues(koppen2)
+    koppen1Data <- raster::getValues(koppen1)
+    koppen2Data <- raster::getValues(koppen2)
     koppenCombinedData <- ifelse(is.na(koppen1Data),0,koppen1Data) + ifelse(is.na(koppen2Data),0,koppen2Data)
     koppenCombinedData <- ifelse(koppenCombinedData==0,NA,koppenCombinedData)
     koppenCombinedData <- ifelse(koppenCombinedData %in% whichToShow,koppenCombinedData,NA)
     koppenCombined <- koppen1
-    koppenCombined <- setValues(koppenCombined,koppenCombinedData)
-    
+    koppenCombined <- raster::setValues(koppenCombined,koppenCombinedData)
+    koppenCombined
+}
+##
+##  labels=c("BSh","BSk","CSa","CSb"),
+combined_koppen_layer <- function(alpha=1,whichToShow=c(5,6,8,9)) {
+    koppenCombined <- combined_koppen()
     tm_shape(koppenCombined) +
         tm_raster(
             palette= c("#F6A200","#FDDA62","#FCFE04","#CECC08"),
             style = "cat",colorNA = "#FFFFFF00",alpha = alpha,
             labels=c("BSh","BSk","CSa","CSb"),
             title="Köppen–Geiger classification",
-            textNA = NA)
+            textNA = NA,
+            legend.show = F)
     
 }
 
@@ -318,26 +323,26 @@ combined_koppen_layer <- function(alpha=1,whichToShow=c(5,6,8,9)) {
 infection_layer <- function(fileName,column,title,alpha=1) {
     data <- read_excel(fileName)
                                         #data <- left_join(cgms25grid@data,asco,by=c("Grid_Code"="GRID_NO"))
-        data <- left_join(cgms25grid@data,data,by=c("Grid_Code"="GRID_NO")) %>%
-            data.frame()
+    data <- left_join(cgms25grid@data,data,by=c("Grid_Code"="GRID_NO")) %>%
+        data.frame()
                                         #    column <- paste0("X",column)
-        dataSpdf <- cgms25grid
-        dataSpdf@data <- data
-        dataSpdf <- dataSpdf[!is.na(dataSpdf[[column]]),]    
-        tm_shape(dataSpdf) +
-            tm_polygons(column,border.col = "grey10",alpha=alpha,border.alpha = alpha,
-                        palette=paste0(col2hex(c("white","lightblue","green","yellow","orange","red")),"FF"),
-                        breaks=c(-Inf,0.01,0.5,1,5,10,Inf),
-                        title=title
-                        )    
+    dataSpdf <- cgms25grid
+    dataSpdf@data <- data
+    dataSpdf <- dataSpdf[!is.na(dataSpdf[[column]]),]    
+    tm_shape(dataSpdf) +
+        tm_polygons(column,border.col = "grey10",alpha=alpha,border.alpha = alpha,
+                    palette=paste0(col2hex(c("white","lightblue","green","yellow","orange","red")),"FF"),
+                    breaks=c(-Inf,0.01,0.5,1,5,10,Inf),
+                    title=title
+                    )    
     
-    }
+}
 
 
-    if(!is.memoised(prepare_citrus_layer)) {
-        prepare_citrus_layer <- memoise(prepare_citrus_layer)
-    }
+if(!is.memoised(prepare_citrus_layer)) {
+    prepare_citrus_layer <- memoise(prepare_citrus_layer)
+}
 
-    if(!is.memoised(sample_dots)) {
-        sample_dots <- memoise(tmap::sample_dots)
-    }
+if(!is.memoised(sample_dots)) {
+    sample_dots <- memoise(tmap::sample_dots)
+}
