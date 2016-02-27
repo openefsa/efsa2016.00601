@@ -1,8 +1,7 @@
 
-
 source("./combine.R")
 
-usePng <- T
+usePng <- F
 
 nextPlot <- function(name) {
     if (usePng & !names(dev.cur())=="null device") {
@@ -161,7 +160,16 @@ base_layer() +
     tm_format_Europe()
 
 nextPlot("surfaceHatched_MartinezKoppen")
-plot_citrus_koppen_schraffiert_layer()
+plot_citrus_koppen_schraffiert()
+
+
+nextPlot("surfaceHatched_efsa2014")
+plot_infection("./spores2/Asco_3_15_Model_AVG.xlsx","Sep")
+plot_citrus_density(add=T)
+plot(EU_NUTS.0,add=T)
+}
+
+
 
 dev.off()
 

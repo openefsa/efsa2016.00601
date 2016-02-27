@@ -16,6 +16,7 @@ p_load(dplyr)
 p_load(readxl)
 p_load(efsagis)
 p_load(gplots)
+p_load(classInt)
 
 source("replace.R")
 source("utils.R")
@@ -137,12 +138,18 @@ prepare_citrus_layer <- function() {
     EU_NUTS.3.ha <- EU_NUTS.3.ha[!is.na(EU_NUTS.3.ha@data$ha),]
     EU_NUTS.3.ha
 }
-plot_citrus_koppen_schraffiert_layer <-  function() {
 
+plot_citrus_density <- function(add=F) {
     spdf <- prepare_citrus_layer()
-    koppenCombined <- combined_koppen(whichToShow=c(5,6))
     brks <- quantile(spdf@data$citrus_density)
-    dens <- (2:length(brks))*3
+    dens <- (2:length(brks))*6
+    plot(spdf,density = dens[findInterval(spdf@data$citrus_density,brks,all.inside = T)],add=add)
+
+}
+
+plot_citrus_koppen_schraffiert <-  function() {
+
+    koppenCombined <- combined_koppen(whichToShow=c(5,6))
 
     plot(koppenCombined,
          col= c("#F6A200","#FDDA62","#FCFE04","#CECC08"),
@@ -151,9 +158,8 @@ plot_citrus_koppen_schraffiert_layer <-  function() {
          axes=F,
          frame.plot = F
          )
-    
+    plot_cirus_density()
     plot(EU_NUTS.0,add=T)
-    plot(spdf,density = dens[findInterval(spdf@data$citrus_density,brks,all.inside = T)],add=T)
 
 }
 
@@ -321,7 +327,8 @@ combined_koppen_layer <- function(alpha=1,whichToShow=c(5,6,8,9)) {
 }
 
 
-infection_layer <- function(fileName,column,title,alpha=1) {
+
+prepare_infection_sp <- function(fileName,column) {
     data <- read_excel(fileName)
                                         #data <- left_join(cgms25grid@data,asco,by=c("Grid_Code"="GRID_NO"))
     data <- left_join(cgms25grid@data,data,by=c("Grid_Code"="GRID_NO")) %>%
@@ -330,13 +337,37 @@ infection_layer <- function(fileName,column,title,alpha=1) {
     dataSpdf <- cgms25grid
     dataSpdf@data <- data
     dataSpdf <- dataSpdf[!is.na(dataSpdf[[column]]),]    
-    tm_shape(dataSpdf) +
+    dataSpdf
+
+}
+
+
+infection_layer <- function(fileName,column,title,alpha=1) {
+    tm_shape(prepare_infection_sp(fileName,column)) +
         tm_polygons(column,border.col = "grey10",alpha=alpha,border.alpha = alpha,
                     palette=paste0(col2hex(c("white","lightblue","green","yellow","orange","red")),"FF"),
                     breaks=c(-Inf,0.01,0.5,1,5,10,Inf),
                     title=title
                     )    
     
+}
+
+plot_infection <- function(fileName,column){
+    dataSpdf <-  prepare_infection_sp(fileName,column) %>%
+        postProcessMap(crs,extent)
+    intervals <- classIntervals(dataSpdf[[column]],style="fixed",fixedBreaks=c(-Inf,0.01,0.5,1,5,10,Inf))
+    palette <- col2hex(c("beige","lightblue","green","yellow","orange","red"))
+
+    ## dataSpdf <- tmap::append_data(dataSpdf,
+    ##                              data.frame(infectionClass=factor(findCols(intervals),
+    ##                                                               levels=c(1,2,3,4,5,6),
+    ##                                                               labels=c("<0.01","0.01-0.5","0.5-1","1-5","5-10","
+    ##>10"))))
+
+    colors <- findColours(intervals,palette)
+    plot(dataSpdf,col=colors,border="transparent")
+    
+
 }
 
 
