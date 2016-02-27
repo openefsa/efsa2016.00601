@@ -307,7 +307,7 @@ combined_koppen <- function(whichToShow=c(5,6,8,9)) {
 ##
 ##  labels=c("BSh","BSk","CSa","CSb"),
 combined_koppen_layer <- function(alpha=1,whichToShow=c(5,6,8,9)) {
-    koppenCombined <- combined_koppen()
+    koppenCombined <- combined_koppen(whichToShow)
     tm_shape(koppenCombined) +
         tm_raster(
             palette= c("#F6A200","#FDDA62","#FCFE04","#CECC08"),
@@ -315,7 +315,8 @@ combined_koppen_layer <- function(alpha=1,whichToShow=c(5,6,8,9)) {
             labels=c("BSh","BSk","CSa","CSb"),
             title="Köppen–Geiger classification",
             textNA = NA,
-            legend.show = F)
+            showNA = F,
+            legend.show = T)
     
 }
 

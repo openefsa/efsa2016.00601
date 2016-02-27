@@ -103,8 +103,8 @@ base_layer() +
     worldCountries_layer(world.eu) +
     nuts3_layer() +
     combined_koppen_layer(whichToShow = c(5,6))+
-    citrusSurface_outline_layer() 
-
+    citrusSurface_outline_layer() +
+    tm_format_Europe()
 
 ##surface + Martinez2015(koppen)
 nextPlot("surface_MartinezKoppen")
@@ -114,7 +114,8 @@ base_layer() +
     worldCountries_layer(world.eu) +
     nuts3_layer() +
     combined_koppen_layer()+
-    citrusSurface_outline_layer()
+    citrusSurface_outline_layer() +
+    tm_format_Europe()
 
 
 
@@ -125,7 +126,8 @@ base_layer() +
     worldCountries_layer(world.eu) +
     nuts3_layer() +
     aschmann_layer() +
-    citrusSurface_outline_layer() 
+    citrusSurface_outline_layer()  +
+    tm_format_Europe()
 
 
 nextPlot("surfaceDots_MartinezAschmann")
@@ -134,7 +136,8 @@ base_layer() +
     worldCountries_layer(world.eu) +
     nuts3_layer() +
     aschmann_layer() +
-    citrusSurface_dots_layer()
+    citrusSurface_dots_layer() +
+    tm_format_Europe()
 
 nextPlot("surfaceDots_MartinezKoppen")
 base_layer() +
@@ -142,7 +145,8 @@ base_layer() +
     worldCountries_layer(world.eu) +
     nuts3_layer() +
     combined_koppen_layer() +
-    citrusSurface_dots_layer()
+    citrusSurface_dots_layer() +
+    tm_format_Europe()
 
 nextPlot("surfaceDots_efsa2014")
 base_layer() +
@@ -153,7 +157,8 @@ base_layer() +
                     "Proportion of infection events (%)",
                     1) +
     
-    citrusSurface_dots_layer()
+    citrusSurface_dots_layer() +
+    tm_format_Europe()
 
 nextPlot("surfaceHatched_MartinezKoppen")
 plot_citrus_koppen_schraffiert_layer()
