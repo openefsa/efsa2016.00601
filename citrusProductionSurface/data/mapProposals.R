@@ -1,23 +1,23 @@
 
 source("./combine.R")
 
-usePng <- F
+usePng <- T
 
 nextPlot <- function(name) {
     if (usePng & !names(dev.cur())=="null device") {
         dev.off()
     }
     if (usePng) {
-        png(paste0("./output/",name,".png"),width = 1366,height=768)
+        png(paste0("./output/mapProposals/",name,".png"),width = 1366,height=768)
     } else {
         readline(prompt=paste0(name,": Press [enter] to continue"))
         
     }
 
 }
-
-system("rm output/*.png")
-
+if (usePng) {
+    system("rm output/mapProposals/*.png")
+}
 nextPlot("surface_ha")
 ## surface
 
@@ -167,13 +167,15 @@ nextPlot("surfaceHatched_efsa2014")
 plot_infection("./spores2/Asco_3_15_Model_AVG.xlsx","Sep")
 plot_citrus_density(add=T)
 plot(EU_NUTS.0,add=T)
-}
+
 
 
 
 dev.off()
 
-
+if(usePng) {
+    zip("mapProposals.zip","./output/mapProposals/")
+}
 
 ## todo
 ## sent both (ha + density) maps to working group

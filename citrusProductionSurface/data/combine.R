@@ -158,7 +158,7 @@ plot_citrus_koppen_schraffiert <-  function() {
          axes=F,
          frame.plot = F
          )
-    plot_cirus_density()
+    plot_citrus_density()
     plot(EU_NUTS.0,add=T)
 
 }
@@ -189,7 +189,7 @@ citrusSurface_dots_layer <- function() {
     
     
     tm_shape(shp)+
-        tm_dots(size = 0.01,col="black") 
+        tm_dots(size = 0.01,col="red") 
 
 }
 
@@ -283,6 +283,7 @@ aschmann_layer <- function(alpha=1) {
         tm_raster(alpha = alpha,legend.show = T,style="cat",
                   palette=c("grey"),
                   textNA = NA,
+                  colorNA = "white",
                   title="",
                   labels=c("Aschmann's mediteranea type"))
 }
@@ -321,7 +322,6 @@ combined_koppen_layer <- function(alpha=1,whichToShow=c(5,6,8,9)) {
             labels=c("BSh","BSk","CSa","CSb"),
             title="Köppen–Geiger classification",
             textNA = NA,
-            showNA = F,
             legend.show = T)
     
 }
