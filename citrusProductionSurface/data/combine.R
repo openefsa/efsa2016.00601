@@ -158,7 +158,7 @@ plot_citrus_koppen_schraffiert <-  function() {
          axes=F,
          frame.plot = F
          )
-    plot_citrus_density()
+    plot_citrus_density(add = T)
     plot(EU_NUTS.0,add=T)
 
 }
@@ -210,7 +210,7 @@ citrusSurface_layer <- function(column,alpha=1) {
                 textNA = NA,
                 alpha = alpha,
                 legend.format = list(scientific=T,format="f"),
-                contras=c(0.2,1),
+                contrast=c(0.2,1),
                 title=title) 
     
 }
@@ -248,7 +248,7 @@ magarey_layer <- function(column_size,column_col=NA,title.size=NA,title.col=NA,s
     write.csv(mag2015Data,"mag2015Nuts3.csv")
 
     lonLat <- mag2015Data %>% select(Lon,Lat) %>% data.frame()
-    plot(EU_NUTS.0,col = "white") # to make pointLabel happy
+    invisible(plot(EU_NUTS.0,col = "white",type="n",lwd=0.001)) # to make pointLabel happy
     xy <- pointLabel(lonLat$Lon,lonLat$Lat,labels = paste0(seq_along(lonLat$Lon)),doPlot = F,cex=2) 
 
 
@@ -283,8 +283,6 @@ aschmann_layer <- function(alpha=1) {
         tm_raster(alpha = alpha,legend.show = T,style="cat",
                   palette=c("grey"),
                   textNA = NA,
-                  colorNA = "white",
-                  title="",
                   labels=c("Aschmann's mediteranea type"))
 }
 ## type: med,Bsk_Bsh,Csa_Csb
@@ -293,7 +291,8 @@ koppen_layer <- function(type,alpha=0.2,palette=NULL) {
         raster::crop(extent) 
     
     tm_shape(koppen) +
-        tm_raster(alpha = alpha,legend.show = T,palette = palette) 
+        tm_raster(alpha = alpha,legend.show = T,palette = palette,
+                  textNA=NA) 
     
 }
 
@@ -318,7 +317,9 @@ combined_koppen_layer <- function(alpha=1,whichToShow=c(5,6,8,9)) {
     tm_shape(koppenCombined) +
         tm_raster(
             palette= c("#F6A200","#FDDA62","#FCFE04","#CECC08"),
-            style = "cat",colorNA = "#FFFFFF00",alpha = alpha,
+            style = "cat",
+            #colorNA = "#FFFFFF00",
+            alpha = alpha,
             labels=c("BSh","BSk","CSa","CSb"),
             title="Köppen–Geiger classification",
             textNA = NA,
