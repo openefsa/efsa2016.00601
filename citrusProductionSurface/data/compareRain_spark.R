@@ -3,7 +3,6 @@ p_load(magrittr)
 p_load(efsagis)
 p_load(sp)
 p_load(dplyr)
-p_load(raster)
 p_load(ggplot2)
 p_load(tmap)
 source("./readMagareyTable.R")
@@ -13,10 +12,11 @@ if (!exists("asco_df")) {
     sc <- SparkR::sparkR.init(master="local",sparkPackages = "com.databricks:spark-csv_2.10:1.3.0")
     sqlContext <- SparkR::sparkRSQL.init(sc)
 
-    asco_df <- SparkR::read.df(sqlContext, "./infections/asco_3_15.csv",
-                              source = "com.databricks.spark.csv",
-                              header="true",
-                              inferSchema = "true")
+    ##asco_df <- SparkR::read.df(sqlContext, "./infections/asco_3_15.csv",
+    ##    source = "com.databricks.spark.csv",
+    ##  header="true",
+    ##inferSchema = "true")
+    asco_df <- SparkR::read.parquet(sqlContext,"./infections/asco_3_15.paquet")
     SparkR::cache(asco_df)
 
 
@@ -44,7 +44,7 @@ if (!exists("asco_df")) {
 
                                         #write.df(df, "./output/", "com.databricks.spark.csv", "overwrite")
 joinEfsaGridMagereyPts <- function(gridedValues,dataColumn) {
-    crs <- CRS("+proj=longlat +ellps=WGS84")
+    crs <- sp::CRS("+proj=longlat +ellps=WGS84")
 
     mag2015table1 <- readMagTable1()
     coords <- mag2015table1 %>% dplyr::select(Lon,Lat) %>% data.frame()
@@ -52,9 +52,9 @@ joinEfsaGridMagereyPts <- function(gridedValues,dataColumn) {
 
     mag2015pts <- SpatialPointsDataFrame(coords,coordsData,proj4string = crs)
 
-    crsGrid <- crs(cgms25grid)
+    crsGrid <- raster::crs(cgms25grid)
     mag2015pts <- sp::spTransform(mag2015pts,crsGrid)
-    match <- over(mag2015pts,cgms25grid)
+    match <- sp::over(mag2015pts,cgms25grid)
     mag2015pts.eu <- 
         dplyr::bind_cols(mag2015table1,match) %>%
         dplyr::filter(!is.na(Grid_Code)) %>%
@@ -90,16 +90,16 @@ gridDataToSpdf <- function(data,col) {
 plotInfections <- function(data,ind_rain_,col) {
 
                                         #withRain <- sum_by_rain_gridno %>% dplyr::filter(ind_rain==1)
-        filtered <- data %>%
-            dplyr::filter(ind_rain==ind_rain_)
+    filtered <- data %>%
+        dplyr::filter(ind_rain==ind_rain_)
 
 
-        filteredSpdf <- gridDataToSpdf(filtered,col)
-        tm_shape(filteredSpdf) +
-            tm_fill(col=col, breaks=seq(0,6,.5),
-                    contrast=c(0.2,1)
+    filteredSpdf <- gridDataToSpdf(filtered,col)
+    tm_shape(filteredSpdf) +
+        tm_fill(col=col, breaks=seq(0,6,.5),
+                contrast=c(0.2,1)
 
-                    ) +
+                ) +
     tm_borders()
     
 

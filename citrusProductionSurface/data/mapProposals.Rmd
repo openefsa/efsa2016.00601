@@ -244,17 +244,17 @@ plot_citrus_koppen_schraffiert()
 
 # rain/non rain comparison
 
-```{r}
+```{r warning=F,message=F,fic.cap="EFSA 2104 infections for Magarey 2015 locations"}
 source("./compareRain_spark.R")
 joined <- joinEfsaGridMagereyPts(sum_by_rain_gridno,"`sum(INFECTION_EVENTS)`")
 plotMag2015byRain(joined)
 ```
 
-```{r fig.cap="Average EFSA 2014 infections on days without rain (July)"}
+```{r warning=F,message=F,fig.cap="Average EFSA 2014 infections on days without rain (July)"}
 plotInfections(avg_by_gridno_rain_month %>% filter(month==7),0,"avg(INFECTION_EVENTS)") 
 ```
 
-```{r}
+```{r warning=F,message=F,fig.cap="Average EFSA 2014 infections on days with rain (July)"}
 plotInfections(avg_by_gridno_rain_month %>% filter(month==7),1,"avg(INFECTION_EVENTS)") 
 ```
 
