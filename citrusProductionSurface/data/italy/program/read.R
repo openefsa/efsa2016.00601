@@ -60,8 +60,10 @@ readCitrusHectar_italy <- function() {
         getDataFromSheet("Dw312013.xls",1,2013,""), 
         getDataFromSheet("Dw312013.xls",2,2013,""),
         getDataFromSheet("Dw312014.xls",1,2014,""), 
-        getDataFromSheet("Dw312014.xls",2,2014,""), 
-        getDataFromSheet("Dw312015.xls",1,2015,"Data for pompelmo, bergamotto, cedro, chinotto is missing for 2015")) %>%
+        getDataFromSheet("Dw312014.xls",2,2014,"")) %>%
+        
+      #, 
+        #getDataFromSheet("Dw312015.xls",1,2015,"Data for pompelmo, bergamotto, cedro, chinotto is missing for 2015")) %>%
         group_by(name,year,country) %>%
         mutate(ha=sum(ha))  %>%
         filter(row_number()==1) 
