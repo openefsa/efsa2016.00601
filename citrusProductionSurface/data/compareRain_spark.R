@@ -1,4 +1,8 @@
 library(pacman)
+if (!p_loaded(SparkR)) {
+    .libPaths(c(file.path(Sys.getenv("SPARK_HOME"), "R", "lib"), .libPaths()))
+    p_load(SparkR)
+}
 p_load(magrittr)
 p_load(efsagis)
 p_load(sp)
@@ -32,9 +36,9 @@ if (!exists("asco_df")) {
         SparkR::collect() %>%
         tbl_df()
 
-    avg_by_gridno_rain_month <- asco_df %>%
+    sum_by_gridno_rain_month <- asco_df %>%
         SparkR::groupBy(asco_df$GRID_NO,asco_df$ind_rain,asco_df$month) %>%
-        SparkR::summarize(avg(asco_df$INFECTION_EVENTS)) %>%
+        SparkR::summarize(sum(asco_df$INFECTION_EVENTS)) %>%
         SparkR::collect() %>%
         tbl_df()
 
@@ -96,7 +100,9 @@ plotInfections <- function(data,ind_rain_,col) {
 
     filteredSpdf <- gridDataToSpdf(filtered,col)
     tm_shape(filteredSpdf) +
-        tm_fill(col=col, breaks=seq(0,6,.5),
+        tm_fill(col=col,
+
+                breaks=seq(0,5000,500),
                 contrast=c(0.2,1)
 
                 ) +
