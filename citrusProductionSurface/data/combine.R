@@ -38,19 +38,20 @@ resolution <- "01M"
 extent <- raster::extent(-10,34,34,48) #small
 data(NUTS_01M_2013,countries_01M_2013)
 
-EU_NUTS <- NUTS_01M_2013 %>%
-    retainEU28()
+if (!exists("EU_NUTS")) {
+    EU_NUTS <- NUTS_01M_2013 %>%
+        retainEU28()
 
 
-EU_NUTS.0 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==0,] %>%
-    postProcessMap(crs,extent)
-EU_NUTS.3 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==3,] %>%
-    postProcessMap(crs,extent)
+    EU_NUTS.0 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==0,] %>%
+        postProcessMap(crs,extent)
+    EU_NUTS.3 <- EU_NUTS[EU_NUTS@data$STAT_LEVL_==3,] %>%
+        postProcessMap(crs,extent)
 
 
-world.eu <- postProcessMap(countries_01M_2013[!countries_01M_2013@data$CNTR_ID %in%  as.character(EU_NUTS.0@data$NUTS_ID),],crs=crs,extent = extent)
+    world.eu <- postProcessMap(countries_01M_2013[!countries_01M_2013@data$CNTR_ID %in%  as.character(EU_NUTS.0@data$NUTS_ID),],crs=crs,extent = extent)
 
-
+}
 
 
 warnIfUnkownIds <- function(europe) {
@@ -178,14 +179,14 @@ citrusSurface_dots_layer <- function() {
     total <- sum(citrusMap@data$ha)
 
     shp <- sample_dots(citrusMap,
-                      shp.id = "NUTS_ID",
-                      w=100,
-                      vars="ha",
-                      units="ha",
-                      units.size=1,
-                      convert2density = F,nrow=400,ncol=1300,
-                      npop=total,
-                      total.area=sum(citrusMap@data$Shape_Area_ha))
+                       shp.id = "NUTS_ID",
+                       w=100,
+                       vars="ha",
+                       units="ha",
+                       units.size=1,
+                       convert2density = F,nrow=400,ncol=1300,
+                       npop=total,
+                       total.area=sum(citrusMap@data$Shape_Area_ha))
     
     
     tm_shape(shp)+
@@ -253,11 +254,11 @@ magarey_layer <- function(column_size,column_col=NA,title.size=NA,title.col=NA,s
 
 
     spts <- SpatialPointsDataFrame(coords=lonLat,
-                                  data=mag2015Data %>% data.frame(),
-                                  proj4string = crs)
+                                   data=mag2015Data %>% data.frame(),
+                                   proj4string = crs)
     
     text_sp <- SpatialPointsDataFrame(coords=xy,data=mag2015Data %>% data.frame(),
-                                     proj4string = crs)
+                                      proj4string = crs)
     
     tm_shape(spts) +
         tm_bubbles(size=column_size,col=column_col,border.col = "blue",alpha=1,
@@ -318,7 +319,7 @@ combined_koppen_layer <- function(alpha=1,whichToShow=c(5,6,8,9)) {
         tm_raster(
             palette= c("#F6A200","#FDDA62","#FCFE04","#CECC08"),
             style = "cat",
-            #colorNA = "#FFFFFF00",
+                                        #colorNA = "#FFFFFF00",
             alpha = alpha,
             labels=c("BSh","BSk","CSa","CSb"),
             title="Köppen–Geiger classification",
