@@ -8,20 +8,26 @@ output:
     toc: yes
 ---
 
-```{r echo=F, results="hide",warning=F,message=F,}
+```{r echo=F, results="hide",warning=F,message=F,cache=F}
 library(pacman)
-.libPaths(c(file.path(Sys.getenv("SPARK_HOME"), "R", "lib"), .libPaths()))
-p_load(SparkR)
+
+##if (!p_loaded(SparkR)) {
+  ##  .libPaths(c(file.path(Sys.getenv("SPARK_HOME"), "R", "lib"), .libPaths()))
+    ##p_load(SparkR)
+##}
 p_load(dplyr)
 source("./combine.R")
 source("./compareRain_spark.R")
-p_load(devEMF)
 p_load(knitr)
 p_unload(raster)
 p_unload(SparkR)
+p_load(pander)
+
 usePng <- F
 
 nextPlot <- function(name) {
+    p_unload(SparkR)
+
     if (usePng & !names(dev.cur())=="null device") {
         dev.off()
     }
@@ -37,18 +43,49 @@ nextPlot <- function(name) {
 if (usePng) {
     system("rm output/mapProposals/*.png")
 }
-opts_chunk$set(comment=NA, fig.width=14, fig.height=14/2.4,dpi=221,echo=F)
-prepare_citrus_layer()
+opts_chunk$set(comment=NA, fig.width=14, fig.height=14/2.4,dpi=221,echo=F,cache=T)
 
 ```
 
+```{r echo=F, results="hide",warning=F,message=F}
+p_unload(SparkR)
+prepare_citrus_layer()
+```
+
 # EU citrus production surface area 
+## data
+
+```{r echo=F,warning=F,error=F,message=F}
+p_unload(SparkR)
+data <-  latestData() 
+mostRecentData <- data %>%
+    dplyr::select(country,year,NUTS.Code,NUTS3.name,ha,citrus_density) %>%
+    dplyr::arrange(NUTS.Code) 
+
+pander(mostRecentData %>% as.data.frame ,caption="Citrus product surface area per NUTS3 region")
+```
+
+```{r echo=F,warning=F,error=F,message=F}
+countryHa <- data %>%
+    dplyr::group_by(country) %>%
+    dplyr::summarise(sum(ha))
+
+pander(countryHa %>% as.data.frame,digits=0,caption="Citrus product surface area per country")
+```
+
+```{r echo=F,warning=F,error=F,message=F}
+comments <- data %>%
+    dplyr::mutate(comment=ifelse(is.na(comment),"",comment)) %>%
+    dplyr::group_by(country,year,comment) %>%
+    dplyr::select(country,comment) %>%
+    dplyr::slice(1)
+pander(comments %>% as.data.frame,caption="Notes on data transformations")
+```
 
 ## in ha 
 ```{r warning=F,message=F,fig.cap="EU map of NUTS3 citrus growing regions based on citrus production data extracted from national statistical database of Portugal, Spain, France, Italy, Malta, Croatia, Greece and Cyprus"}
 nextPlot("surface_ha")
 ## surface
-
 base_layer() +
     worldCountries_layer(world.eu) +
     citrusSurface_layer(column="ha",alpha=1) +
@@ -79,7 +116,6 @@ base_layer() +
 ## with ascospores infection score
 ```{r warning=F,message=F,fig.cap="Magharey 2015 EU locations and the reported ascospore infection score and the percentage of suitable years for infection",fig.keep="last"}
 nextPlot("surface_MagAsco")
-##OKb
 base_layer() +
     worldCountries_layer(world.eu) +
     citrusSurface_layer(column="ha") +
@@ -230,6 +266,7 @@ base_layer() +
     aschmann_layer() +
     citrusSurface_dots_layer() +
     tm_format_Europe()
+
 ```
 
 
@@ -245,25 +282,30 @@ plot_citrus_koppen_schraffiert()
 # rain/non rain comparison
 
 ```{r warning=F,message=F,fic.cap="EFSA 2104 infections for Magarey 2015 locations"}
-source("./compareRain_spark.R")
 joined <- joinEfsaGridMagereyPts(sum_by_rain_gridno,"`sum(INFECTION_EVENTS)`")
+pander(joined %>% dplyr::select(Country,Location,ind_rain,`sum(INFECTION_EVENTS)`) %>%
+       as.data.frame,
+       caption = "EFSA 2104 infections for Magarey 2015 locations")
+```
+
+```{r warning=F,message=F,fig.cap="EFSA 2104 infections for Magarey 2015 locations"}
 plotMag2015byRain(joined)
 ```
 
 ```{r warning=F,message=F,fig.cap="Average EFSA 2014 infections on days without rain (July)"}
-plotInfections(avg_by_gridno_rain_month %>% filter(month==7),0,"avg(INFECTION_EVENTS)") 
+plotInfections(sum_by_rain_gridno,0,"sum(INFECTION_EVENTS)") 
 ```
 
 ```{r warning=F,message=F,fig.cap="Average EFSA 2014 infections on days with rain (July)"}
-plotInfections(avg_by_gridno_rain_month %>% filter(month==7),1,"avg(INFECTION_EVENTS)") 
+plotInfections(sum_by_rain_gridno,1,"sum(INFECTION_EVENTS)") 
 ```
 
 
 ```{r warning=F,message=F,results="hide"}
-dev.off()
 
 if(usePng) {
+    dev.off()
     zip("mapProposals.zip","./output/mapProposals/")
 }
-
+```
 
