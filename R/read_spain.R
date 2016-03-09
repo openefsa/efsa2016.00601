@@ -1,7 +1,7 @@
 
 distributeToNuts3 <- function(df,nuts2,name) {
-    nutsLevels <- nutsLevels()
-    nutsAreas <- getNuts3Areas()
+    nutsLevels <- efsagis::nutsLevels()
+    nutsAreas <- efsagis::getNuts3Areas()
     
     nutsLevels %>%
         filter(grepl(paste0(nuts2,".+"),NUTS.Code)) %>%

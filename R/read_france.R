@@ -2,8 +2,8 @@
 
 readCitrusHectar_france_<- function() {
     
-    nutsLevels <- nutsLevels()
-    nuts.area <-  getNuts3Areas()
+    nutsLevels <- efsagis::nutsLevels()
+    nuts.area <-  efsagis::getNuts3Areas()
     
     df <- readxl::read_excel(system.file("extdata/france/verger2015T6bsva.xls",package = "efsa2016.00601"),2,F,skip=8) %>%
         tbl_df() %>%

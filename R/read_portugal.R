@@ -66,7 +66,7 @@ readCitrus2009Census <- function() {
 }
 
 readCitrus2009Census_singleFile <- function() {
-    nuts2010 <- nutsLevels(2010) %>%
+    nuts2010 <- efsagis::nutsLevels(2010) %>%
         filter(grepl("^PT",NUTS.Code),Level==3) %>%
         filter(!NUTS.Code %in% c("PT1",   "PT2" ,  "PT3",   "PTZ" ,  "PT11",  "PT15",  "PT16" , "PT17",  "PT18",  "PT20",  "PT30"))
     
@@ -103,7 +103,7 @@ readCitrus2009Census_singleFile <- function() {
 
 readCitrusHectar_portugal <- function() {
 
-    nutsLevels <- nutsLevels() %>%
+    nutsLevels <- efsagis::nutsLevels() %>%
         select(-Description.latin,-Description.countryLang)
                                         #https://www.ine.pt/xportal/xmain?xpid=INE&xpgid=ine_indicadores&indOcorrCod=0000020&contexto=bd&selTab=tab2
    

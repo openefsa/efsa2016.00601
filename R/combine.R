@@ -1,37 +1,3 @@
-## library(pacman)
-## p_load(raster)
-
-## p_load(cartography)
-## p_load(rgdal)
-## p_load(PBSmapping)
-## p_load(maptools)
-## p_load(readr)
-## p_load(memoise)
-## p_load(maptools)
-## p_load(tmap)
-## p_load_gh("eblondel/cleangeo")
-## p_unload(raster)
-## p_load(Hmisc)
-## p_load(dplyr)
-## p_load(readxl)
-## p_load(efsagis)
-## p_load(gplots)
-## p_load(classInt)
-
-## source("replace.R")
-## source("utils.R")
-## source("./readMagareyTable.R")
-
-## source("spain/program/read.R")
-## source("france/program/read.R")
-## source("italy/program/read.R")
-## source("portugal/program/read.R")
-## source("cyprus/program/read.R")
-## source("croatia/program/read.R")
-## source("greece/program/read.R")
-## source("malta/program/read.R")
-
-
 #'@importFrom dplyr distinct
 warnIfUnkownIds <- function(europe) {
     diff <- setdiff(europe$NUTS.Code,euNuts3()@data$NUTS_ID)
@@ -46,12 +12,6 @@ warnIfUnkownIds <- function(europe) {
 
 #' @export
 extractCitrusData <- function() {
-
-
-  
-    
-
-
     conversion_sa_ha <- 904436
 
     nutsLevels <- efsagis::nutsLevels() %>%
