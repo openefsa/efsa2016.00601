@@ -1,0 +1,26 @@
+Package: efsa2016.00601
+Title: What the Package Does (one line, title case)
+Version: 0.0.0.9000
+Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
+Description: What the package does (one paragraph).
+Depends:
+    R (>= 3.2.2)
+License: What license is it under?
+LazyData: true
+Imports:
+    efsagis,
+    readr,
+    readxl,
+    reshape2,
+    stringr,
+    tmap,
+    rgeos,
+    maptools,
+    gplots,
+    classInt,
+    SparkR,
+    sp,
+    ggplot2,
+    knitr,
+    pander
+RoxygenNote: 5.0.1
