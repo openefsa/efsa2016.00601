@@ -6,41 +6,52 @@ output: word_document
 library(pacman)
 p_load(knitr)
 p_load(rmarkdown)
-opts_chunk$set(dpi=75)
+p_load(pander)
+#opts_chunk$set(dpi=75)
 ```
 
 
 ```{r echo=F,warning=F,error=F,message=F}
 source("combine.R")
-data <-  extractCitrusData() 
+data <-  latestData() 
 mostRecentData <- data %>%
-   select(country,year,NUTS.Code,NUTS3.name,ha) %>%
+    select(country,year,NUTS.Code,NUTS3.name,ha) %>%
     arrange(NUTS.Code)
 
-kable(mostRecentData,digits=1,caption="Citrus product surface area per NUTS3 region")
+pander(mostRecentData,digits=1,caption="Citrus product surface area per NUTS3 region")
 ```
 
 ```{r echo=F,warning=F,error=F,message=F}
 countryHa <- data %>%
     group_by(country) %>% summarise(sum(ha))
 
-kable(countryHa,digits=0,caption="Citrus product surface area per country")
+pander(countryHa,digits=0,caption="Citrus product surface area per country")
 ```
 
 ```{r echo=F,warning=F,error=F,message=F}
- comments <- data %>%
-      mutate(comment=ifelse(is.na(comment),"",comment)) %>%
-      group_by(country,year,comment) %>%
-      select(country,comment) %>%
-      slice(1)
-kable(comments,caption="Notes on potential data transformations")
+comments <- data %>%
+    mutate(comment=ifelse(is.na(comment),"",comment)) %>%
+    group_by(country,year,comment) %>%
+    select(country,comment) %>%
+    slice(1)
+pander(comments,caption="Notes on potential data transformations")
 ```
 
 
-```{r fig.height=6, fig.width=12,dpi=600,echo=F}
-    breaks=cut2(mostRecentData$ha,onlycuts=T,g=10)
-    plotCitrusMap(mostRecentData,large=F,breaks,"ha")
-    #svg("citrusMap_ha.svg",width=12,height=6)
-    #plotCitrusMap(mostRecentData,large=F,breaks,"ha")
-    #dev.off() 
+```{r fig.height=14/2.4, fig.width=14,dpi=600,echo=T,warning=F,message=F}
+base_layer() +
+worldCountries_layer(world.eu) +
+    citrusSurface_layer(alpha=1) +
+    nuts3_layer() +
+    nuts0_layer() +
+    tm_format_Europe()
+```
+
+```{r fig.height=14/2.4, fig.width=14,dpi=600,echo=T,warning=F,message=F}
+base_layer() +
+worldCountries_layer(world.eu) +
+    citrusSurface_layer(alpha=1) +
+    nuts3_layer() +
+    nuts0_layer() +
+    tm_format_Europe()
 ```
