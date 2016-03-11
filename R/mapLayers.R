@@ -1,4 +1,16 @@
 
+#'@importFrom dplyr distinct
+warnIfUnkownIds <- function(europe) {
+    diff <- setdiff(europe$NUTS.Code,euNuts3()@data$NUTS_ID)
+    missingNutsIds <- europe %>%
+        filter(NUTS.Code %in% diff) %>%
+        select(NUTS.Code,NUTS3.name) %>% distinct()
+    if(nrow(missingNutsIds)>0) {
+        warning("The following nuts3 ids exist in the data but not in the map. So there values will not be shown: \n",missingNutsIds)
+    }
+}
+
+
 #' @export
 euNuts <- function() {
     NUTS_01M_2013 %>%
@@ -126,14 +138,14 @@ citrusSurface_dots_layer <- function() {
     total <- sum(citrusMap@data$ha)
 
     shp <- tmap::sample_dots(citrusMap,
-                            shp.id = "NUTS_ID",
-                            w=100,
-                            vars="ha",
-                            units="ha",
-                            units.size=1,
-                            convert2density = F,nrow=400,ncol=1300,
-                            npop=total,
-                            total.area=sum(citrusMap@data$Shape_Area_ha))
+                             shp.id = "NUTS_ID",
+                             w=100,
+                             vars="ha",
+                             units="ha",
+                             units.size=1,
+                             convert2density = F,nrow=400,ncol=1300,
+                             npop=total,
+                             total.area=sum(citrusMap@data$Shape_Area_ha))
     
     
     tmap::tm_shape(shp)+
@@ -164,9 +176,7 @@ citrusSurface_layer <- function(column,alpha=1) {
     
 }
 
-#' @importFrom dplyr bind_cols
-#' @export
-magarey_layer <- function(column_size,column_col=NA,title.size=NA,title.col=NA,style=NULL) {
+magarey_shp <- function() {
 
     europe <- latestData()
     mag2015table1 <- readMagTable1()
@@ -209,6 +219,17 @@ magarey_layer <- function(column_size,column_col=NA,title.size=NA,title.col=NA,s
     
     text_sp <- sp::SpatialPointsDataFrame(coords=xy,data=mag2015Data %>% data.frame(),
                                          proj4string = wgs84())
+
+    list(spts=spts,text_sp=text_sp)
+}
+
+#' @importFrom dplyr bind_cols
+#' @export
+magarey_layer <- function(column_size,column_col=NA,title.size=NA,title.col=NA,style=NULL) {
+
+    shps <- magarey_shp()
+    spts <- shps$spts
+    text_sp <- shps$text_sp
     
     tmap::tm_shape(spts) +
         tmap::tm_bubbles(size=column_size,col=column_col,border.col = "blue",alpha=1,
@@ -276,57 +297,58 @@ combined_koppen_layer <- function(alpha=1,whichToShow=c(5,6,8,9)) {
             palette= c("#F6A200","#FDDA62","#FCFE04","#CECC08"),
             style = "cat",
                                         #colorNA = "#FFFFFF00",
-            alpha = alpha,
-            labels=c("BSh","BSk","CSa","CSb"),
-            title="Köppen–Geiger classification",
-            textNA = NA,
-            legend.show = T)
+                alpha = alpha,
+                labels=c("BSh","BSk","CSa","CSb"),
+                title="Köppen–Geiger classification",
+                textNA = NA,
+                legend.show = T)
     
-}
+    }
 
 
-#' @export
-prepare_infection_sp <- function(fileName,column) {
-    data <- readxl::read_excel(system.file(fileName,package = "efsa2016.00601"))
+    #' @export
+    prepare_infection_sp <- function(fileName,column) {
+        data <- readxl::read_excel(system.file(fileName,package = "efsa2016.00601"))
                                         #data <- left_join(cgms25grid@data,asco,by=c("Grid_Code"="GRID_NO"))
-    data <- left_join(cgms25grid@data,data,by=c("Grid_Code"="GRID_NO")) %>%
-        data.frame()
+        data <- left_join(cgms25grid@data,data,by=c("Grid_Code"="GRID_NO")) %>%
+            data.frame()
                                         #    column <- paste0("X",column)
-    dataSpdf <- cgms25grid
-    dataSpdf@data <- data
-    dataSpdf <- dataSpdf[!is.na(dataSpdf[[column]]),]    
-    dataSpdf
+        dataSpdf <- cgms25grid
+        dataSpdf@data <- data
+        dataSpdf <- dataSpdf[!is.na(dataSpdf[[column]]),]    
+        dataSpdf
 
-}
+    }
 
 
-#' @export
-infection_layer <- function(fileName,column,title,alpha=1) {
-    tmap::tm_shape(prepare_infection_sp(fileName,column)) +
-        tmap::tm_polygons(column,border.col = "grey10",alpha=alpha,border.alpha = alpha,
-                          palette=paste0(gplots::col2hex(c("white","lightblue","green","yellow","orange","red")),"FF"),
-                          breaks=c(-Inf,0.01,0.5,1,5,10,Inf),
-                          title=title
-                          )    
+    #' @export
+    infection_layer <- function(fileName,column,title,alpha=1) {
+        tmap::tm_shape(prepare_infection_sp(fileName,column)) +
+            tmap::tm_polygons(column,border.col = "grey10",alpha=alpha,border.alpha = alpha,
+                              palette=paste0(gplots::col2hex(c("white","lightblue","green","yellow","orange","red")),"FF"),
+                              breaks=c(-Inf,0.01,0.5,1,5,10,Inf),
+                              title=title
+                              )    
     
-}
+    }
 
-#' @export
-plot_infection <- function(fileName,column){
-    dataSpdf <-  prepare_infection_sp(fileName,column) %>%
-        postProcessMap(wgs84(),euExtent())
-    intervals <- classInt::classIntervals(dataSpdf[[column]],style="fixed",fixedBreaks=c(-Inf,0.01,0.5,1,5,10,Inf))
-    palette <- gplots::col2hex(c("beige","lightblue","green","yellow","orange","red"))
+    #' @export
+    plot_infection <- function(fileName,column){
+        dataSpdf <-  prepare_infection_sp(fileName,column) %>%
+            postProcessMap(wgs84(),euExtent())
+        intervals <- classInt::classIntervals(dataSpdf[[column]],style="fixed",
+                                             fixedBreaks=c(-Inf,0.01,0.5,1,5,10,Inf))
+        palette <- gplots::col2hex(c("beige","lightblue","green","yellow","orange","red"))
 
-    ## dataSpdf <- tmap::append_data(dataSpdf,
-    ##                              data.frame(infectionClass=factor(findCols(intervals),
-    ##                                                               levels=c(1,2,3,4,5,6),
-    ##                                                               labels=c("<0.01","0.01-0.5","0.5-1","1-5","5-10","
-    ##>10"))))
+        ## dataSpdf <- tmap::append_data(dataSpdf,
+        ##                              data.frame(infectionClass=factor(findCols(intervals),
+        ##                                                               levels=c(1,2,3,4,5,6),
+        ##                                                               labels=c("<0.01","0.01-0.5","0.5-1","1-5","5-10","
+        ##>10"))))
 
-    colors <- classInt::findColours(intervals,palette)
-    plot(dataSpdf,col=colors,border="transparent")
+        colors <- classInt::findColours(intervals,palette)
+        plot(dataSpdf,col=colors,border="transparent")
     
 
-}
+    }
 

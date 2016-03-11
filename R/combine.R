@@ -1,16 +1,7 @@
-#'@importFrom dplyr distinct
-warnIfUnkownIds <- function(europe) {
-    diff <- setdiff(europe$NUTS.Code,euNuts3()@data$NUTS_ID)
-    missingNutsIds <- europe %>%
-        filter(NUTS.Code %in% diff) %>%
-        select(NUTS.Code,NUTS3.name) %>% distinct()
-    if(nrow(missingNutsIds)>0) {
-        warning("The following nuts3 ids exist in the data but not in the map. So there values will not be shown: \n",missingNutsIds)
-    }
-}
-
-
+#' Combines the citrus production data of all countries into a single data frame.
+#' The result of this is the data object 'euCitrusData'
 #' @export
+
 extractCitrusData <- function() {
     conversion_sa_ha <- 904436
 
