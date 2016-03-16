@@ -15,9 +15,9 @@ fixCitrinos <-  function(df) {
 } 
 
 readPortugalCsv <- function(name,fileNumber,skip,sliceStart,sliceEnd,link) {
-    data <- read_csv(system.file(paste0("extdata/portugal/",name,"/",fileNumber,".csv"),
-                                package="efsa2016.00601"),
-                    locale=iso88591Locale(),skip=skip)
+    data <- readr::read_csv(system.file(paste0("extdata/portugal/",name,"/",fileNumber,".csv"),
+                                       package="efsa2016.00601"),
+                           locale=iso88591Locale(),skip=skip)
     names(data)[1:3] <- c("nuts3","concelho","unit")
     data <- data[,1:8]
     data  %>% select(nuts3,Citrinos) %>%
@@ -76,7 +76,7 @@ readCitrus2009Census_singleFile <- function() {
     names(data) <- c("name","ha","nothing")
 
     data <- data %>% select(name,ha) %>%
-        separate(name,into = c("code","name"),sep=":") %>%
+        tidyr::separate(name,into = c("code","name"),sep=":") %>%
         select(-code) %>%
         mutate(name=stringr::str_trim(name)) %>%
         filter(!is.na(ha),!is.na(name)) %>%

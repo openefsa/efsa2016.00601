@@ -81,7 +81,7 @@ nuts3_layer <- function(alpha=1) {
 }
 
 #' @export
-prepare_citrus_layer <- function() {
+prepare_citrus_layer <- function() {     
     data <- latestData()
     warnIfUnkownIds(data)
     

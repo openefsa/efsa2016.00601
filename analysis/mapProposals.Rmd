@@ -12,9 +12,25 @@ library(pacman)
 library(efsagis)
 library(efsa2016.00601)
 library(dplyr)
+library(pander)
 
 
 usePng <- F
+
+exportCsv <- function(df,filename) {
+    write.csv(df,paste0("./output/",filename,".csv"))
+}
+
+
+renderDF <- function(df,caption,digits=panderOptions("digits")) {
+    exportCsv(df,gsub(" ","_",caption))
+    pander::pander(df %>% as.data.frame ,
+                   caption=caption,
+                   digits)
+    
+
+}
+
 
 nextPlot <- function(name) {
 
@@ -36,49 +52,44 @@ if (usePng) {
 }
 data(NUTS_01M_2013,package="efsagis")
 data(countries_01M_2013,package="efsagis")
+data(euCitrusSurface,package = "efsa2016.00601")
 
-knitr::opts_chunk$set(comment=NA, fig.width=14, fig.height=14/2.4,dpi=221,echo=F,cache=T)
+knitr::opts_chunk$set(comment=NA, fig.width=14, fig.height=14/2.4,dpi=221,echo=F,cache=T,fig.path="figures/")
 world.eu <- worldEu()
 EU_NUTS.0 <- euNuts0()
-sc <- SparkR::sparkR.init(master="local",sparkPackages = "com.databricks:spark-csv_2.10:1.3.0")
-sqlContext <- SparkR::sparkRSQL.init(sc)
+
+                                     
 ```
 
 ```{r echo=F, results="hide",warning=F,message=F}
 prepare_citrus_layer()
-																																																																																						```
+exportCsv(euCitrusSurface,"euCitrusSurfaceData")
+```
 
 # EU citrus production surface area 
 ## data
+
+The following table is showing the citrus production surface in Europe.
+The data was collected from the national statistical offices of the individual countries.
+It most cases the data was available on NUTS-3 level, in some cases it was extrapolated from NUTS2.
+These cases are listed in table xxx. The table shows as well the latest year of which data was available.
+
+
 
 ```{r echo=F,warning=F,error=F,message=F}
 data <-  latestData() 
 mostRecentData <- data %>%
     dplyr::select(country,year,NUTS.Code,NUTS3.name,ha,citrus_density) %>%
     dplyr::arrange(NUTS.Code) 
-
-pander::pander(mostRecentData %>% as.data.frame ,caption="Citrus product surface area per NUTS3 region")
+renderDF(mostRecentData ,caption="Citrus product surface area per NUTS3 region")
 ```
 
-```{r echo=F,warning=F,error=F,message=F}
-countryHa <- data %>%
-    dplyr::group_by(country) %>%
-    dplyr::summarise(sum(ha))
+The following map shows the citrus production from above table with colorcoding according to the area of citrus production in each NUTS3 region.
 
-pander::pander(countryHa %>% as.data.frame,digits=0,caption="Citrus product surface area per country")
-```
 
-```{r echo=F,warning=F,error=F,message=F}
-comments <- data %>%
-    dplyr::mutate(comment=ifelse(is.na(comment),"",comment)) %>%
-    dplyr::group_by(country,year,comment) %>%
-    dplyr::select(country,comment) %>%
-    dplyr::slice(1)
-pander::pander(comments %>% as.data.frame,caption="Notes on data transformations")
-```
 
 ## in ha 
-```{r warning=F,message=F,fig.cap="EU map of NUTS3 citrus growing regions based on citrus production data extracted from national statistical database of Portugal, Spain, France, Italy, Malta, Croatia, Greece and Cyprus"}
+```{r warning=F,message=F,fig.cap="EU map of NUTS3 citrus production area based on citrus production data extracted from national statistical database of Portugal, Spain, France, Italy, Malta, Croatia, Greece and Cyprus"}
 nextPlot("surface_ha")
 ## surface
 base_layer() +
@@ -91,24 +102,48 @@ base_layer() +
 
 ```
 
+
+The next table aggregates the citrus area by country. 
+
+```{r echo=F,warning=F,error=F,message=F}			
+countryHa <- data %>%
+    dplyr::group_by(country) %>%
+    dplyr::summarise(sum(ha))
+ 
+renderDF(countryHa,caption="Citrus product surface area per country")
+```
+
+This table shows for which NUTS3 regions data transformations where applied, in order to have all data in the same NUTS3 classification.
+
+```{r echo=F,warning=F,error=F,message=F}
+comments <- data %>%
+    dplyr::mutate(comment=ifelse(is.na(comment),"",comment)) %>%
+    dplyr::group_by(country,year,comment) %>%
+    dplyr::select(country,comment) %>%
+    dplyr::slice(1)
+renderDF(comments,caption="Notes on data transformations")
+```
 ## as density ha / km^2
 
-```{r warning=F,message=F,fig.cap="EU map of NUTS3 citrus growing regions based on citrus production data extracted from national statistical database of Portugal, Spain, France, Italy, Malta, Croatia, Greece and Cyprus"}
+The following table shows the EU citrus production surface as density, instead of absolute surface.
+
+```{r warning=F,message=F,fig.cap="EU map of NUTS3 citrus production density based on citrus production data extracted from national statistical database of Portugal, Spain, France, Italy, Malta, Croatia, Greece and Cyprus" }
 nextPlot("surface_density")
 base_layer() +
     worldCountries_layer(world.eu) +
-    
     citrusSurface_layer(column="citrus_density",alpha=1) +
-    
     nuts3_layer() +
     nuts0_layer()+
-
     tmap::tm_format_Europe() 
 ```
 
 # Citrus surface + Magarey 2015 stations
 
+In the following map the Magarey 2015 EU locations are shown and two columns of table 2 of Magarey 2015 are shown, which characterize the ascospore infection risk. 
+
 ## with ascospores infection score
+
+
 ```{r warning=F,message=F,fig.cap="Magharey 2015 EU locations and the reported ascospore infection score and the percentage of suitable years for infection",fig.keep="last"}
 nextPlot("surface_MagAsco")
 base_layer() +
@@ -125,6 +160,8 @@ base_layer() +
 ```
 
 ## with pycnidiospres infection scores
+
+This map shows the pycnidiospores infection score from Magarey 2015 table 2.
 
 ```{r warning=F,message=F,fig.cap="Magharey 2015 EU locations and the reported pycnidiospores infection score and the percentage of suitable years for infection",fig.keep="last"}
 nextPlot("surface_MagPycnidio")
@@ -192,6 +229,8 @@ plot(EU_NUTS.0,add=T)
 
 ### with Koeppen climate zones BSh+BSk
 
+The following map shows the Koeppen-Geiger climate zones BSk and BSh from the Martinez 2015 and how they overlap with the citrus production areas of Europe.
+
 ```{r warning=F,message=F,fig.cap="Overlap of citrus production area and Koeppen-Geiger climate zones"}
 nextPlot("surface_MartinezKoppenBskBsh")
 
@@ -205,6 +244,9 @@ base_layer() +
 ```
 
 ### with Koeppen climate zones BSh,BSk,CSa,CSb
+
+The following map shows the Koeppen-Geiger climate zones BSk,BSh,CSa and CSb from the Martinez 2015 and how they overlap with the citrus production areas of Europe.
+
 ```{r warning=F,message=F,fig.cap="Overlap of citrus production area and Koeppen-Geiger climate zones"}
 nextPlot("surface_MartinezKoppen")
 
@@ -219,6 +261,8 @@ base_layer() +
 ```
 
 ### with Aschmann mediteranian climat zone
+
+The following map shows the Aschmann mediterranean climate zone from the Martinez 2015 and how it overlaps with the citrus production areas of Europe.
 
 ```{r warning=F,message=F,fig.cap="Overlap of citrus production area and Aschmann mediteranian climate zone"}
 nextPlot("surface_MartinezAschmann")
@@ -275,20 +319,27 @@ plot_citrus_koppen_schraffiert()
 
 
 # rain/non rain comparison
-
-```{r warning=F,message=F,fic.cap="EFSA 2104 infections for Magarey 2015 locations"}
+```{r warning=F,message=F}
 p_load(SparkR)
+sc <- SparkR::sparkR.init(master="local",sparkPackages = "com.databricks:spark-csv_2.10:1.3.0")
+sqlContext <- SparkR::sparkRSQL.init(sc)
 sum_by_rain_gridno <- sum_by_rain_gridno(sqlContext)
-joined <- joinEfsaGridMagereyPts(sum_by_rain_gridno,"`sum(INFECTION_EVENTS)`")
-pander::pander(joined %>% dplyr::select(Country,Location,ind_rain,`sum(INFECTION_EVENTS)`) %>%
-               as.data.frame,
-               caption = "EFSA 2104 infections for Magarey 2015 locations")
+sum_by_rain <- sum_by_rain(sqlContext)
+SparkR::sparkR.stop()
 p_unload(SparkR)
 ```
 
-```{r warning=F,message=F,fig.cap="EFSA 2104 infections for Magarey 2015 locations"}
-plotMag2015byRain(joined)
+In order to assess the impact of inclusion or exclusion of the condition of rain on the model, 
+the following table compares the total number of infection events from EFSA 2014, seperated by presence/non-presence of rain on a given day.
+
+```{r warning=F,message=F,fig.cap="EFSA 2104 infections with/without presence of rain"}
+renderDF(sum_by_rain,"EFSA 2104 infection events with and without presence of rain")
+
 ```
+
+The next 2 plots show the avverage number of infection events from EFSA 2014 for the month of July on days without rain and with rain.
+
+
 
 ```{r warning=F,message=F,fig.cap="Average EFSA 2014 infections on days without rain (July)"}
 plotInfections(sum_by_rain_gridno,0,"sum(INFECTION_EVENTS)") 
@@ -298,6 +349,79 @@ plotInfections(sum_by_rain_gridno,0,"sum(INFECTION_EVENTS)")
 plotInfections(sum_by_rain_gridno,1,"sum(INFECTION_EVENTS)") 
 ```
 
+
+
+In the following we show the difference between inclusion/exclusion of rain for the Magarey 2015 EU locations.
+The table shows the total number of infection events from the EFSA 2014 model with and without rain for each of the Magarey 2015 EU locations.
+
+The columns are:
+ * EFSA infections : total number of infection events  from EFSA 2014
+ * EFSA infections filtered : number of infection events, excluding days without rain from EFSA 2014
+ * asco_days_average : Magarey 2015 ascospores infection score
+ * asco_suit_years : Magarey 2015 ascospores suitable years
+ * pyc_average :  Magarey 2015 pycnidiospores infection score
+ * pyc_suit_years : Magarey 2015 pycnidiospores suitable years
+
+
+```{r rainNonRainTable,warning=F,message=F,fig.cap="EFSA 2014 infections for Magarey 2015 locations"}
+joined <- joinEfsaGridMagereyPts(sum_by_rain_gridno,"`sum(INFECTION_EVENTS)`") %>%
+    dplyr::rename(infection_events=`sum(INFECTION_EVENTS)`)
+
+joined.pres  <- joined %>%
+    as.data.frame %>%
+    tidyr::spread(ind_rain,infection_events) %>%
+    dplyr::rename(efsa_infs_no_rain=`0`) %>%
+    dplyr::rename(efsa_infs_rain=`1`)
+joined.pres <- joined.pres[,1:7]
+joined.pres <- joined.pres %>%
+    dplyr::left_join(readMagTable2()) %>%
+    dplyr::mutate(efsa_total_infections=efsa_infs_no_rain+efsa_infs_rain) %>%
+    dplyr::select(Country,Location,efsa_total_infections,efsa_infs_rain,
+                  asco_days_average,asco_suit_years, pyc_average,  pyc_suit_years) %>%
+    
+    tbl_df() %>%
+    dplyr::arrange( -asco_days_average,-pyc_average)
+exportCsv(joined.pres,"rainForMagereyPoints")
+colnames(joined.pres) <- c( "Country"   ,
+                          "Location"      ,
+                          "EFSA infections",
+                          "EFSA infections\nfiltered"   ,
+                          "Magarey\nasco_days\naverage",
+                          "Magarey\nasco\nsuit_years"  ,
+                          "Magarey\npyc\naverage"    ,
+                          "Magarey\npyc\nsuit_years")
+pander::pander(joined.pres ,
+               caption = "EFSA 2014 infections for Magarey 2015 locations",
+               split.cells=T,
+               split.tables=Inf)
+
+
+```
+
+The data from above shown as a bar plot.
+
+```{r rainNoRainPlot,warning=F,message=F,fig.cap="EFSA 2104 infections for Magarey 2015 locations"}
+plotMag2015byRain(joined)
+```
+
+# Chapter 2.1
+
+We have used the following data sources for the preparation of the tables and maps.
+
+## Citrus production data
+The citrus production data was obtained from the offical national statistical offices of the citrus producing countries of Europe.
+The data was then combined into a single EU dataset, retaining the latest available data for each country.
+
+## Infection events from EFSA 2014
+The infection events for the rain/non rain comparisons were obtained from the output file of the run of the ascospores infection model for the EFSA 2014 opinion on CBS. It was the same data then used in the EFSA 2014 opinion. The data set contains the number of daily infection events and the information, if any rain was present on that day. We use the data from the model run with D_50 = 3 hours and T_min = 10 °C, the same as in EFSA 2014.
+
+## Infection scores from Magarey 2015
+The infection scores from Magerey 2015 were downloaded from the web page of the article at Science Direct.
+http://www.sciencedirect.com/science/article/pii/S0261219415300387
+
+## Climate zones from Martinez 2015
+The climat zone raster files were obtained by personal communication with the 
+author of Martinez 2015.
 
 ```{r warning=F,message=F,results="hide"}
 

@@ -1,24 +1,3 @@
-## library(pacman)
-## if (!p_loaded(SparkR)) {
-##     .libPaths(c(file.path(Sys.getenv("SPARK_HOME"), "R", "lib"), .libPaths()))
-##     p_load(SparkR)
-## }
-## p_load(magrittr)
-## p_load(efsagis)
-## p_load(sp)
-## p_load(dplyr)
-## p_load(ggplot2)
-## p_load(tmap)
-## source("./readMagareyTable.R")
-## data(cgms25grid)
-
-##sc <- SparkR::sparkR.init(master="local",sparkPackages = "com.databricks:spark-csv_2.10:1.3.0")
-##sqlContext <- SparkR::sparkRSQL.init(sc)
-
-##asco_df <- SparkR::read.df(sqlContext, "./infections/asco_3_15.csv",
-##    source = "com.databricks.spark.csv",
-##  header="true",
-##inferSchema = "true")
 
 #' @export
 getAsco_3_15 <- function(sqlContext) {
@@ -86,25 +65,24 @@ joinEfsaGridMagereyPts <- function(gridedValues,dataColumn) {
     mag2015pts.eu
 
 }
-                                        #write.csv(mag2015pts.eu,"./output/mag2015Tab1_rain.csv")
+                                      
 #' @export
 plotMag2015byRain <- function(mag2015pts.eu) {
-    mag2015pts.eu$Location <- reorder(mag2015pts.eu$Location,mag2015pts.eu$`sum(INFECTION_EVENTS)`)
+    mag2015pts.eu$Location <- reorder(mag2015pts.eu$Location,mag2015pts.eu$infection_events)
     mag2015pts.eu = mag2015pts.eu[with(mag2015pts.eu, order(ind_rain)), ] %>%
-        dplyr::mutate(`rain indicator`=ifelse(ind_rain==0,"no rain","rain"))
+        dplyr::mutate(`rain indicator`=ifelse(ind_rain==0,
+                                              "infections on days without rain",
+                                              "infections on days with rain"))
 
-                                        #png("./output/mag2015Tab1_rain.png")
-    ggplot2::ggplot(mag2015pts.eu,ggplot2::aes(x=Location,y=`sum(INFECTION_EVENTS)`,fill=`rain indicator`)) +
+                                       
+    ggplot2::ggplot(mag2015pts.eu,ggplot2::aes(x=Location,y=infection_events,fill=`rain indicator`)) +
         ggplot2::geom_bar(stat="identity") +
-        ggplot2::coord_flip()
-                                        #dev.off()
+        ggplot2::coord_flip() +
+        ggplot2::theme(legend.position="bottom")
+                                      
 }
 
 gridDataToSpdf <- function(data,col) {
-
-                                        #data <- left_join(cgms25grid@data,data,by=c("Grid_Code"="GRID_NO")) %>%
-                                        #    as.data.frame()
-                                        #    column <- paste0("X",column)
                                         
     dataSpdf <-  tmap::append_data(cgms25grid,data,key.data = "GRID_NO",key.shp = "Grid_Code")
     dataSpdf <- dataSpdf[!is.na(dataSpdf[[col]]),]    
@@ -124,10 +102,12 @@ plotInfections <- function(data,ind_rain_,col) {
         tmap::tm_fill(col=col,
 
                       breaks=seq(0,5000,500),
-                      contrast=c(0.2,1)
+                      contrast=c(0.3,1),
+                      legend.hist = T,
 
                       ) +
-    tmap::tm_borders()
+        tmap::tm_borders() +
+    tmap::tm_format_Europe()
     
 
 }
