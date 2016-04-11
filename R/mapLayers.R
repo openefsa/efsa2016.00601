@@ -224,14 +224,14 @@ magarey_shp <- function() {
 
 #' @importFrom dplyr bind_cols
 #' @export
-magarey_layer <- function(column_size,column_col=NA,title.size=NA,title.col=NA,style=NULL) {
+magarey_layer <- function(column_size,column_col=NA,title.size=NA,title.col=NA,style=NULL,alpha=1) {
 
     shps <- magarey_shp()
     spts <- shps$spts
     text_sp <- shps$text_sp
     
     tmap::tm_shape(spts) +
-        tmap::tm_bubbles(size=column_size,col=column_col,border.col = "blue",alpha=1,
+        tmap::tm_bubbles(size=column_size,col=column_col,border.col = "blue",alpha=alpha,
                          title.col = title.col,title.size = title.size,
                          palette = "Blues",
                          scale=1.2,

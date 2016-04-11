@@ -322,13 +322,13 @@ plot_citrus_koppen_schraffiert()
 
 # rain/non rain comparison
 ```{r warning=F,message=F}
-p_load(SparkR)
+library(SparkR)
 sc <- SparkR::sparkR.init(master="local",sparkPackages = "com.databricks:spark-csv_2.10:1.3.0")
 sqlContext <- SparkR::sparkRSQL.init(sc)
 sum_by_rain_gridno <- sum_by_rain_gridno(sqlContext)
 sum_by_rain <- sum_by_rain(sqlContext)
 SparkR::sparkR.stop()
-p_unload(SparkR)
+detach("package:SparkR")
 ```
 
 In order to assess the impact of inclusion or exclusion of the condition of rain on the model, 
@@ -433,3 +433,49 @@ if(usePng) {
 }
 ```
 
+ 
+	```{r}
+ base_layer() +
+      worldCountries_layer(world.eu) +
+      nuts3_layer() +
+      infection_layer("extdata/spores2/Asco_3_15_Model_AVG.xlsx","Sep",
+                       "Proportion of infection events (%)",
+                       1) +
+      magarey_layer("pyc_average",
+                     "pyc_suit_years",
+                     title.size = "Pycnidiospores \ninfection score",
+                     title.col = "Pycnidiospores \n(% suitable years)",
+                     style="cat",alpha=0.7) +
+      tmap::tm_format_Europe()
+
+```
+
+```{r}
+base_layer() +
+
+    citrusSurface_layer(column="citrus_density",alpha=1) +
+    citrusSurface_outline_layer() +
+    citrusSurface_layer(column="ha",alpha=1) +
+    citrusSurface_dots_layer() +
+    
+    combined_koppen_layer(whichToShow = c(5,6))+
+    aschmann_layer() +
+    
+
+    infection_layer("extdata/spores2/Asco_3_15_Model_AVG.xlsx","Sep",
+                    "Proportion of infection events (%)",
+                    1) +
+
+    magarey_layer("pyc_average",
+                  "pyc_suit_years",
+                  title.size = "Pycnidiospores \ninfection score",
+                  title.col = "Pycnidiospores \n(% suitable years)",
+                  style="cat",alpha=0.7) +
+
+    magarey_layer("asco_days_average","asco_suit_years",
+                  title.size = "Ascospores \ninfection score",
+                  title.col = "Ascospores \n(% suitable years)",
+                  style = "pretty")
+
+
+```
