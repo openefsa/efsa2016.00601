@@ -57,7 +57,6 @@ latestData <- function() {
         filter(year==max_year) %>%
         ungroup() %>%
         select(-max_year)
-                                        #write.csv(data,"output/citrusProduction_latest.csv")
     data
 }
 
@@ -214,11 +213,11 @@ magarey_shp <- function() {
 
 
     spts <- sp::SpatialPointsDataFrame(coords=lonLat,
-                                      data=mag2015Data %>% data.frame(),
-                                      proj4string = wgs84())
+                                       data=mag2015Data %>% data.frame(),
+                                       proj4string = wgs84())
     
     text_sp <- sp::SpatialPointsDataFrame(coords=xy,data=mag2015Data %>% data.frame(),
-                                         proj4string = wgs84())
+                                          proj4string = wgs84())
 
     list(spts=spts,text_sp=text_sp)
 }
@@ -251,7 +250,7 @@ magarey_layer <- function(column_size,column_col=NA,title.size=NA,title.col=NA,s
 #' @export
 aschmann_layer <- function(alpha=1) {
     aschmann <- raster::raster(system.file("extdata/martinez2015/rasters/mediterranean/ASCHMANN/Aschmann_med.grd",
-                                          package = "efsa2016.00601")) %>%
+                                           package = "efsa2016.00601")) %>%
         raster::crop(euExtent())
     tmap::tm_shape(aschmann) +
         tmap::tm_raster(alpha = alpha,legend.show = T,style="cat",
@@ -297,58 +296,52 @@ combined_koppen_layer <- function(alpha=1,whichToShow=c(5,6,8,9)) {
             palette= c("#F6A200","#FDDA62","#FCFE04","#CECC08"),
             style = "cat",
                                         #colorNA = "#FFFFFF00",
-                alpha = alpha,
-                labels=c("BSh","BSk","CSa","CSb"),
-                title="Köppen–Geiger classification",
-                textNA = NA,
-                legend.show = T)
+            alpha = alpha,
+            labels=c("BSh","BSk","CSa","CSb"),
+            title="Köppen–Geiger classification",
+            textNA = NA,
+            legend.show = T)
     
-    }
+}
 
 
-    #' @export
-    prepare_infection_sp <- function(fileName,column) {
-        data <- readxl::read_excel(system.file(fileName,package = "efsa2016.00601"))
+#' @export
+prepare_infection_sp <- function(fileName,column) {
+    data <- readxl::read_excel(system.file(fileName,package = "efsa2016.00601"))
                                         #data <- left_join(cgms25grid@data,asco,by=c("Grid_Code"="GRID_NO"))
-        data <- left_join(cgms25grid@data,data,by=c("Grid_Code"="GRID_NO")) %>%
-            data.frame()
+    data <- left_join(cgms25grid@data,data,by=c("Grid_Code"="GRID_NO")) %>%
+        data.frame()
                                         #    column <- paste0("X",column)
-        dataSpdf <- cgms25grid
-        dataSpdf@data <- data
-        dataSpdf <- dataSpdf[!is.na(dataSpdf[[column]]),]    
-        dataSpdf
+    dataSpdf <- cgms25grid
+    dataSpdf@data <- data
+    dataSpdf <- dataSpdf[!is.na(dataSpdf[[column]]),]    
+    dataSpdf
 
-    }
+}
 
 
-    #' @export
-    infection_layer <- function(fileName,column,title,alpha=1) {
-        tmap::tm_shape(prepare_infection_sp(fileName,column)) +
-            tmap::tm_polygons(column,border.col = "grey10",alpha=alpha,border.alpha = alpha,
-                              palette=paste0(gplots::col2hex(c("white","lightblue","green","yellow","orange","red")),"FF"),
-                              breaks=c(-Inf,0.01,0.5,1,5,10,Inf),
-                              title=title
-                              )    
+#' @export
+infection_layer <- function(fileName,column,title,alpha=1) {
+    tmap::tm_shape(prepare_infection_sp(fileName,column)) +
+        tmap::tm_polygons(column,border.col = "grey10",alpha=alpha,border.alpha = alpha,
+                          palette=paste0(gplots::col2hex(c("white","lightblue","green","yellow","orange","red")),"FF"),
+                          breaks=c(-Inf,0.01,0.5,1,5,10,Inf),
+                          title=title
+                          )    
     
-    }
+}
 
-    #' @export
-    plot_infection <- function(fileName,column){
-        dataSpdf <-  prepare_infection_sp(fileName,column) %>%
-            postProcessMap(wgs84(),euExtent())
-        intervals <- classInt::classIntervals(dataSpdf[[column]],style="fixed",
-                                             fixedBreaks=c(-Inf,0.01,0.5,1,5,10,Inf))
-        palette <- gplots::col2hex(c("beige","lightblue","green","yellow","orange","red"))
+#' @export
+plot_infection <- function(fileName,column){
+    dataSpdf <-  prepare_infection_sp(fileName,column) %>%
+        postProcessMap(wgs84(),euExtent())
+    intervals <- classInt::classIntervals(dataSpdf[[column]],style="fixed",
+                                          fixedBreaks=c(-Inf,0.01,0.5,1,5,10,Inf))
+    palette <- gplots::col2hex(c("beige","lightblue","green","yellow","orange","red"))
 
-        ## dataSpdf <- tmap::append_data(dataSpdf,
-        ##                              data.frame(infectionClass=factor(findCols(intervals),
-        ##                                                               levels=c(1,2,3,4,5,6),
-        ##                                                               labels=c("<0.01","0.01-0.5","0.5-1","1-5","5-10","
-        ##>10"))))
-
-        colors <- classInt::findColours(intervals,palette)
-        plot(dataSpdf,col=colors,border="transparent")
+    colors <- classInt::findColours(intervals,palette)
+    plot(dataSpdf,col=colors,border="transparent")
     
 
-    }
+}
 

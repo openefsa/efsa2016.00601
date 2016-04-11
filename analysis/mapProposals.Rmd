@@ -8,13 +8,15 @@ output:
     toc: yes
 ---
 ```{r echo=F, results="hide",warning=F,message=F,cache=F}
-library(pacman)
 library(efsagis)
 library(efsa2016.00601)
 library(dplyr)
 library(pander)
+library(sp)
+knitr::opts_chunk$set(comment=NA, fig.width=14, fig.height=14/2.4,dpi=221,echo=F,cache=T,fig.path="figures/")
+```
 
-
+```{r echo=F, results="hide",warning=F,message=F}
 usePng <- F
 
 exportCsv <- function(df,filename) {
@@ -54,12 +56,12 @@ data(NUTS_01M_2013,package="efsagis")
 data(countries_01M_2013,package="efsagis")
 data(euCitrusSurface,package = "efsa2016.00601")
 
-knitr::opts_chunk$set(comment=NA, fig.width=14, fig.height=14/2.4,dpi=221,echo=F,cache=T,fig.path="figures/")
 world.eu <- worldEu()
 EU_NUTS.0 <- euNuts0()
 
                                      
 ```
+
 
 ```{r echo=F, results="hide",warning=F,message=F}
 prepare_citrus_layer()
@@ -355,12 +357,12 @@ In the following we show the difference between inclusion/exclusion of rain for 
 The table shows the total number of infection events from the EFSA 2014 model with and without rain for each of the Magarey 2015 EU locations.
 
 The columns are:
- * EFSA infections : total number of infection events  from EFSA 2014
- * EFSA infections filtered : number of infection events, excluding days without rain from EFSA 2014
- * asco_days_average : Magarey 2015 ascospores infection score
- * asco_suit_years : Magarey 2015 ascospores suitable years
- * pyc_average :  Magarey 2015 pycnidiospores infection score
- * pyc_suit_years : Magarey 2015 pycnidiospores suitable years
+* EFSA infections : total number of infection events  from EFSA 2014
+* EFSA infections filtered : number of infection events, excluding days without rain from EFSA 2014
+* asco_days_average : Magarey 2015 ascospores infection score
+* asco_suit_years : Magarey 2015 ascospores suitable years
+* pyc_average :  Magarey 2015 pycnidiospores infection score
+* pyc_suit_years : Magarey 2015 pycnidiospores suitable years
 
 
 ```{r rainNonRainTable,warning=F,message=F,fig.cap="EFSA 2014 infections for Magarey 2015 locations"}

@@ -23,7 +23,7 @@ Imports:
     ggplot2,
     knitr,
     pander,
-    datapackage,
+    datapack,
     uuid,
     network
 RoxygenNote: 5.0.1
