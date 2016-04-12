@@ -153,7 +153,7 @@ In the following map the Magarey 2015 EU locations are shown and two columns of 
 nextPlot("surface_MagAsco")
 base_layer() +
     worldCountries_layer(world.eu) +
-    citrusSurface_layer(column="ha") +
+    citrusSurface_layer(column="citrus_density") +
     nuts0_layer()+
     nuts3_layer() +
     magarey_layer("asco_days_average","asco_suit_years",
@@ -173,7 +173,7 @@ nextPlot("surface_MagPycnidio")
 ##OK
 base_layer() +
     worldCountries_layer(world.eu) +
-    citrusSurface_layer(alpha=1,column="ha") +
+    citrusSurface_layer(alpha=1,column="citrus_density") +
     nuts3_layer() +
     nuts0_layer()+
     magarey_layer("pyc_average","pyc_suit_years",title.size = "Pycnidiospores \ninfection score",title.col = "Pycnidiospores \n(% suitable years)",style="cat") +
