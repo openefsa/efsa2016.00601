@@ -156,10 +156,12 @@ base_layer() +
     citrusSurface_layer(column="citrus_density") +
     nuts0_layer()+
     nuts3_layer() +
-    magarey_layer("asco_days_average","asco_suit_years",
+    magarey_layer("asco_days_average",
                   title.size = "Ascospores \ninfection score",
-                  title.col = "Ascospores \n(% suitable years)",
-                  style = "pretty") +
+                  style = "pretty",
+                  alpha = 0.5,
+                  scale=1.2
+                  ) +
     tmap::tm_format_Europe()
 
 ```
@@ -170,13 +172,17 @@ This map shows the pycnidiospores infection score from Magarey 2015 table 2.
 
 ```{r warning=F,message=F,fig.cap="Magharey 2015 EU locations and the reported pycnidiospores infection score and the percentage of suitable years for infection",fig.keep="last"}
 nextPlot("surface_MagPycnidio")
-##OK
+
 base_layer() +
     worldCountries_layer(world.eu) +
     citrusSurface_layer(alpha=1,column="citrus_density") +
     nuts3_layer() +
     nuts0_layer()+
-    magarey_layer("pyc_average","pyc_suit_years",title.size = "Pycnidiospores \ninfection score",title.col = "Pycnidiospores \n(% suitable years)",style="cat") +
+    magarey_layer("pyc_average",
+                  title.size = "Pycnidiospores \ninfection score",
+                  style="cat",
+                  alpha=0.5,
+                  scale=1) +
     tmap::tm_format_Europe()
 ```
 
