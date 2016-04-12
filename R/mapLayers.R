@@ -323,7 +323,7 @@ prepare_infection_sp <- function(fileName,column) {
 #' @export
 infection_layer <- function(fileName,column,title,alpha=1) {
     tmap::tm_shape(prepare_infection_sp(fileName,column)) +
-        tmap::tm_polygons(column,border.col = "grey10",alpha=alpha,border.alpha = alpha,
+        tmap::tm_polygons(column,border.col = NULL,alpha=alpha,border.alpha = alpha,
                           palette=paste0(gplots::col2hex(c("white","lightblue","green","yellow","orange","red")),"FF"),
                           breaks=c(-Inf,0.01,0.5,1,5,10,Inf),
                           title=title
