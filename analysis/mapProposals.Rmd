@@ -13,6 +13,9 @@ library(efsa2016.00601)
 library(dplyr)
 library(pander)
 library(sp)
+library(tidyr)
+library(ggplot2)
+
 knitr::opts_chunk$set(comment=NA, fig.width=14, fig.height=14/2.4,dpi=221,echo=F,cache=T,fig.path="figures/")
 ```
 
@@ -182,8 +185,8 @@ base_layer() +
 
 ```{r warning=F,message=F,fig.cap="Overlap of EU citrus production regions and EFSA 2014 predicted infections"}
 nextPlot("surface_efsa2014")
-## renove grid borders
-## try schraffierung 
+
+
 base_layer() +
     nuts0_layer()+
     worldCountries_layer(world.eu) +
