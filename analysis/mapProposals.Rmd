@@ -1,9 +1,9 @@
 ---
 output:
-  word_document: 
+  html_document:
     fig_caption: yes
     toc: yes
-  html_document:
+  word_document:
     fig_caption: yes
     toc: yes
 ---
@@ -16,7 +16,8 @@ library(sp)
 library(tidyr)
 library(ggplot2)
 
-knitr::opts_chunk$set(comment=NA, fig.width=14, fig.height=14/2.4,dpi=221,echo=F,cache=T,fig.path="figures/")
+knitr::opts_chunk$set(comment=NA, fig.width=14, fig.height=14/2.4,dpi=221,echo=F,cache=T,fig.path="figures/",
+                      autodep=T)
 ```
 
 ```{r echo=F, results="hide",warning=F,message=F}
