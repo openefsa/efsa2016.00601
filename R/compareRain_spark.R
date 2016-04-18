@@ -90,23 +90,25 @@ gridDataToSpdf <- function(data,col) {
 }
 
 #' @export
-plotInfections <- function(data,ind_rain_,col) {
+plotInfections <- function(data,ind_rain_) {
 
                                         #withRain <- sum_by_rain_gridno %>% dplyr::filter(ind_rain==1)
     filtered <- data %>%
-        dplyr::filter(ind_rain==ind_rain_)
+        dplyr::filter(ind_rain==ind_rain_) %>%
+        dplyr::rename(`infection events`=`sum(INFECTION_EVENTS)`)
+    
 
 
-    filteredSpdf <- gridDataToSpdf(filtered,col)
+    filteredSpdf <- gridDataToSpdf(filtered,"infection events")
     tmap::tm_shape(filteredSpdf) +
-        tmap::tm_fill(col=col,
+        tmap::tm_fill(col="infection events",
 
                       breaks=seq(0,5000,500),
                       contrast=c(0.3,1),
                       legend.hist = T,
 
                       ) +
-        tmap::tm_borders() +
+    tmap::tm_borders() +
     tmap::tm_format_Europe()
     
 
