@@ -137,14 +137,14 @@ citrusSurface_dots_layer <- function() {
     total <- sum(citrusMap@data$ha)
 
     shp <- tmap::sample_dots(citrusMap,
-                             shp.id = "NUTS_ID",
-                             w=100,
-                             vars="ha",
-                             units="ha",
-                             units.size=1,
-                             convert2density = F,nrow=400,ncol=1300,
-                             npop=total,
-                             total.area=sum(citrusMap@data$Shape_Area_ha))
+                            shp.id = "NUTS_ID",
+                            w=100,
+                            vars="ha",
+                            units="ha",
+                            units.size=1,
+                            convert2density = F,nrow=400,ncol=1300,
+                            npop=total,
+                            total.area=sum(citrusMap@data$Shape_Area_ha))
     
     
     tmap::tm_shape(shp)+
@@ -213,11 +213,11 @@ magarey_shp <- function() {
 
 
     spts <- sp::SpatialPointsDataFrame(coords=lonLat,
-                                       data=mag2015Data %>% data.frame(),
-                                       proj4string = wgs84())
+                                      data=mag2015Data %>% data.frame(),
+                                      proj4string = wgs84())
     
     text_sp <- sp::SpatialPointsDataFrame(coords=xy,data=mag2015Data %>% data.frame(),
-                                          proj4string = wgs84())
+                                         proj4string = wgs84())
 
     list(spts=spts,text_sp=text_sp)
 }
@@ -251,7 +251,7 @@ magarey_layer <- function(column_size,title.size,scale,style=NULL,alpha=1) {
 #' @export
 aschmann_layer <- function(alpha=1) {
     aschmann <- raster::raster(system.file("extdata/martinez2015/rasters/mediterranean/ASCHMANN/Aschmann_med.grd",
-                                           package = "efsa2016.00601")) %>%
+                                          package = "efsa2016.00601")) %>%
         raster::crop(euExtent())
     tmap::tm_shape(aschmann) +
         tmap::tm_raster(alpha = alpha,legend.show = T,style="cat",
@@ -337,7 +337,7 @@ plot_infection <- function(fileName,column){
     dataSpdf <-  prepare_infection_sp(fileName,column) %>%
         postProcessMap(wgs84(),euExtent())
     intervals <- classInt::classIntervals(dataSpdf[[column]],style="fixed",
-                                          fixedBreaks=c(-Inf,0.01,0.5,1,5,10,Inf))
+                                         fixedBreaks=c(-Inf,0.01,0.5,1,5,10,Inf))
     palette <- gplots::col2hex(c("beige","lightblue","green","yellow","orange","red"))
 
     colors <- classInt::findColours(intervals,palette)
