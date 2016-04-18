@@ -229,16 +229,16 @@ renderDF(sum_by_rain,"EFSA 2104 infection events with and without presence of ra
 
 ```
 
-The next 2 plots show the avverage number of infection events from EFSA 2014 for the month of July on days without rain and with rain.
+The next 2 plots show the avverage number of infection events from EFSA 2014 on days without rain and with rain.
 
 
 
-```{r warning=F,message=F,fig.cap="Average EFSA 2014 infections on days without rain (July)"}
-plotInfections(sum_by_rain_gridno,0,"sum(INFECTION_EVENTS)") 
+```{r warning=F,message=F,fig.cap="Sum of EFSA 2014 infections on days without rain"}
+plotInfections(sum_by_rain_gridno,0) 
 ```
 
-```{r warning=F,message=F,fig.cap="Average EFSA 2014 infections on days with rain (July)"}
-plotInfections(sum_by_rain_gridno,1,"sum(INFECTION_EVENTS)") 
+```{r warning=F,message=F,fig.cap="Sum of EFSA 2014 infections on days with rain"}
+plotInfections(sum_by_rain_gridno,1) 
 ```
 
 
@@ -269,6 +269,7 @@ joined.pres <- joined.pres %>%
     dplyr::left_join(readMagTable2()) %>%
     dplyr::mutate(efsa_total_infections=efsa_infs_no_rain+efsa_infs_rain) %>%
     dplyr::select(Country,Location,efsa_total_infections,efsa_infs_rain,
+                  efsa_infs_no_rain,
                   asco_days_average,asco_suit_years, pyc_average,  pyc_suit_years) %>%
     
     tbl_df() %>%
