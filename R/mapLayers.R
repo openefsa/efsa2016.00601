@@ -127,7 +127,7 @@ citrusSurface_outline_layer <- function() {
     ID <- cut(coords[,1], range(coords[,1]), include.lowest=TRUE)
     outline <- maptools::unionSpatialPolygons(citrusMap, ID)
     tmap::tm_shape(outline) +
-        tmap::tm_borders(lwd=1,col="red") 
+        tmap::tm_borders(lwd=1,col="blue") 
 }
 
 #' @export
