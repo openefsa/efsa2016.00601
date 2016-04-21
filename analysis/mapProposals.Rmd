@@ -449,3 +449,35 @@ pander::pander(table(levelsEfsa,levelsMagarey),
 ```
 
 
+## statistical analysis EFSA2014 and Magarey ascospore infection scores
+
+### Plot of data
+
+```{r}
+
+    ggplot(joined.pres,aes(x=`EFSA infections`, y=`Magarey\nasco_days\naverage`)) + 
+      geom_point() +
+      geom_smooth() +
+      ggtitle("Magarey2015 and EFSA2014 ascospore infection scores for the 36 Magarey2015 EU locations") +
+      labs(x="EFSA2014 infection score",y="Magarey2015 infection score")
+```
+
+### Plot of ranks
+```{r}
+        ggplot(joined.pres,aes(x=rank(`EFSA infections`), y=rank(`Magarey\nasco_days\naverage`))) +       geom_point() +
+      geom_smooth() +
+            ggtitle("Magarey2015 and EFSA2014 ranked ascospore infection scores for the 36 Magarey2015 EU locations") +
+      labs(x="Ranked EFSA2014 infection score",y="Ranked Magarey2015 infection score")
+
+
+
+```
+
+### 3 statistical tests for correlation between the ranks
+```{r}
+
+cor.test(joined.pres$`EFSA infections`, joined.pres$`Magarey\nasco_days\naverage`,method = "pearson")
+cor.test(joined.pres$`EFSA infections`, joined.pres$`Magarey\nasco_days\naverage`,method = "kendal",exact = F)
+cor.test(joined.pres$`EFSA infections`, joined.pres$`Magarey\nasco_days\naverage`,method = "spearman",exact = F)
+
+```
