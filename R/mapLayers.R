@@ -31,7 +31,7 @@ euNuts0 <- function() {
 
 #' @export
 euNuts3 <- function() {
-    
+
     euNuts()[euNuts()@data$STAT_LEVL_==3,] %>%
         efsagis::postProcessMap(wgs84(),euExtent())
 
@@ -50,7 +50,7 @@ wgs84 <- function() {
 
 #' @export
 latestData <- function() {
-    
+
     data <- euCitrusSurface %>%
         group_by(NUTS.Code) %>%
         mutate(max_year=max(year)) %>%
@@ -70,23 +70,23 @@ base_layer <- function() {
 #' @export
 nuts0_layer <- function(alpha=1) {
     tmap::tm_shape(euNuts0()) +
-        tmap::tm_borders(lwd=0.5,col="grey20",alpha = alpha) 
+        tmap::tm_borders(lwd=0.5,col="grey20",alpha = alpha)
 }
 #' @export
 nuts3_layer <- function(alpha=1) {
     tmap::tm_shape(euNuts3()) +
-        tmap::tm_borders(lwd=0.1,col="grey10",alpha=alpha) 
-    
+        tmap::tm_borders(lwd=0.1,col="grey10",alpha=alpha)
+
 }
 
 #' @export
-prepare_citrus_layer <- function() {     
+prepare_citrus_layer <- function() {
     data <- latestData()
     warnIfUnkownIds(data)
-    
+
     EU_NUTS.3.ha <- euNuts3()
     newData <- euNuts3()@data %>% left_join(data,by=c("NUTS_ID"="NUTS.Code"))
-    
+
     EU_NUTS.3.ha@data <- newData
     EU_NUTS.3.ha <- EU_NUTS.3.ha[!is.na(EU_NUTS.3.ha@data$ha),]
     EU_NUTS.3.ha
@@ -145,10 +145,10 @@ citrusSurface_dots_layer <- function() {
                             convert2density = F,nrow=400,ncol=1300,
                             npop=total,
                             total.area=sum(citrusMap@data$Shape_Area_ha))
-    
-    
+
+
     tmap::tm_shape(shp)+
-        tmap::tm_dots(size = 0.01,col="red") 
+        tmap::tm_dots(size = 0.01,col="red")
 
 }
 
@@ -157,7 +157,7 @@ citrusSurface_dots_layer <- function() {
 #' @export
 citrusSurface_layer <- function(column,alpha=1) {
     if (column=="citrus_density") {
-        title=paste0("Citrus production area density \n (ha/km^2)")
+        title=paste0("Citrus production area\ndensity(ha/km^2)")
         breaks=NULL
     } else  if (column=="ha") {
         title="Citrus production area \n (ha)"
@@ -171,35 +171,35 @@ citrusSurface_layer <- function(column,alpha=1) {
                       alpha = alpha,
                       legend.format = list(scientific=T,format="f"),
                       contrast=c(0.2,1),
-                      title=title) 
-    
+                      title=title)
+
 }
 
 magarey_shp <- function() {
 
     europe <- latestData()
     mag2015table1 <- readMagTable1()
-    
+
     pts <- mag2015table1 %>% select(Lon,Lat) %>% data.frame() %>% sp::SpatialPoints(wgs84())
-    
-    
+
+
     match <- (sp::over(pts,euNuts3()))
     mag2015Data <- bind_cols(mag2015table1,match)  %>%
         filter(!is.na(NUTS_ID)) %>%
         select(-STAT_LEVL_,-Shape_Leng,-Shape_Area) %>%
         left_join((europe %>% select(NUTS.Code,NUTS3.name,ha)),by=c("NUTS_ID"="NUTS.Code"))
-    
+
     mag2015table2 <- readr::read_csv(system.file("extdata/mag2015_table2.csv",package = "efsa2016.00601"),skip=5) %>%
         setNames(c("Location","Country","prevalence","asco_pat_average","asco_days_average","asco_days_stddev","asco_suit_years","pyc_average","pyc_stddev","pyc_suit_years")) %>%
                                         #select(Location,asco_days_average) %>%
         mutate(Location=gsub("<comma>",".",Location)) %>%
         mutate(Location=gsub("-","/",Location,fixed=T),
                Location=gsub("Larnaca Cyprus","Larnaca",Location),
-               Location=gsub("^Palermo/Punta$","Palermo/Punta Raisi",Location)) 
-    
-    
-    mag2015Data <- mag2015Data %>% left_join(mag2015table2,by=c("Location")) 
-    
+               Location=gsub("^Palermo/Punta$","Palermo/Punta Raisi",Location))
+
+
+    mag2015Data <- mag2015Data %>% left_join(mag2015table2,by=c("Location"))
+
 
 
 
@@ -209,13 +209,13 @@ magarey_shp <- function() {
 
     lonLat <- mag2015Data %>% select(Lon,Lat) %>% data.frame()
     invisible(sp::plot(euNuts0(),col = "white",type="n",lwd=0.001)) # to make pointLabel happy
-    xy <- maptools::pointLabel(lonLat$Lon,lonLat$Lat,labels = paste0(seq_along(lonLat$Lon)),doPlot = F,cex=2) 
+    xy <- maptools::pointLabel(lonLat$Lon,lonLat$Lat,labels = paste0(seq_along(lonLat$Lon)),doPlot = F,cex=2)
 
 
     spts <- sp::SpatialPointsDataFrame(coords=lonLat,
                                       data=mag2015Data %>% data.frame(),
                                       proj4string = wgs84())
-    
+
     text_sp <- sp::SpatialPointsDataFrame(coords=xy,data=mag2015Data %>% data.frame(),
                                          proj4string = wgs84())
 
@@ -224,27 +224,34 @@ magarey_shp <- function() {
 
 #' @importFrom dplyr bind_cols
 #' @export
-magarey_layer <- function(column_size,title.size,scale,style=NULL,alpha=1) {
+magarey_layer <- function(column_size,title_size,
+                          column_text,title_text,
+                          scale,style=NULL,alpha=1) {
 
     shps <- magarey_shp()
     spts <- shps$spts
     text_sp <- shps$text_sp
-    
+
     tmap::tm_shape(spts) +
         tmap::tm_bubbles(size=column_size,
                          border.col = "blue",
                          alpha=alpha,
                          col=c("white"),
-                         title.size = title.size,
+                         title.size = title_size,
                          scale=scale,
-                         style = style,
+                         #style = style,
                          legend.format = list(scientific=T,format="f"),
+                         sizes.legend=c(0,10,20,30,40,50,60),
+
 
                          ) +
-
+    tmap::tm_shape(spts) +
+    tmap::tm_dots(size=0.05,col="blue") +
     tmap::tm_shape(text_sp) +
-    tmap::tm_text(column_size,col="blue")
-
+    tmap::tm_text(column_text,col=column_text,palette = c("blue"),breaks=c(0,1),
+                  title.col = "Magarey2015 score",
+                  labels=c(title_text),
+                  labels.text = "xx.x")
 }
 
 
@@ -263,19 +270,19 @@ aschmann_layer <- function(alpha=1) {
 #' @export
 koppen_layer <- function(type,alpha=0.2,palette=NULL) {
     koppen <- raster::raster(system.file(sprintf("extdata/martinez2015/rasters/mediterranean/KOPPEN/koppen_%s.grd",type),package = "efsa2016.00601")) %>%
-        raster::crop(euExtent()) 
-    
+        raster::crop(euExtent())
+
     tmap::tm_shape(koppen) +
         tmap::tm_raster(alpha = alpha,legend.show = T,palette = palette,
-                        textNA=NA) 
-    
+                        textNA=NA)
+
 }
 
 #' @export
 combined_koppen <- function(whichToShow=c(5,6,8,9)) {
     koppen1 <- raster::raster(system.file(sprintf("extdata/martinez2015/rasters/mediterranean/KOPPEN/koppen_%s.grd","Bsk_Bsh"),package = "efsa2016.00601")) %>%
         raster::crop(euExtent())
-    
+
     koppen2 <- raster::raster(system.file(sprintf("extdata/martinez2015/rasters/mediterranean/KOPPEN/koppen_%s.grd","Csa_Csb"),package = "efsa2016.00601")) %>%
         raster::crop(euExtent())
     koppen1Data <- raster::getValues(koppen1)
@@ -302,7 +309,7 @@ combined_koppen_layer <- function(alpha=1,whichToShow=c(5,6,8,9)) {
             title="Köppen–Geiger classification",
             textNA = NA,
             legend.show = T)
-    
+
 }
 
 
@@ -315,7 +322,7 @@ prepare_infection_sp <- function(fileName,column) {
                                         #    column <- paste0("X",column)
     dataSpdf <- cgms25grid
     dataSpdf@data <- data
-    dataSpdf <- dataSpdf[!is.na(dataSpdf[[column]]),]    
+    dataSpdf <- dataSpdf[!is.na(dataSpdf[[column]]),]
     dataSpdf
 
 }
@@ -328,8 +335,8 @@ infection_layer <- function(fileName,column,title,alpha=1) {
                           palette=paste0(gplots::col2hex(c("white","lightblue","green","yellow","orange","red")),"FF"),
                           breaks=c(-Inf,0.01,0.5,1,5,10,Inf),
                           title=title
-                          )    
-    
+                          )
+
 }
 
 #' @export
@@ -342,7 +349,7 @@ plot_infection <- function(fileName,column){
 
     colors <- classInt::findColours(intervals,palette)
     plot(dataSpdf,col=colors,border="transparent")
-    
+
 
 }
 

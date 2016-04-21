@@ -1,9 +1,9 @@
 ---
 output:
-  html_document:
+  word_document:
     fig_caption: yes
     toc: yes
-  word_document:
+  html_document:
     fig_caption: yes
     toc: yes
 ---
@@ -15,6 +15,7 @@ library(pander)
 library(sp)
 library(tidyr)
 library(ggplot2)
+library(ggalt) # devtools::install_github("hrbrmstr/ggalt") 
 
 knitr::opts_chunk$set(comment=NA, fig.width=14, fig.height=14/2.4,dpi=221,echo=F,cache=T,fig.path="figures/",
                       autodep=T)
@@ -157,13 +158,18 @@ base_layer() +
     citrusSurface_layer(column="citrus_density") +
     nuts0_layer()+
     nuts3_layer() +
-    magarey_layer("asco_days_average",
-                  title.size = "Ascospores \ninfection score",
-                  style = "pretty",
+    magarey_layer(column_text = "asco_days_average",
+                  title_text = "Ascospores",
+                  column_size = "asco_suit_years",
+                  title_size = "Magarey2015\nAscospores \n% suitable years",
+                  style = "fixed",
                   alpha = 0.5,
                   scale=1.2
                   ) +
-    tmap::tm_format_Europe()
+  tmap::tm_legend(title.size=1.0,
+                  text.size=0.6) +
+    tmap::tm_format_Europe_wide(inner.margins = c(0, 0.18, 0, 0),
+                                title="Magarey2015 ascospores\ninfection scores") 
 
 ```
 
@@ -172,19 +178,23 @@ base_layer() +
 This map shows the pycnidiospores infection score from Magarey 2015 table 2.
 
 ```{r warning=F,message=F,fig.cap="Magharey 2015 EU locations and the reported pycnidiospores infection score and the percentage of suitable years for infection",fig.keep="last"}
-nextPlot("surface_MagPycnidio")
-
+nextPlot("surface_MagPycnidio") 
 base_layer() +
     worldCountries_layer(world.eu) +
     citrusSurface_layer(alpha=1,column="citrus_density") +
     nuts3_layer() +
     nuts0_layer()+
-    magarey_layer("pyc_average",
-                  title.size = "Pycnidiospores \ninfection score",
-                  style="cat",
+    magarey_layer(column_text = "pyc_average",
+                  title_text = "Pycnidiospores",
+                  column_size = "pyc_suit_years",
+                  title_size = "Magarey2015\nPycnidiospores \n% suitable years",
+                  style="fixed",
                   alpha=0.5,
-                  scale=1) +
-    tmap::tm_format_Europe()
+                  scale=0.6) +
+  tmap::tm_legend(title.size=1.0,
+                  text.size=0.6) +
+    tmap::tm_format_Europe_wide(inner.margins = c(0, 0.18, 0, 0),
+                                title="Magarey2015 pycnidiospores\ninfection scores") 
 ```
 
 # Citrus surface + EFSA 2014
@@ -198,16 +208,33 @@ base_layer() +
     nuts0_layer()+
     worldCountries_layer(world.eu) +
     nuts3_layer() +
-    infection_layer("extdata/spores2/Asco_3_15_Model_AVG.xlsx","Sep",
+    infection_layer("extdata/spores2/Asco_3_15_Model_AVG.xlsx","Jun",
                     "Proportion of infection events (%)",
-                    1) +
+                    .5) +
     
     citrusSurface_outline_layer() +
     tmap::tm_format_Europe()
 ```
 
 
-
+# EFSA 2014 + Magarey 2015
+```{r}
+base_layer() +
+    nuts0_layer()+
+    worldCountries_layer(world.eu) +
+    nuts3_layer() +
+    infection_layer("extdata/spores2/Asco_3_15_Model_AVG.xlsx","Jun",
+                    "EFSA2014 proportion of infection events (%)",
+                    .5) +
+    
+    magarey_layer("asco_days_average",
+                  title.size = "Magarey2015 ascospores \ninfection score",
+                  style = "pretty",
+                  alpha = 0.5,
+                  scale=1.0
+                  ) +
+    tmap::tm_format_Europe()
+```
 
 
 # rain/non rain comparison
@@ -279,16 +306,15 @@ colnames(joined.pres) <- c( "Country"   ,
                           "Location"      ,
                           "EFSA infections",
                           "EFSA infections\nfiltered"   ,
+                          "efsa_infs_no_rain",
                           "Magarey\nasco_days\naverage",
                           "Magarey\nasco\nsuit_years"  ,
                           "Magarey\npyc\naverage"    ,
                           "Magarey\npyc\nsuit_years")
-pander::pander(joined.pres ,
+pander::pander(joined.pres %>% select(-efsa_infs_no_rain),
                caption = "EFSA 2014 infections for Magarey 2015 locations",
                split.cells=T,
                split.tables=Inf)
-
-
 ```
 
 The data from above shown as a bar plot.
@@ -389,8 +415,19 @@ To estimate which impact the Magarey2015 data could have, the EFSA2015 and the M
 The following graph shows the normalised risk scores for each Magarey location and the corresponding EFSA2014 grid cell. 
 
 ```{r}
+
+max_events <- sum_by_rain_gridno %>% 
+  group_by(GRID_NO) %>% 
+  summarise(total_events=sum(`sum(INFECTION_EVENTS)`)) %>%
+  filter(total_events==max(total_events))
+
 joined.pres.norm <- joined.pres %>%
-     dplyr::mutate(`EFSA infections` = `EFSA infections` / max(`EFSA infections`,na.rm=T)) %>%
+     bind_rows(data_frame(Location="EFSA grid cell[60126]",
+             `EFSA infections`=max_events$total_events[1])) %>%
+  filter(!Location %in% c("Thessaloniki/Mikra","Firenze")) %>%
+           
+ 
+    dplyr::mutate(`EFSA infections` = `EFSA infections` / max(`EFSA infections`,na.rm=T)) %>%
      dplyr::mutate(`Magarey\nasco_days\naverage` = `Magarey\nasco_days\naverage` / max(`Magarey\nasco_days\naverage`,na.rm=T)) %>%
      mutate( 
          Location = reorder(Location,`EFSA infections`)) 
