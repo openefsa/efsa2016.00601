@@ -397,17 +397,19 @@ joined.pres.norm <- joined.pres %>%
 
 joined.pres.norm %>% gather(type,value,`EFSA infections`,`Magarey\nasco_days\naverage`) %>%
     select(Location,type,value) %>%
-    mutate(type = ifelse(type == "EFSA infections","rel. EFSA inf. score",type),
-           type = ifelse(type == "Magarey\nasco_days\naverage","rel. Magarey inf. score",type)) %>%
+    mutate(type = ifelse(type == "EFSA infections","norm. EFSA inf. score",type),
+           type = ifelse(type == "Magarey\nasco_days\naverage","norm. Magarey inf. score",type)) %>%
     ggplot() +
-    geom_bar(aes(x=Location,fill=type,y=value),stat="identity",position="dodge") +
-    geom_hline(yintercept = c(0.33,0.66),color="black",na.rm=T) +
-    geom_label(aes(x='Firenze',y=0.15,label="Low")) +
-    geom_label(aes(x='Firenze',y=0.48,label="Middle")) +
-    geom_label(aes(x='Firenze',y=0.81,label="High")) +
+    geom_bar(aes(x=Location,fill=type,y=value),stat="identity",position="stack") +
+    #geom_hline(yintercept = c(0.33,0.66),color="black",na.rm=T) +
+    #geom_label(aes(x='Firenze',y=0.15,label="Low")) +
+    #geom_label(aes(x='Firenze',y=0.48,label="Middle")) +
+    #geom_label(aes(x='Firenze',y=0.81,label="High")) +
     
     ggplot2::coord_flip() 
 ```
+
+
 
 
 The normalised risk scores where then encoded as relative risk scores 'high','middle','low'' by cutting them into 3 intervals of 0.33 and brought into a table form for easy comparison.
