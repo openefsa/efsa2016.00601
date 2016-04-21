@@ -297,6 +297,55 @@ The data from above shown as a bar plot.
 plotMag2015byRain(joined)
 ```
 
+```{r}
+colRain <- "#9fb0ff"
+colTotal <- "#ff5555"
+
+
+joined.pres <- joined.pres %>%
+    mutate(diff=`EFSA infections` - `EFSA infections\nfiltered`,
+           Location = reorder(Location,diff)) %>%
+    arrange(-diff) 
+
+gg <- ggplot(joined.pres)
+                                        # doing this vs y axis major grid line
+gg <- gg + geom_segment(aes(y=Location, yend=Location, x=-25, xend=2500), color="#b2b2b2", size=0.15)
+                                        # dum…dum…dum!bell
+gg <- gg + geom_dumbbell(aes(x=`EFSA infections\nfiltered`, xend=`EFSA infections`, y=Location),
+                        size=1.5, color="#b2b2b2", point.size.l=3, point.size.r=3,
+                        point.colour.l=colRain, point.colour.r=colTotal)
+                                        # text below points
+gg <- gg + geom_text(data=slice(joined.pres,1),
+                    aes(x=`EFSA infections\nfiltered`, y=Location, label="Infections events filtered by days with rain"),
+                    color=colRain, size=3, vjust=-2.5, fontface="bold", family="Calibri")
+gg <- gg + geom_text(data=slice(joined.pres, 1),
+                    aes(x=`EFSA infections`, y=Location, label="All infection events"),
+                    color=colTotal, size=3, vjust=-2.5, fontface="bold", family="Calibri")
+                                        # text above points
+gg <- gg + geom_label(aes(x=`EFSA infections\nfiltered`, y=Location, label=`EFSA infections\nfiltered`),
+                     color=colRain, size=2.75, nudge_x = -50, family="Calibri")
+
+gg <- gg + geom_label(color=colTotal, size=2.75, nudge_x = 50, family="Calibri",
+                     aes(x=`EFSA infections`, y=Location, label=`EFSA infections`))
+                                        # difference column
+gg <- gg + geom_rect(aes(xmin=2500, xmax=2600, ymin=-Inf, ymax=Inf), fill="#efefe3")
+gg <- gg + geom_text(aes(label=diff, y=Location, x=2550), fontface="bold", size=3, family="Calibri")
+gg <- gg + geom_text(data=slice(joined.pres, 1), aes(x=2550, y=Location, label="DIFF"),
+                    color="#7a7d7e", size=3.1, vjust=-2, fontface="bold", family="Calibri")
+gg <- gg + scale_x_continuous(expand=c(0,0), limits=c(-25, 2600))
+gg <- gg + scale_y_discrete(expand=c(0.075,0))
+gg <- gg + labs(x=NULL, y=NULL, title="Influence of the constraint of rain on predicted ascospore infection events")
+gg <- gg + theme_bw(base_family="Calibri")
+gg <- gg + theme(panel.grid.major=element_blank())
+gg <- gg + theme(panel.grid.minor=element_blank())
+gg <- gg + theme(panel.border=element_blank())
+gg <- gg + theme(axis.ticks=element_blank())
+gg <- gg + theme(axis.text.x=element_blank())
+gg <- gg + theme(plot.title=element_text(face="bold"))
+gg
+```
+
+
 # Chapter 2.1
 
 We have used the following data sources for the preparation of the tables and maps.
