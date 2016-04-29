@@ -9,4 +9,4 @@ manuscript_html: analysis/mapProposals.Rmd
 
 clean:
 	rm -f $(MANUSCRIPT).md
-	rm -f analysis/mapProposals_cache
+	rm -rf analysis/mapProposals_cache
