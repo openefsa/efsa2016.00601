@@ -4,14 +4,14 @@ getAsco_3_15 <- function(sqlContext) {
     asco_df <- SparkR::read.parquet(sqlContext,system.file("extdata/asco_3_15.paquet",package = "efsa2016.00601"))
     dummy <- SparkR::cache(asco_df)
     asco_df
-    
+
 
 }
 
 #' @export
 sum_by_rain <- function(sqlContext) {
     asco_df <- getAsco_3_15(sqlContext)
-    
+
     asco_df %>%
         SparkR::groupBy(asco_df$ind_rain) %>%
         SparkR::summarize(sum(asco_df$INFECTION_EVENTS)) %>%
@@ -57,7 +57,7 @@ joinEfsaGridMagereyPts <- function(gridedValues,dataColumn) {
     crsGrid <- raster::crs(cgms25grid)
     mag2015pts <- sp::spTransform(mag2015pts,crsGrid)
     match <- sp::over(mag2015pts,cgms25grid)
-    mag2015pts.eu <- 
+    mag2015pts.eu <-
         dplyr::bind_cols(mag2015table1,match) %>%
         dplyr::filter(!is.na(Grid_Code)) %>%
         dplyr::left_join(gridedValues,by=c("Grid_Code"="GRID_NO")) %>%
@@ -65,7 +65,7 @@ joinEfsaGridMagereyPts <- function(gridedValues,dataColumn) {
     mag2015pts.eu
 
 }
-                                      
+
 #' @export
 plotMag2015byRain <- function(mag2015pts.eu) {
     mag2015pts.eu$Location <- reorder(mag2015pts.eu$Location,mag2015pts.eu$infection_events)
@@ -74,18 +74,18 @@ plotMag2015byRain <- function(mag2015pts.eu) {
                                               "infections on days without rain",
                                               "infections on days with rain"))
 
-                                       
+
     ggplot2::ggplot(mag2015pts.eu,ggplot2::aes(x=Location,y=infection_events,fill=`rain indicator`)) +
         ggplot2::geom_bar(stat="identity") +
         ggplot2::coord_flip() +
         ggplot2::theme(legend.position="bottom")
-                                      
+
 }
 
 gridDataToSpdf <- function(data,col) {
-                                        
+
     dataSpdf <-  tmap::append_data(cgms25grid,data,key.data = "GRID_NO",key.shp = "Grid_Code")
-    dataSpdf <- dataSpdf[!is.na(dataSpdf[[col]]),]    
+    dataSpdf <- dataSpdf[!is.na(dataSpdf[[col]]),]
     dataSpdf
 }
 
@@ -96,7 +96,7 @@ plotInfections <- function(data,ind_rain_) {
     filtered <- data %>%
         dplyr::filter(ind_rain==ind_rain_) %>%
         dplyr::rename(`infection events`=`sum(INFECTION_EVENTS)`)
-    
+
 
 
     filteredSpdf <- gridDataToSpdf(filtered,"infection events")
@@ -110,6 +110,6 @@ plotInfections <- function(data,ind_rain_) {
                       ) +
     tmap::tm_borders() +
     tmap::tm_format_Europe()
-    
+
 
 }
