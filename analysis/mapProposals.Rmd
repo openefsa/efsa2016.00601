@@ -543,3 +543,8 @@ cor.test(joined.pres$`EFSA infections`, joined.pres$`Magarey\nasco_days\naverage
 cor.test(joined.pres$`EFSA infections`, joined.pres$`Magarey\nasco_days\naverage`,method = "spearman",exact = F)
 
 ```
+
+# session info
+```{r}
+sessionInfo()
+```
