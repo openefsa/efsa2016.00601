@@ -213,7 +213,7 @@ magarey_shp <- function() {
                                labels = paste0(seq_along(lonLat$Lon)),
                                doPlot = F,
                                offset=0,
-                               cex=1.2)
+                               cex=1)
 
 
     spts <- sp::SpatialPointsDataFrame(coords=lonLat,
