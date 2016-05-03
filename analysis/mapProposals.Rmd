@@ -331,6 +331,7 @@ colTotal <- "#ff5555"
 
 
 joined.pres <- joined.pres %>%
+  na.omit() %>%
     mutate(diff=`EFSA infections` - `EFSA infections\nfiltered`,
            Location = reorder(Location,diff)) %>%
     arrange(-diff) 
@@ -426,7 +427,7 @@ max_events <- sum_by_rain_gridno %>%
 joined.pres.norm <- joined.pres %>%
      bind_rows(data_frame(Location="EFSA grid cell[60126]",
              `EFSA infections`=max_events$total_events[1])) %>%
-  filter(!Location %in% c("Thessaloniki/Mikra","Firenze")) %>%
+  
            
  
     dplyr::mutate(`EFSA infections` = `EFSA infections` / max(`EFSA infections`,na.rm=T)) %>%
