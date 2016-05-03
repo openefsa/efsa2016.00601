@@ -161,7 +161,7 @@ base_layer() +
     magarey_layer(column_text = "asco_days_average",
                   title_text = "Ascospores",
                   column_size = "asco_suit_years",
-                  title_size = "Magarey2015\nAscospores \n% suitable years",
+                  title_size = "Magarey et al. 2015\nAscospores \n% suitable years",
                   style = "fixed",
                   alpha = 0.5,
                   scale=1.2
@@ -169,7 +169,7 @@ base_layer() +
   tmap::tm_legend(title.size=1.0,
                   text.size=0.6) +
     tmap::tm_format_Europe_wide(inner.margins = c(0, 0.18, 0, 0),
-                                title="Magarey2015 ascospores\ninfection scores") 
+                                title="Magarey et al. 2015 ascospores\ninfection scores") 
 
 ```
 
@@ -187,14 +187,14 @@ base_layer() +
     magarey_layer(column_text = "pyc_average",
                   title_text = "Pycnidiospores",
                   column_size = "pyc_suit_years",
-                  title_size = "Magarey2015\nPycnidiospores \n% suitable years",
+                  title_size = "Magarey et al. 2015\nPycnidiospores \n% suitable years",
                   style="fixed",
                   alpha=0.5,
                   scale=0.6) +
   tmap::tm_legend(title.size=1.0,
                   text.size=0.6) +
     tmap::tm_format_Europe_wide(inner.margins = c(0, 0.18, 0, 0),
-                                title="Magarey2015 pycnidiospores\ninfection scores") 
+                                title="Magarey et al. 2015 pycnidiospores\ninfection scores") 
 ```
 
 # Citrus surface + EFSA 2014
@@ -229,7 +229,7 @@ base_layer() +
         magarey_layer(column_text = "asco_days_average",
                   title_text = "Ascospores",
                   column_size = "asco_suit_years",
-                  title_size = "Magarey2015\nAscospores \n% suitable years",
+                  title_size = "Magarey et al. 2015\nAscospores \n% suitable years",
                   style = "fixed",
                   alpha = 0.5,
                   scale=1.2
@@ -500,8 +500,8 @@ pander::pander(table(levelsEfsa,levelsMagarey),
     ggplot(joined.pres,aes(x=`EFSA infections`, y=`Magarey\nasco_days\naverage`)) + 
       geom_point() +
       geom_smooth() +
-      ggtitle("Magarey2015 and EFSA2014 ascospore infection scores for the 36 Magarey2015 EU locations") +
-      labs(x="EFSA2014 infection score",y="Magarey2015 infection score")
+      ggtitle("Magarey et al. 2015 and EFSA2014 ascospore infection scores for the 36 Magarey et al. 2015 EU locations") +
+      labs(x="EFSA2014 infection score",y="Magarey et al. 2015 infection score")
 ```
 #### linear model
 ```{r}
@@ -509,8 +509,8 @@ pander::pander(table(levelsEfsa,levelsMagarey),
     ggplot(joined.pres,aes(x=`EFSA infections`, y=`Magarey\nasco_days\naverage`)) + 
       geom_point() +
       geom_smooth(method = "lm") +
-      ggtitle("Magarey2015 and EFSA2014 ascospore infection scores for the 36 Magarey2015 EU locations") +
-      labs(x="EFSA2014 infection score",y="Magarey2015 infection score")
+      ggtitle("Magarey et al. 2015 and EFSA2014 ascospore infection scores for the 36 Magarey et al. 2015 EU locations") +
+      labs(x="EFSA2014 infection score",y="Magarey et al. 2015 infection score")
 ```
 
 
@@ -519,8 +519,8 @@ pander::pander(table(levelsEfsa,levelsMagarey),
 ```{r}
         ggplot(joined.pres,aes(x=rank(`EFSA infections`), y=rank(`Magarey\nasco_days\naverage`))) +       geom_point() +
       geom_smooth() +
-            ggtitle("Magarey2015 and EFSA2014 ranked ascospore infection scores for the 36 Magarey2015 EU locations") +
-      labs(x="Ranked EFSA2014 infection score",y="Ranked Magarey2015 infection score")
+            ggtitle("Magarey et al. 2015 and EFSA2014 ranked ascospore infection scores for the 36 Magarey el al. EU locations") +
+      labs(x="Ranked EFSA2014 infection score",y="Ranked Magarey et al. 2015 infection score")
 
 
 
@@ -529,8 +529,8 @@ pander::pander(table(levelsEfsa,levelsMagarey),
 ```{r}
         ggplot(joined.pres,aes(x=rank(`EFSA infections`), y=rank(`Magarey\nasco_days\naverage`))) +       geom_point() +
       geom_smooth(method = "lm") +
-            ggtitle("Magarey2015 and EFSA2014 ranked ascospore infection scores for the 36 Magarey2015 EU locations") +
-      labs(x="Ranked EFSA2014 infection score",y="Ranked Magarey2015 infection score")
+            ggtitle("Magarey et al. 2015 and EFSA2014 ranked ascospore infection scores for the 36 Magarey et al. 2015 EU locations") +
+      labs(x="Ranked EFSA2014 infection score",y="Ranked Magarey et al. 2015 infection score")
 
 
 

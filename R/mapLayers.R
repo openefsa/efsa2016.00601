@@ -253,7 +253,7 @@ magarey_layer <- function(column_size,title_size,
     tmap::tm_dots(size=0.05,col="blue") +
     tmap::tm_shape(text_sp) +
     tmap::tm_text(column_text,col=column_text,palette = c("blue"),breaks=c(0,1),
-                  title.col = "Magarey2015 score",
+                  title.col = "Magarey et al. 2015 score",
                   labels=c(title_text),
                   labels.text = "xx.x")
 }
