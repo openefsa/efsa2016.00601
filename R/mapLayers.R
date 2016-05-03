@@ -209,7 +209,11 @@ magarey_shp <- function() {
 
     lonLat <- mag2015Data %>% select(Lon,Lat) %>% data.frame()
     invisible(sp::plot(euNuts0(),col = "white",type="n",lwd=0.001)) # to make pointLabel happy
-    xy <- maptools::pointLabel(lonLat$Lon,lonLat$Lat,labels = paste0(seq_along(lonLat$Lon)),doPlot = F,cex=2)
+    xy <- maptools::pointLabel(lonLat$Lon,lonLat$Lat,
+                               labels = paste0(seq_along(lonLat$Lon)),
+                               doPlot = F,
+                               offset=0,
+                               cex=1.2)
 
 
     spts <- sp::SpatialPointsDataFrame(coords=lonLat,
