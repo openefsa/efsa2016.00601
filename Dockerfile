@@ -16,7 +16,7 @@ EXPOSE 8080 7077 8888 8081 4040 7001 7002 7003 7004 7005 7006
 
 
 RUN apt-get update
-RUN apt-get install -y libgdal-dev libproj-dev curl librdf0-dev openjdk-8-jdk
+RUN apt-get install -y libgdal-dev libproj-dev curl librdf0-dev openjdk-8-jdk openssh-server
 
 
 RUN install2.r tmap raster dplyr tidyr gplots pander uuid network devtools redland readr readxl reshape2 maptools ggplot2 knitr rmarkdown
@@ -40,7 +40,7 @@ ENV PATH /usr/lib/rstudio-server/bin/:$PATH
 
 ## Download and install RStudio server & dependencies
 ## Attempts to get detect latest version, otherwise falls back to version given in $VER
-## Symlink pandoc, pandoc-citeproc so they are available system-wide
+ ## Symlink pandoc, pandoc-citeproc so they are available system-wide
 RUN rm -rf /var/lib/apt/lists/ \
   && apt-get update \
   && apt-get install -y -t unstable --no-install-recommends \
@@ -76,3 +76,8 @@ COPY /Makefile /tmp/
 COPY /analysis/mapProposals.Rmd /tmp/analysis/
 RUN mkdir -p /tmp/analysis/output
 RUN make -C /tmp
+
+RUN mkdir /var/run/sshd 
+RUN echo 'root:screencast' |chpasswd
+EXPOSE 22
+CMD    /usr/sbin/sshd -D
