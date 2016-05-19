@@ -242,7 +242,7 @@ base_layer() +
 ```{r warning=F,message=F}
 library(SparkR)
                                         ##sc <- SparkR::sparkR.init(master="local[2]",sparkPackages = "com.databricks:spark-csv_2.10:1.3.0")
-sc <- SparkR::sparkR.init(master="local[2]")
+sc <- SparkR::sparkR.init(master="local[4]")
 sqlContext <- SparkR::sparkRSQL.init(sc)
 sum_by_rain_gridno <- sum_by_rain_gridno(sqlContext)
 sum_by_rain <- sum_by_rain(sqlContext)
@@ -500,8 +500,8 @@ pander::pander(table(levelsEfsa,levelsMagarey),
     ggplot(joined.pres,aes(x=`EFSA infections`, y=`Magarey\nasco_days\naverage`)) + 
       geom_point() +
       geom_smooth() +
-      ggtitle("Magarey et al. 2015 and EFSA2014 ascospore infection scores for the 36 Magarey et al. 2015 EU locations") +
-      labs(x="EFSA2014 infection score",y="Magarey et al. 2015 infection score")
+      ggtitle("Magarey et al. 2015 and EFSA PLH 2014 ascospore infection scores for the 33 Magarey et al. 2015 EU locations") +
+      labs(x="EFSA PLH 2014 infection score",y="Magarey et al. 2015 infection score")
 ```
 #### linear model
 ```{r}
@@ -509,8 +509,8 @@ pander::pander(table(levelsEfsa,levelsMagarey),
     ggplot(joined.pres,aes(x=`EFSA infections`, y=`Magarey\nasco_days\naverage`)) + 
       geom_point() +
       geom_smooth(method = "lm") +
-      ggtitle("Magarey et al. 2015 and EFSA2014 ascospore infection scores for the 36 Magarey et al. 2015 EU locations") +
-      labs(x="EFSA2014 infection score",y="Magarey et al. 2015 infection score")
+      ggtitle("Magarey et al. 2015 and EFSA PLH 2014 ascospore infection scores for the 33 Magarey et al. 2015 EU locations") +
+      labs(x="EFSA PLH 2014 infection score",y="Magarey et al. 2015 infection score")
 ```
 
 
@@ -519,8 +519,8 @@ pander::pander(table(levelsEfsa,levelsMagarey),
 ```{r}
         ggplot(joined.pres,aes(x=rank(`EFSA infections`), y=rank(`Magarey\nasco_days\naverage`))) +       geom_point() +
       geom_smooth() +
-            ggtitle("Magarey et al. 2015 and EFSA2014 ranked ascospore infection scores for the 36 Magarey el al. EU locations") +
-      labs(x="Ranked EFSA2014 infection score",y="Ranked Magarey et al. 2015 infection score")
+            ggtitle("Magarey et al. 2015 and EFSA PLH 2014 ranked ascospore infection scores for the 33 Magarey el al. EU locations") +
+      labs(x="Ranked EFSA PLH 2014 infection score",y="Ranked Magarey et al. 2015 infection score")
 
 
 
@@ -529,8 +529,8 @@ pander::pander(table(levelsEfsa,levelsMagarey),
 ```{r}
         ggplot(joined.pres,aes(x=rank(`EFSA infections`), y=rank(`Magarey\nasco_days\naverage`))) +       geom_point() +
       geom_smooth(method = "lm") +
-            ggtitle("Magarey et al. 2015 and EFSA2014 ranked ascospore infection scores for the 36 Magarey et al. 2015 EU locations") +
-      labs(x="Ranked EFSA2014 infection score",y="Ranked Magarey et al. 2015 infection score")
+            ggtitle("Magarey et al. 2015 and EFSA PLH 2014 ranked ascospore infection scores for the 33 Magarey et al. 2015 EU locations") +
+      labs(x="Ranked EFSA PLH 2014 infection score",y="Ranked Magarey et al. 2015 infection score")
 
 
 
